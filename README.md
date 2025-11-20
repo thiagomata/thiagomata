@@ -209,5 +209,5 @@ You can also reach me on
 <a href="https://stackoverflow.com/users/456164/thiago-mata">StackOverflow</a>,
 or by email at <a class="email" href="mailto:thiago.henrique.mata@gmail.com">thiago.henrique.mata@gmail.com</a>
 
-- [One Page CV](./pdf/thiago-mata-one-page-cv.pdf)
-- [Detailed CV](./pdf/thiago-mata-detailed-cv.pdf)
+- [One Page CV](pdf/thiago-mata-one-page-cv.pdf)
+- [Detailed CV](pdf/thiago-mata-detailed-cv.pdf)

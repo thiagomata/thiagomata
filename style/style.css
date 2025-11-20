@@ -659,7 +659,9 @@ body {
             "title-box-name"
             "title-box-description"
             "title-box-offer"
-            "title-box-call-to-action";
+            "title-box-call-to-action"
+            "title-box-cv"
+            ;
     }
 
     .title-box-name {
@@ -681,11 +683,20 @@ body {
         display: flex;
     }
 
+    .title-box-cv {
+        grid-area: title-box-cv;
+        justify-content: center;
+        align-items: flex-end;
+        display: flex;
+    }
+
     .title-box-call-to-action a {
         text-decoration: none;
     }
 
-    .title-box-call-to-action .button-primary {
+    .title-box-call-to-action .button-primary,
+    .title-box-cv .button-primary
+     {
         background-color: var(--dark-80);
         color: var(--light-80);
         width: 12rem;
@@ -693,6 +704,13 @@ body {
         cursor: pointer;
         font-size: var(--size-3);
         border-radius: 5px;
+    }
+    .title-box-cv .button-primary {
+        background-color: var(--light-80);
+        color: var(--dark-80);
+        border-style: solid;
+        border-width: 2px;
+        border-color: var(--dark-80);
     }
 }
 p {
@@ -795,7 +813,8 @@ p {
             grid-template-areas:
                 "title-box-name         title-box-name"
                 "title-box-description  title-box-description"
-                "title-box-offer        title-box-call-to-action";
+                "title-box-offer        title-box-call-to-action"
+                "title-box-offer        title-box-cv";
         }
 
         .bento-box {
@@ -966,7 +985,9 @@ p {
             grid-template-areas:
                 "title-box-right title-box-name         title-box-name         title-box-name            title-box-name            title-box-left"
                 "title-box-right title-box-description  title-box-description  title-box-description     .                         title-box-left"
-                "title-box-right title-box-offer        title-box-offer        .                         title-box-call-to-action  title-box-left";
+                "title-box-right title-box-offer        title-box-offer        .                         title-box-call-to-action  title-box-left"
+                "title-box-right title-box-offer        title-box-offer        .                         title-box-cv              title-box-left"
+                ;
         }
 
         .bento-box .bento-box-xp {
