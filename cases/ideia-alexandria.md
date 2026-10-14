@@ -1,42 +1,44 @@
-# Ideia - Alexandria
+# Ideia — Preparing Alexandria to scale through self-service
 
 [Thiago Mata](../README.md)
 
-| &nbsp;    | &nbsp;                                              |
-|-----------|-----------------------------------------------------|
-| Company:  | IDEIA                                               |
-| Position: | CTO                                                 |
-| Summary:  | We created a new product for research, microtargeting, communication, and statistics using publicly available demographic data, distributed systems, machine learning, and streaming on the cloud. |
+**Position:** CTO
 
-##  Ideia
+## Summary
 
-<div style="background-color: white; display: flex; justify-content: center; align-items: center; height: 100px;">
-<img src="../img/ideia.svg" style="height:90px;"/>
-</div>
+We evolved Alexandria from an internal reporting tool used by consulting employees into a self-service platform. The goal was to prepare Ideia to scale by enabling clients to work directly with their data, rather than depending on the technical team for each analysis.
 
----
+## The business challenge
 
-IDEIA is a survey company that provides demographic analysis and microtargeting services to political campaigns, non-profits, and corporations. Founded in 2011, it has developed a unique methodology that integrates traditional and modern information-gathering techniques. For example, it utilizes crowdsourcing for anthropological studies to innovate in public opinion research.
+Ideia served a small number of large, high-revenue clients. They were very satisfied with the service, but depended heavily on the technical team.
 
-I guided the company's development of its IT infrastructure and products, improving the company's development process and training policy, defining the career ladder, reporting the company strategy and vision to investors, improving the observability and monitoring, evaluating product existing and new features with clients, measuring their engagement and feedback, and optimizing the cloud infrastructure for scalability and reliability while reducing the cost.
+Alexandria initially helped consulting employees generate reports. That supported the existing business, but expanding the client base would place additional demands on the team. Preparing the company to scale required changing how clients accessed the product's capabilities.
 
-## Microtargeting with Data Intelligence
+## The product shift
 
-| &nbsp; | &nbsp; |
-|--------|--------|
-| Alexandria was the company's main product. It serves as a platform for the company to combine data from different sources, clean data, extract features, and visualize data. It also helps to define the target audience's demographics, create microtargeting campaigns, and consume the data from different sources to create statistics and reports. The clients could extract reports with insights from the data and use them to improve their campaigns and products. | <img width="1000px" src="../img/library.jpg"> |
+We expanded Alexandria into a client-facing, self-service platform. Clients could upload their own files, query their databases, and extract insights directly.
 
-## Impact
- 
-We developed the new product Alexandria as a platform for the company to combine data from different sources, clean data, extract features, and visualize data. It helped to improve the data quality, the reports' accuracy, and the surveys' speed. The clients used to extract reports with insights from the data and use them to improve their campaigns and products. The company increased the number of clients, revenue, the speed to create and run surveys, and the quality of the reports.
+This changed Alexandria's role in the business: it became a product clients could actively use, extending its value beyond the reports delivered by consulting employees. Its existing capabilities for combining, cleaning, analyzing, and visualizing data supported that transition.
+
+## My contribution as CTO
+
+I guided the development of the company's technology infrastructure and products, working with clients to evaluate features and understand their engagement and feedback.
+
+Alongside product development, I improved engineering processes and training, defined the career ladder, and strengthened observability and monitoring. I also communicated the company's strategy and vision to investors and worked on cloud scalability, reliability, and cost.
+
+## Outcome
+
+Clients gained direct access to capabilities that had previously been mediated by the consulting and technical teams.
+
+The transition expanded the client experience and established a self-service foundation intended to support growth. It addressed the company's dependence on technical-team involvement as a constraint on serving more clients.
 
 ## Technologies
 
 - PHP
 - Python
 - Scala
-- Node.JS
-- Postgres
+- Node.js
+- PostgreSQL
 - Apache Spark
 - Redis
 - AWS Elastic Beanstalk
