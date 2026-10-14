@@ -1072,3 +1072,103 @@ p {
 {
     height: 140px;
 }
+
+/* Macquarie: quiet copy area with restrained vector arcs. */
+#top-companies section[data-company="macquarie"] {
+    --background-image: url("../img/macquarie-background.webp");
+    height: auto;
+    min-height: 670px;
+    padding: clamp(24px, 4vw, 48px);
+    color: #e9ecef;
+    background-position: center;
+    background-size: cover;
+    background-color: #111315;
+    background-repeat: no-repeat;
+}
+#top-companies section[data-company="macquarie"] .company-name {
+    height: auto;
+    margin: 0 0 28px;
+}
+#top-companies section[data-company="macquarie"] .company-name img {
+    display: block;
+    width: 260px;
+    max-width: 100%;
+    height: auto;
+    filter: invert(1);
+}
+#top-companies section[data-company="macquarie"] .call {
+    height: auto;
+    min-height: 0;
+    max-width: 460px;
+    margin: 24px 0;
+}
+#top-companies section[data-company="macquarie"] .description {
+    height: auto;
+    min-height: 0;
+    max-width: 460px;
+    line-height: 1.6;
+}
+#top-companies section[data-company="macquarie"] .see-more {
+    padding-top: 32px;
+}
+#top-companies section[data-company="macquarie"] .see-more a {
+    min-width: 0;
+    max-width: 100%;
+}
+#top-companies section[data-company="macquarie"] .see-more a:focus-visible {
+    outline: 2px solid white;
+    outline-offset: 5px;
+}
+
+#projects h2 {
+    padding: 120px 15px 0;
+    font-size: clamp(2.5rem, 6vw, 4rem);
+}
+#projects .project-banner {
+    background-color: #10171c;
+    background-size: cover;
+    background-position: center;
+    min-height: 670px;
+    margin: 26px 16px 0;
+    padding: 40px;
+    color: #e9ecef;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+#projects [data-project="parallax"] { background-image: url("../img/project-parallax.svg"); }
+#projects [data-project="probability"] { background-image: url("../img/project-probability.svg"); }
+#projects [data-project="primes"] { background-image: url("../img/project-primes.svg"); }
+#projects h3 { font-size: 30px; margin: 0 0 36px; }
+#projects h4 {
+    font-family: Teko, sans-serif;
+    font-size: 45px;
+    line-height: 1.1;
+    text-transform: uppercase;
+    max-width: 420px;
+    margin-bottom: 40px;
+}
+#projects p { max-width: 500px; line-height: 1.6; }
+#projects .project-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: auto;
+    padding-top: 40px;
+}
+#projects .project-links a {
+    color: white;
+    border: 3px solid rgba(255,255,255,.5);
+    padding: 18px 24px;
+    text-decoration: none;
+    text-transform: uppercase;
+    font: bold 13px Roboto, sans-serif;
+    background: rgba(16,23,28,.8);
+    text-align: center;
+}
+#projects .project-links a:focus-visible { outline: 2px solid white; outline-offset: 5px; }
+@media (max-width: 43em) {
+    #projects .project-banner { padding: 24px; background-position: 25% center; }
+    #projects .project-links { width: 100%; }
+    #projects .project-links a { width: 100%; }
+}

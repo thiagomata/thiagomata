@@ -1,0 +1,888 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Perceptions of Probability — Estimate Explorer</title>
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        background: #f3f5f7;
+        color: #182b3a;
+        font:
+          16px/1.6 system-ui,
+          sans-serif;
+      }
+      main {
+        max-width: 1120px;
+        margin: auto;
+        padding: 48px 24px;
+      }
+      header {
+        margin-bottom: 32px;
+      }
+      .eyebrow {
+        color: #317363;
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+      }
+      h1 {
+        font-size: clamp(32px, 5vw, 48px);
+        line-height: 1.15;
+        letter-spacing: -0.04em;
+        margin: 12px 0;
+      }
+      header p {
+        color: #526574;
+        max-width: 620px;
+      }
+      a {
+        color: #246a59;
+      }
+      form,
+      .chart-panel,
+      .results {
+        background: white;
+        border: 1px solid #dce3e8;
+        border-radius: 16px;
+        padding: 24px;
+      }
+      form {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 20px;
+        margin-bottom: 24px;
+      }
+      label {
+        display: block;
+        font-size: 14px;
+        font-weight: 650;
+        margin-bottom: 8px;
+      }
+      input,
+      select {
+        width: 100%;
+        min-height: 48px;
+        padding: 10px 12px;
+        border: 1px solid #a5b4bf;
+        border-radius: 8px;
+        background: white;
+        color: #182b3a;
+        font: inherit;
+      }
+      input:focus-visible,
+      select:focus-visible,
+      a:focus-visible {
+        outline: 3px solid #328776;
+        outline-offset: 3px;
+      }
+      .hint {
+        font-size: 12px;
+        color: #526574;
+        margin: 8px 0 0;
+      }
+      .results {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 24px;
+        margin-bottom: 24px;
+      }
+      .result-label {
+        color: #526574;
+        font-size: 14px;
+      }
+      .result-value {
+        font-size: 36px;
+        line-height: 1.3;
+        font-weight: 650;
+        font-variant-numeric: tabular-nums;
+      }
+      .result-note {
+        font-size: 13px;
+        color: #526574;
+      }
+      .chart-panel h2 {
+        margin: 0;
+        font-size: 20px;
+      }
+      .legend {
+        font-size: 13px;
+        color: #526574;
+      }
+      .expected-dot {
+        display: inline-block;
+        background: #c43b3b;
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        margin: 0 6px 0 0;
+      }
+      .dot {
+        display: inline-block;
+        background: #287c68;
+        width: 10px;
+        height: 10px;
+        border-radius: 3px;
+        margin-right: 6px;
+      }
+      .chart {
+        width: 100%;
+        overflow: hidden;
+      }
+      .chart svg {
+        display: block;
+        width: 100%;
+        height: auto;
+      }
+      .chart text {
+        font-family: system-ui, sans-serif;
+        font-size: 13px;
+        fill: #526574;
+      }
+      .domain,
+      .tick line {
+        stroke: #b7c4ce;
+      }
+      .grid line {
+        stroke: #e8edf1;
+      }
+      .grid .domain {
+        display: none;
+      }
+      details {
+        margin-top: 24px;
+        padding: 20px 0;
+        color: #526574;
+        font-size: 14px;
+      }
+      summary {
+        cursor: pointer;
+        font-weight: 650;
+        color: #182b3a;
+      }
+      details p {
+        max-width: 850px;
+      }
+      #status {
+        color: #a03333;
+        margin: 12px 0;
+      }
+      footer {
+        margin-top: 20px;
+        font-size: 13px;
+      }
+      @media (max-width: 760px) {
+        main {
+          padding: 28px 16px;
+        }
+        form {
+          grid-template-columns: 1fr 1fr;
+        }
+        .results {
+          padding: 20px;
+        }
+        .result-value {
+          font-size: 28px;
+        }
+      }
+      @media (max-width: 420px) {
+        form {
+          grid-template-columns: 1fr;
+        }
+        .results {
+          grid-template-columns: 1fr;
+          gap: 20px;
+        }
+      }
+      .reference-table {
+        overflow-x: auto;
+        margin: 16px 0;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        background: white;
+        text-align: left;
+        font-size: 14px;
+      }
+      caption {
+        text-align: left;
+        font-size: 13px;
+        margin-bottom: 12px;
+        color: #526574;
+      }
+      th,
+      td {
+        padding: 12px 16px;
+        border-bottom: 1px solid #dce3e8;
+      }
+      thead th {
+        background: #eaf1ee;
+        color: #182b3a;
+      }
+      tbody th {
+        font-weight: 500;
+        color: #182b3a;
+      }
+      .kent-reference {
+        border-top: 1px solid #dce3e8;
+      }
+      @media (max-width: 420px) {
+        th,
+        td {
+          padding: 10px 8px;
+          font-size: 12px;
+        }
+      }
+      .source-control {
+        grid-column: 1/-1;
+        max-width: 440px;
+      }
+      [hidden] {
+        display: none !important;
+      }
+      input:disabled,
+      select:disabled {
+        background: #edf0f2;
+        color: #657580;
+      }
+    </style>
+    <script src="https://d3js.org/d3.v4.min.js"></script>
+  </head>
+  <body>
+    <main>
+      <header>
+        <a href="../../index.html#projects">Projects and Experiments</a>
+        <div class="eyebrow">An experiment in estimation</div>
+        <h1>Explore the uncertainty<br />behind an estimate.</h1>
+        <p>
+          Choose a best-case estimate, a worst-case estimate, and a likelihood
+          phrase. Explore survey-based distributions or compare Kent’s proposed
+          probability scale.
+        </p>
+      </header>
+      <form id="controls" onsubmit="return false">
+        <div class="source-control">
+          <label for="reference-source">Reference source</label
+          ><select id="reference-source">
+            <option value="survey">Survey responses</option>
+            <option value="kent">Kent scale — triangular model</option>
+          </select>
+          <p class="hint" id="source-note">
+            Survey-based distributions mapped onto your estimates.
+          </p>
+        </div>
+        <div>
+          <label for="optimist">Optimistic estimate</label
+          ><input
+            id="optimist"
+            type="number"
+            min="0"
+            step="any"
+            value="13"
+            required
+          />
+          <p class="hint">Your best-case scenario.</p>
+        </div>
+        <div>
+          <label for="pessimist">Pessimistic estimate</label
+          ><input
+            id="pessimist"
+            type="number"
+            min="0"
+            step="any"
+            value="21"
+            required
+          />
+          <p class="hint">Your worst-case scenario. Use the same units.</p>
+        </div>
+        <div>
+          <label for="probability">Likelihood of the optimistic estimate</label
+          ><select id="probability" disabled></select>
+        </div>
+        <div>
+          <label for="confidence-interval">Model interval coverage</label
+          ><select id="confidence-interval">
+            <option value="0.9">90%</option>
+            <option value="0.95" selected>95%</option>
+            <option value="0.99">99%</option>
+            <option value="0.999">99.9%</option>
+            <option value="0.9999">99.99%</option>
+            <option value="1">100%</option>
+          </select>
+        </div>
+      </form>
+      <p id="status" role="status" aria-live="polite">
+        Loading the probability data…
+      </p>
+      <section
+        class="results"
+        aria-label="Estimate results"
+        aria-live="polite"
+        aria-atomic="true"
+      >
+        <div>
+          <div class="result-label" id="expected-label">Expected estimate</div>
+          <div class="result-value" id="expected">—</div>
+          <div class="result-note" id="expected-note">
+            Weighted mean, not the most likely value.
+          </div>
+        </div>
+        <div>
+          <div class="result-label" id="interval-label">
+            95% model-based interval
+          </div>
+          <div class="result-value" id="interval">—</div>
+          <div class="result-note" id="interval-note">
+            A range within this exploratory model.
+          </div>
+        </div>
+      </section>
+      <section class="chart-panel" id="survey-chart">
+        <h2>How the estimates are distributed</h2>
+        <p class="hint">
+          Based on probability-perception survey work, rather than an arbitrary
+          curve.
+          <a href="https://github.com/zonination/perceptions"
+            >Read the source and background</a
+          >.
+        </p>
+        <p class="legend">
+          <span class="dot"></span>Samples inside the selected interval · pale
+          bars show the remaining samples. The faint curve is a visual guide.<br /><span
+            class="expected-dot"
+          ></span
+          >Expected Value
+        </p>
+        <div class="chart"></div>
+      </section>
+      <details class="kent-reference">
+        <summary>Compare with Sherman Kent’s probability scale</summary>
+        <p>
+          In
+          <a
+            href="https://www.cia.gov/resources/csi/static/Words-of-Estimative-Probability.pdf#page=8"
+            >Words of Estimative Probability (1964)</a
+          >, Kent proposed numerical meanings for a small set of likelihood
+          expressions. These are reference probabilities with approximate
+          ranges, rather than sampled distributions.
+        </p>
+        <div class="reference-table">
+          <table>
+            <caption>
+              Kent’s proposed scale · probability percentages, not estimate
+              units
+            </caption>
+            <thead>
+              <tr>
+                <th scope="col">Expression</th>
+                <th scope="col">Reference probability</th>
+                <th scope="col">Approximate range</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <th scope="row">Certain</th>
+                <td>100%</td>
+                <td>100%</td>
+              </tr>
+              <tr>
+                <th scope="row">Almost certain</th>
+                <td>93%</td>
+                <td>87–99%</td>
+              </tr>
+              <tr>
+                <th scope="row">Probable</th>
+                <td>75%</td>
+                <td>63–87%</td>
+              </tr>
+              <tr>
+                <th scope="row">Chances about even</th>
+                <td>50%</td>
+                <td>40–60%</td>
+              </tr>
+              <tr>
+                <th scope="row">Probably not</th>
+                <td>30%</td>
+                <td>20–40%</td>
+              </tr>
+              <tr>
+                <th scope="row">Almost certainly not</th>
+                <td>7%</td>
+                <td>2–12%</td>
+              </tr>
+              <tr>
+                <th scope="row">Impossible</th>
+                <td>0%</td>
+                <td>0%</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <p>
+          Kent’s original ranges are not confidence intervals and do not specify
+          a distribution. In Kent model mode, we assume a triangular shape with
+          these endpoints and the reference probability as its mode. This added
+          shape is our assumption, not a result of Kent’s work. Certain and
+          Impossible use point masses.
+        </p>
+      </details>
+      <details>
+        <summary>Research background and model assumptions</summary>
+        <p>
+          This experiment builds on
+          <a href="https://github.com/zonination/perceptions"
+            >zonination’s Perceptions of Probability and Numbers</a
+          >, which reports survey responses from Reddit’s r/SampleSize
+          community. Respondents assigned numerical probabilities to phrases
+          such as “Almost Certainly” and “About Even.” The survey was inspired
+          by Sherman Kent’s work on communicating uncertainty; it is not the
+          original CIA study.
+        </p>
+        <p>
+          The research provides the motivation for using phrase-specific
+          distributions. Mapping those distributions between your optimistic and
+          pessimistic estimates is this project’s modeling choice, rather than a
+          finding of the survey.
+        </p>
+        <p>
+          Survey mode maps sampled interpretations of probability phrases onto
+          your estimate range. Kent mode uses a constructed triangular
+          distribution, discretized into one-percentage-point bins by
+          integrating its probability mass. Both sources are mapped onto your
+          optimistic and pessimistic estimates. It treats the CSV percentages as
+          discrete weights, normalizes rounding differences, and calculates
+          equal-tail quantiles.
+        </p>
+        <p>
+          This is an exploratory mapping, not a measured forecast of task
+          completion. The selected coverage describes the model, not a guarantee
+          about your work. Because the samples are discrete, the interval can
+          contain more mass than the selected coverage. Values are shown to two
+          decimal places.
+        </p>
+      </details>
+      <footer>
+        <a href="https://github.com/thiagomata/perceptions-of-probability"
+          >Source code and background</a
+        >
+      </footer>
+    </main>
+    <script>
+      function extractXY(data, dimension) {
+        var points = data
+          .map(function (row) {
+            return {
+              x: 1 - Number(row.probability) / 100,
+              y: Number(row[dimension]) / 100,
+            };
+          })
+          .sort(function (a, b) {
+            return a.x - b.x;
+          });
+        var total = points.reduce(function (sum, point) {
+          return sum + point.y;
+        }, 0);
+        if (
+          !Number.isFinite(total) ||
+          total <= 0 ||
+          points.some(function (point) {
+            return (
+              !Number.isFinite(point.x) ||
+              point.x < 0 ||
+              point.x > 1 ||
+              !Number.isFinite(point.y) ||
+              point.y < 0
+            );
+          })
+        )
+          throw new RangeError("Invalid probability distribution");
+        return points.map(function (point) {
+          return { x: point.x, y: point.y / total };
+        });
+      }
+
+      function validateBounds(minValue, maxValue) {
+        if (
+          !Number.isFinite(minValue) ||
+          !Number.isFinite(maxValue) ||
+          minValue > maxValue
+        ) {
+          throw new RangeError(
+            "The optimistic estimate must not exceed the pessimistic estimate",
+          );
+        }
+      }
+
+      // Equal-tail intervals use sampled support values, without inventing bin density.
+      function quantile(points, probability) {
+        var support = points.filter(function (point) {
+          return point.y > 0;
+        });
+        if (probability === 0) return support[0].x;
+        var cumulative = 0;
+        for (var i = 0; i < support.length; i++) {
+          cumulative += support[i].y;
+          if (cumulative >= probability - 1e-12) return support[i].x;
+        }
+        return support[support.length - 1].x;
+      }
+
+      function getConfidenceInterval(
+        data,
+        dimension,
+        confidence = 0.95,
+        minValue = 0,
+        maxValue = 1,
+      ) {
+        validateBounds(minValue, maxValue);
+        if (!Number.isFinite(confidence) || confidence <= 0 || confidence > 1) {
+          throw new RangeError(
+            "Coverage must be greater than zero and at most one",
+          );
+        }
+        var points = extractXY(data, dimension);
+        var tail = (1 - confidence) / 2;
+        var span = maxValue - minValue;
+        return {
+          from: minValue + quantile(points, tail) * span,
+          to: minValue + quantile(points, 1 - tail) * span,
+        };
+      }
+
+      function getExpectedValue(data, dimension, minValue = 0, maxValue = 1) {
+        validateBounds(minValue, maxValue);
+        var mean = extractXY(data, dimension).reduce(function (sum, point) {
+          return sum + point.x * point.y;
+        }, 0);
+        return minValue + mean * (maxValue - minValue);
+      }
+      var kentScale = [
+        { phrase: "Certain", probability: 100, from: 100, to: 100 },
+        { phrase: "Almost certain", probability: 93, from: 87, to: 99 },
+        { phrase: "Probable", probability: 75, from: 63, to: 87 },
+        { phrase: "Chances about even", probability: 50, from: 40, to: 60 },
+        { phrase: "Probably not", probability: 30, from: 20, to: 40 },
+        { phrase: "Almost certainly not", probability: 7, from: 2, to: 12 },
+        { phrase: "Impossible", probability: 0, from: 0, to: 0 },
+      ];
+      // Get the data
+      var chart = d3.select(".chart");
+      var statusMessage = document.getElementById("status");
+      d3.csv("data/data.csv", function (surveyError, surveyData) {
+        if (surveyError) {
+          statusMessage.textContent =
+            "The survey data could not be loaded. Please reload to try again.";
+          return;
+        }
+        d3.csv("data/kent-triangular.csv", function (error, kentData) {
+          var data = surveyData;
+          if (error) {
+            statusMessage.textContent =
+              "The probability data could not be loaded. Please reload to try again.";
+            return;
+          }
+          var dimensions = data.columns.filter(function (c) {
+            return c !== "probability";
+          });
+          d3.select("#probability")
+            .selectAll("option")
+            .data(dimensions)
+            .enter()
+            .append("option")
+            .text(function (d) {
+              return d;
+            });
+          document.getElementById("probability").disabled = false;
+          document.getElementById("probability").value = "About Even";
+          var phraseSelect = document.getElementById("probability");
+          var sourceSelect = document.getElementById("reference-source");
+          var savedSurveyPhrase = "About Even";
+          var savedKentPhrase = "Chances about even";
+          // Remember the phrase independently for each source when switching datasets.
+          function switchSource() {
+            var kent = sourceSelect.value === "kent";
+            if (kent) savedSurveyPhrase = phraseSelect.value;
+            else savedKentPhrase = phraseSelect.value;
+            phraseSelect.innerHTML = "";
+            (kent
+              ? kentScale.map(function (row) {
+                  return row.phrase;
+                })
+              : dimensions
+            ).forEach(function (phrase) {
+              var option = document.createElement("option");
+              option.value = phrase;
+              option.textContent = phrase;
+              phraseSelect.appendChild(option);
+            });
+            phraseSelect.value = kent ? savedKentPhrase : savedSurveyPhrase;
+            redraw();
+          }
+          sourceSelect.addEventListener("change", switchSource);
+          function redraw() {
+            var kent = sourceSelect.value === "kent";
+            document.querySelector('label[for="probability"]').textContent =
+              "Likelihood of the optimistic estimate";
+            document.getElementById("source-note").textContent = kent
+              ? "A triangular shape constructed from Kent’s bounds and central value—not observed CIA data."
+              : "Survey-based distributions mapped onto your estimates.";
+            data = kent ? kentData : surveyData;
+            document.querySelector("#survey-chart .hint").innerHTML = kent
+              ? 'Modeled weights from Kent’s proposed scale, with an assumed triangular shape. <a href="https://www.cia.gov/resources/csi/static/Words-of-Estimative-Probability.pdf#page=8">Original reference</a>.'
+              : 'Based on probability-perception survey work, rather than an arbitrary curve. <a href="https://github.com/zonination/perceptions">Read the source and background</a>.';
+            document.getElementById("expected-label").textContent =
+              "Expected estimate";
+            document.getElementById("expected-note").textContent =
+              "Weighted mean, not the most likely value.";
+            document.getElementById("interval-note").textContent =
+              "A range within this exploratory model.";
+            chart.selectAll("*").remove();
+            var optimistic = document.getElementById("optimist");
+            var pessimistic = document.getElementById("pessimist");
+            var lo = optimistic.valueAsNumber,
+              hi = pessimistic.valueAsNumber;
+            if (
+              !optimistic.validity.valid ||
+              !pessimistic.validity.valid ||
+              !Number.isFinite(lo) ||
+              !Number.isFinite(hi) ||
+              lo > hi
+            ) {
+              statusMessage.textContent =
+                "Enter non-negative estimates, with the optimistic estimate no greater than the pessimistic estimate.";
+              document.getElementById("expected").textContent = "—";
+              document.getElementById("interval").textContent = "—";
+              return;
+            }
+            statusMessage.textContent = "";
+            var dimension = document.getElementById("probability").value;
+            var coverage = Number(
+              document.getElementById("confidence-interval").value,
+            );
+            var interval = getConfidenceInterval(
+              data,
+              dimension,
+              coverage,
+              lo,
+              hi,
+            );
+            var normalizedInterval = getConfidenceInterval(
+              data,
+              dimension,
+              coverage,
+            );
+            var format = function (n) {
+              return Number(n.toFixed(2)).toLocaleString(undefined, {
+                maximumFractionDigits: 2,
+              });
+            };
+            document.getElementById("expected").textContent = format(
+              getExpectedValue(data, dimension, lo, hi),
+            );
+            document.getElementById("interval").textContent =
+              format(interval.from) + " – " + format(interval.to);
+            document.getElementById("interval-label").textContent =
+              format(coverage * 100) + "% model-based interval";
+            var margin = { top: 20, right: 24, bottom: 54, left: 65 };
+            var totalWidth = Math.max(
+              320,
+              Math.round(chart.node().getBoundingClientRect().width),
+            );
+            var totalHeight = totalWidth < 600 ? 320 : 400;
+            var width = totalWidth - margin.left - margin.right,
+              height = totalHeight - margin.top - margin.bottom;
+            var root = chart
+              .append("svg")
+              .attr("viewBox", "0 0 " + totalWidth + " " + totalHeight)
+              .attr("role", "img")
+              .attr(
+                "aria-label",
+                dimension +
+                  ": expected estimate " +
+                  format(getExpectedValue(data, dimension, lo, hi)) +
+                  ", model interval " +
+                  format(interval.from) +
+                  " to " +
+                  format(interval.to),
+              );
+            root
+              .append("title")
+              .text("Discrete estimate distribution for " + dimension);
+            var plot = root
+              .append("g")
+              .attr(
+                "transform",
+                "translate(" + margin.left + "," + margin.top + ")",
+              );
+            var points = extractXY(data, dimension);
+            if (lo === hi) points = [{ x: 0.5, y: 1 }];
+            var x = d3
+              .scaleLinear()
+              .domain(lo === hi ? [lo - 1, hi + 1] : [lo, hi])
+              .range([0, width]);
+            var y = d3.scaleLinear().domain([0, 100]).range([height, 0]);
+            plot
+              .append("g")
+              .attr("class", "grid")
+              .call(d3.axisLeft(y).ticks(4).tickSize(-width).tickFormat(""));
+            // Visual guide only; calculations still use the discrete sample weights.
+            var guide = d3
+              .line()
+              .x(function (p) {
+                return x(lo + p.x * (hi - lo));
+              })
+              .y(function (p) {
+                return y(p.y * 100);
+              })
+              .curve(d3.curveMonotoneX);
+            if (lo !== hi) {
+              var guideArea = d3
+                .area()
+                .x(function (p) {
+                  return x(lo + p.x * (hi - lo));
+                })
+                .y0(height)
+                .y1(function (p) {
+                  return y(p.y * 100);
+                })
+                .curve(d3.curveMonotoneX);
+              plot
+                .append("path")
+                .datum(points)
+                .attr("d", guideArea)
+                .attr("fill", "#287c68")
+                .attr("fill-opacity", 0.12)
+                .attr("aria-hidden", "true");
+              plot
+                .append("path")
+                .datum(points)
+                .attr("d", guide)
+                .attr("fill", "none")
+                .attr("stroke", "#287c68")
+                .attr("stroke-width", 2)
+                .attr("stroke-opacity", 0.3)
+                .attr("aria-hidden", "true");
+            }
+            var barWidth = Math.max(2, width / (points.length * 1.4));
+            plot
+              .selectAll("rect")
+              .data(points)
+              .enter()
+              .append("rect")
+              .attr("x", function (p) {
+                return Math.max(
+                  0,
+                  Math.min(
+                    width - barWidth,
+                    x(lo + p.x * (hi - lo)) - barWidth / 2,
+                  ),
+                );
+              })
+              .attr("y", function (p) {
+                return y(p.y * 100);
+              })
+              .attr("width", barWidth)
+              .attr("height", function (p) {
+                return height - y(p.y * 100);
+              })
+              .attr("rx", 2)
+              .attr("fill", function (p) {
+                return lo === hi ||
+                  (p.x >= normalizedInterval.from - 1e-12 &&
+                    p.x <= normalizedInterval.to + 1e-12)
+                  ? "#287c68"
+                  : "#cfdfda";
+              })
+              .append("title")
+              .text(function (p) {
+                return (
+                  "Estimate " +
+                  format(lo + p.x * (hi - lo)) +
+                  ": " +
+                  format(p.y * 100) +
+                  (kent ? "% modeled weight" : "% sample weight")
+                );
+              });
+            var expected = getExpectedValue(data, dimension, lo, hi);
+            var expectedX = x(expected);
+            var expectedPosition =
+              hi === lo ? 0.5 : (expected - lo) / (hi - lo);
+            // Interpolate only the marker height; its x-coordinate is the computed mean.
+            var expectedWeight = points[0].y;
+            for (var i = 1; i < points.length; i++) {
+              if (expectedPosition <= points[i].x) {
+                var before = points[i - 1],
+                  after = points[i];
+                var fraction =
+                  (expectedPosition - before.x) / (after.x - before.x);
+                expectedWeight = before.y + fraction * (after.y - before.y);
+                break;
+              }
+              expectedWeight = points[i].y;
+            }
+            var expectedY = y(expectedWeight * 100);
+            plot
+              .append("line")
+              .attr("x1", expectedX)
+              .attr("x2", expectedX)
+              .attr("y1", expectedY)
+              .attr("y2", height)
+              .attr("stroke", "#c43b3b")
+              .attr("stroke-dasharray", "4 4")
+              .attr("stroke-opacity", 0.65);
+            plot
+              .append("circle")
+              .attr("cx", expectedX)
+              .attr("cy", expectedY)
+              .attr("r", 6)
+              .attr("fill", "#c43b3b")
+              .attr("stroke", "white")
+              .attr("stroke-width", 2)
+              .append("title")
+              .text("Expected estimate: " + format(expected));
+            plot
+              .append("g")
+              .attr("transform", "translate(0," + height + ")")
+              .call(d3.axisBottom(x).ticks(totalWidth < 600 ? 4 : 8));
+            plot.append("g").call(d3.axisLeft(y).ticks(4));
+            plot
+              .append("text")
+              .attr("x", width / 2)
+              .attr("y", height + 44)
+              .attr("text-anchor", "middle")
+              .text("Estimate");
+            plot
+              .append("text")
+              .attr("transform", "rotate(-90)")
+              .attr("x", -height / 2)
+              .attr("y", -45)
+              .attr("text-anchor", "middle")
+              .text(kent ? "Modeled weight (%)" : "Sample weight (%)");
+          }
+          document
+            .getElementById("controls")
+            .addEventListener("input", function (event) {
+              if (event.target !== sourceSelect) redraw();
+            });
+          document
+            .getElementById("controls")
+            .addEventListener("change", function (event) {
+              if (event.target !== sourceSelect) redraw();
+            });
+          var resizeTimer;
+          window.addEventListener("resize", function () {
+            clearTimeout(resizeTimer);
+            resizeTimer = setTimeout(redraw, 100);
+          });
+          redraw();
+        });
+      });
+    </script>
+  </body>
+</html>

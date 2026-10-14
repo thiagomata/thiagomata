@@ -1,0 +1,388 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Perception of Probability - Cards</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- Bootstrap -->
+    <meta charset="utf-8" />
+    <link href="css/bootstrap.min.css" rel="stylesheet" media="screen" />
+    <script src="https://d3js.org/d3.v4.min.js"></script>
+    <style>
+      @media print {
+        div.card-back {
+          transform: rotate(180deg);
+          -webkit-transform: rotate(180deg);
+        }
+        div.dimension {
+          page-break-after: always;
+        }
+      }
+
+      div.card {
+        padding: 10px;
+        border-width: 2px;
+        border-color: rgb(100, 100, 100);
+        border-style: solid;
+        width: 960px;
+        height: 600px;
+        margin-left: 0px;
+      }
+      div.dimension {
+        margin: 0;
+        margin-left: 0;
+        -webkit-box-shadow: 35px 36px 27px -27px rgba(158, 158, 158, 1);
+        -moz-box-shadow: 35px 36px 27px -27px rgba(158, 158, 158, 1);
+        box-shadow: 35px 36px 27px -27px rgba(158, 158, 158, 1);
+        width: 984px;
+      }
+      div.card-front {
+      }
+      div.card-back {
+        margin-bottom: 30px;
+      }
+      table.scrum-table-values {
+        border-collapse: inherit;
+      }
+      .scrum-table-values td {
+        width: 30px;
+        height: 30px;
+        border-color: rgb(200, 200, 200);
+        border-style: solid;
+        border-width: 1px;
+        text-align: center;
+        vertical-align: center;
+      }
+      .center-block {
+        float: none !important;
+      }
+      .scrum-table-values td.td-header {
+        background-color: rgb(100, 100, 200);
+        color: white;
+        border-color: rgb(120, 120, 230);
+      }
+      .scrum-table-values {
+        margin: 0 auto;
+        border-radius: 5px;
+        margin: 0px auto;
+        float: none;
+      }
+      td.pessimist-label-td,
+      td.table-title-label-td,
+      td.optimist-label-td,
+      td.label-empty-td {
+        border-style: none;
+      }
+      td.empty-cross-td {
+        border-width: 0px;
+        background-color: rgb(100, 100, 200);
+      }
+      td.emptyvalue {
+        background-color: rgb(255, 255, 255);
+        border-color: rgb(255, 255, 255);
+      }
+      td.pessimist-label-td {
+        /* Safari */
+        -webkit-transform: rotate(-90deg);
+
+        /* Firefox */
+        -moz-transform: rotate(-90deg);
+
+        /* IE */
+        -ms-transform: rotate(-90deg);
+
+        /* Opera */
+        -o-transform: rotate(-90deg);
+
+        /* Internet Explorer */
+        filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=3);
+      }
+      .line {
+        fill: none;
+        stroke: rgb(100, 100, 100);
+        stroke-width: 4px;
+      }
+
+      .area {
+        stroke: rgb(100, 100, 100);
+        stroke-width: 4px;
+        fill: lightsteelblue;
+      }
+
+      .grid line {
+        stroke: rgba(150, 150, 240, 0.1);
+        stroke-width: 5px;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- load the d3.js library -->
+    <script>
+      // set the dimensions and margins of the graph
+      var margin = { top: 20, right: 20, bottom: 50, left: 70 },
+        width = 960 - margin.left - margin.right,
+        height = 500 - margin.top - margin.bottom;
+
+      // parse the date / time
+      var parseTime = d3.timeParse("%d-%b-%y");
+
+      // set the ranges
+      var x = d3.scaleLinear().range([0, width]);
+      var y = d3.scaleLinear().range([height, 0]);
+
+      var divCharts = d3
+        .select("body")
+        .append("div")
+        .attr("class", "charts container");
+
+      // Get the data
+      d3.csv("data/data.csv", function (error, data) {
+        if (error) throw error;
+        window.data = data;
+
+        var dimensions = data.columns.filter((c) => c != "probability");
+
+        // dimensionColor = d3. line().curve(d3.curveCardinal)
+        //   .domain([1,dimensions.length/2,dimensions.length])
+        //   .interpolate(d3.interpolateLab)
+        //   .range([d3.rgb("#772200"), d3.rgb("#007AFF"), d3.rgb('#FFF500')]);
+
+        var dimensionColor = d3
+          .scaleSequential(d3.interpolateInferno)
+          .domain([dimensions.length, 0]);
+
+        window.dimensionColor = dimensionColor;
+        dimensions.forEach((dimension, key) => {
+          // define the line
+          var area = d3
+            .area()
+            .curve(d3.curveCatmullRom)
+            .x(function (d) {
+              return x(d.probability);
+            })
+            .y1(function (d) {
+              return y(d[dimension]);
+            });
+
+          area.y0(y(0));
+
+          // define the line
+          var valueline = d3
+            .line()
+            .curve(d3.curveCatmullRom)
+            .x(function (d) {
+              return x(d.probability);
+            })
+            .y(function (d) {
+              return y(d[dimension]);
+            });
+
+          window.valueline = valueline;
+
+          var divDimension = divCharts.append("div").attr("class", "dimension");
+          var divChart = divDimension
+            .append("div")
+            .attr("class", "chart row card card-front");
+          divChart.append("h2").text(dimension);
+          var divTable = divDimension
+            .append("div")
+            .attr("class", "row-fluid card card-back");
+          divTable.append("h2").text(dimension);
+
+          var svg = divChart
+            .append("svg")
+            .attr("width", width + margin.left + margin.right)
+            .attr("height", height + margin.top + margin.bottom)
+            .append("g")
+            .attr(
+              "transform",
+              "translate(" + margin.left + "," + margin.top + ")",
+            );
+
+          // Scale the range of the data
+          x.domain([0, 100]);
+          y.domain([0, 100]);
+
+          // gridlines in x axis function
+          function make_x_gridlines() {
+            return d3.axisBottom(x).ticks(5);
+          }
+
+          // gridlines in y axis function
+          function make_y_gridlines() {
+            return d3.axisLeft(y).ticks(5);
+          }
+
+          // add the X gridlines
+          svg
+            .append("g")
+            .attr("class", "grid")
+            .attr("transform", "translate(0," + height + ")")
+            .call(make_x_gridlines().tickSize(-height).tickFormat(""));
+
+          // add the Y gridlines
+          svg
+            .append("g")
+            .attr("class", "grid")
+            .call(make_y_gridlines().tickSize(-width).tickFormat(""));
+
+          // Add the valueline path.
+          // svg.append("path")
+          //     .data([data])
+          //     .attr("class", "line")
+          //     .attr("d", valueline);
+
+          svg
+            .append("path")
+            .data([data])
+            .attr("class", "area")
+            .attr("style", "fill:" + dimensionColor(key))
+            .attr("d", area);
+          // Add the x Axis
+          svg
+            .append("g")
+            .attr("transform", "translate(0," + height + ")")
+            .call(d3.axisBottom(x));
+
+          // text label for the x axis
+          svg
+            .append("text")
+            .attr(
+              "transform",
+              "translate(" +
+                width / 2 +
+                " ," +
+                (height + margin.top + 20) +
+                ")",
+            )
+            .style("text-anchor", "middle")
+            .text("Interpreted probability (%)");
+
+          // Add the y Axis
+          svg.append("g").call(d3.axisLeft(y));
+
+          // text label for the y axis
+          svg
+            .append("text")
+            .attr("transform", "rotate(-90)")
+            .attr("y", 0 - margin.left)
+            .attr("x", 0 - height / 2)
+            .attr("dy", "1em")
+            .style("text-anchor", "middle")
+            .text("Response frequency (%)");
+
+          var prob = data.map((d) => {
+            return {
+              probability: 1 - (1 / 100) * d.probability,
+              chance: (1 / 100) * d[dimension],
+            };
+          });
+
+          var scrumValues = [1, 2, 3, 5, 8, 13, 20, 30, 50, 100];
+          var crossScrumRanges = [];
+          scrumValues.forEach((v1) => {
+            scrumValues.forEach((v2) => {
+              if (v1 < v2) {
+                crossScrumRanges.push({ from: v1, to: v2 });
+              }
+            });
+          });
+
+          var crossScrumValues = crossScrumRanges.map((scrumRange) => {
+            var valueRange = prob.map((p) => {
+              return {
+                probability:
+                  scrumRange.from +
+                  p.probability * (scrumRange.to - scrumRange.from),
+                chance: p.chance,
+              };
+            });
+            var totalWeight = valueRange.reduce((sum, n) => sum + n.chance, 0);
+            var expectedValue =
+              valueRange.reduce((sum, n) => sum + n.probability * n.chance, 0) /
+              totalWeight;
+
+            return {
+              from: scrumRange.from,
+              to: scrumRange.to,
+              value: Math.round(expectedValue),
+            };
+          });
+
+          var scrumTable = document.createElement("table");
+          scrumTable.setAttribute("class", "scrum-table-values center-block");
+
+          var scrumTableTitle = document.createElement("tr");
+          scrumTableTitle.setAttribute("class", "table-title-tr");
+          var scrumTableTitleLabel = document.createElement("td");
+          scrumTableTitleLabel.setAttribute("class", "table-title-label-td");
+          scrumTableTitleLabel.innerHTML =
+            "<span>Expected estimate considering the Optimist and Pessimist values <br/> where the Optimist is " +
+            dimension +
+            "</span>";
+          scrumTableTitleLabel.setAttribute("colspan", scrumValues.length + 2);
+          scrumTableTitle.appendChild(scrumTableTitleLabel);
+          scrumTable.appendChild(scrumTableTitle);
+
+          var scrumTableLabel = document.createElement("tr");
+          scrumTableLabel.setAttribute("class", "optimist-label-tr");
+
+          var scrumHeaderLabelEmpty = document.createElement("td");
+          scrumHeaderLabelEmpty.setAttribute("class", "label-empty-td");
+          scrumHeaderLabelEmpty.setAttribute("colspan", 1);
+          scrumTableLabel.appendChild(scrumHeaderLabelEmpty);
+          var scrumHeaderLabel = document.createElement("td");
+          scrumHeaderLabel.setAttribute("colspan", scrumValues.length + 1);
+          scrumHeaderLabel.setAttribute("class", "optimist-label-td");
+          scrumHeaderLabel.innerHTML = "Optimist";
+          scrumTableLabel.appendChild(scrumHeaderLabel);
+
+          var scrumTableHeader = document.createElement("tr");
+          var scrumHeaderEmpty = document.createElement("td");
+          scrumHeaderEmpty.setAttribute("class", "empty-cross-td");
+          scrumTableHeader.appendChild(scrumHeaderEmpty);
+          scrumValues.forEach((v2) => {
+            var scrumHeaderV2 = document.createElement("td");
+            scrumHeaderV2.setAttribute("class", "td-header");
+            scrumHeaderV2.innerHTML = v2;
+            scrumTableHeader.appendChild(scrumHeaderV2);
+          });
+
+          scrumValues.forEach((v1, key) => {
+            var scrumTableRow = document.createElement("tr");
+            if (key == 0) {
+              var scrumHeaderV1 = document.createElement("td");
+              scrumHeaderV1.innerHTML = "Pessimist";
+              scrumHeaderV1.setAttribute("class", "pessimist-label-td");
+              scrumHeaderV1.setAttribute("rowspan", scrumValues.length + 1);
+              scrumTableRow.appendChild(scrumHeaderV1);
+            }
+            var scrumHeaderV1 = document.createElement("td");
+            scrumHeaderV1.innerHTML = v1;
+            scrumHeaderV1.setAttribute("class", "td-header");
+            scrumTableRow.appendChild(scrumHeaderV1);
+            // add values
+            scrumValues.forEach((v2) => {
+              var scrumTableCell = document.createElement("td");
+              var scrumValue = crossScrumValues.filter(
+                (n) => n.to == v1 && n.from == v2,
+              );
+              if (scrumValue.length == 0) {
+                scrumTableCell.innerHTML = "";
+                scrumTableCell.setAttribute("class", "emptyvalue");
+              } else {
+                scrumTableCell.innerHTML = scrumValue[0].value;
+              }
+              scrumTableRow.appendChild(scrumTableCell);
+            });
+            scrumTable.appendChild(scrumTableRow);
+          });
+          scrumTable.appendChild(scrumTableHeader);
+          scrumTable.appendChild(scrumTableLabel);
+
+          window.divTable = divTable;
+          divTable.node().appendChild(scrumTable);
+        });
+      });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,152 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Kent scale — triangular model cards</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- Bootstrap -->
+    <meta charset="utf-8" />
+    <link href="css/bootstrap.min.css" rel="stylesheet" media="screen" />
+    <script src="https://d3js.org/d3.v4.min.js"></script>
+    <style>
+      header {
+        padding: 20px;
+      }
+      @media print {
+        header {
+          display: none;
+        }
+        div.card-back {
+          transform: rotate(180deg);
+          -webkit-transform: rotate(180deg);
+        }
+        div.dimension {
+          page-break-after: always;
+        }
+      }
+
+      div.card {
+        padding: 10px;
+        border-width: 2px;
+        border-color: rgb(100, 100, 100);
+        border-style: solid;
+        width: 960px;
+        min-height: 600px;
+        margin-left: 0px;
+      }
+      div.dimension {
+        margin: 0;
+        margin-left: 0;
+        -webkit-box-shadow: 35px 36px 27px -27px rgba(158, 158, 158, 1);
+        -moz-box-shadow: 35px 36px 27px -27px rgba(158, 158, 158, 1);
+        box-shadow: 35px 36px 27px -27px rgba(158, 158, 158, 1);
+        width: 984px;
+      }
+      div.card-front {
+      }
+      div.card-back {
+        margin-bottom: 30px;
+      }
+      table.scrum-table-values {
+        border-collapse: inherit;
+      }
+      .scrum-table-values td {
+        width: 30px;
+        height: 30px;
+        border-color: rgb(200, 200, 200);
+        border-style: solid;
+        border-width: 1px;
+        text-align: center;
+        vertical-align: center;
+      }
+      .center-block {
+        float: none !important;
+      }
+      .scrum-table-values td.td-header {
+        background-color: rgb(100, 100, 200);
+        color: white;
+        border-color: rgb(120, 120, 230);
+      }
+      .scrum-table-values {
+        margin: 0 auto;
+        border-radius: 5px;
+        margin: 0px auto;
+        float: none;
+      }
+      td.pessimist-label-td,
+      td.table-title-label-td,
+      td.optimist-label-td,
+      td.label-empty-td {
+        border-style: none;
+      }
+      td.empty-cross-td {
+        border-width: 0px;
+        background-color: rgb(100, 100, 200);
+      }
+      td.emptyvalue {
+        background-color: rgb(255, 255, 255);
+        border-color: rgb(255, 255, 255);
+      }
+      td.pessimist-label-td {
+        /* Safari */
+        -webkit-transform: rotate(-90deg);
+
+        /* Firefox */
+        -moz-transform: rotate(-90deg);
+
+        /* IE */
+        -ms-transform: rotate(-90deg);
+
+        /* Opera */
+        -o-transform: rotate(-90deg);
+
+        /* Internet Explorer */
+        filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=3);
+      }
+      .line {
+        fill: none;
+        stroke: rgb(100, 100, 100);
+        stroke-width: 4px;
+      }
+
+      .area {
+        stroke: rgb(100, 100, 100);
+        stroke-width: 4px;
+        fill: lightsteelblue;
+      }
+
+      .grid line {
+        stroke: rgba(150, 150, 240, 0.1);
+        stroke-width: 5px;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- load the d3.js library -->
+    <header>
+      <h1>Kent scale — triangular model cards</h1>
+      <p>
+        Modeled distributions, not observed CIA data.
+        <a href="cards.html">Survey cards</a> ·
+        <a href="calculator.html">Calculator</a> ·
+        <a
+          href="https://www.cia.gov/resources/csi/static/Words-of-Estimative-Probability.pdf#page=8"
+          >Original reference</a
+        >
+      </p>
+    </header>
+    <script>
+      window.cardDataSource = "data/kent-triangular.csv";
+      window.cardWeightLabel = "Modeled weight (%)";
+      window.cardReferences = {
+        Certain: { value: 100, from: 100, to: 100 },
+        "Almost certain": { value: 93, from: 87, to: 99 },
+        Probable: { value: 75, from: 63, to: 87 },
+        "Chances about even": { value: 50, from: 40, to: 60 },
+        "Probably not": { value: 30, from: 20, to: 40 },
+        "Almost certainly not": { value: 7, from: 2, to: 12 },
+        Impossible: { value: 0, from: 0, to: 0 },
+      };
+    </script>
+    <script src="js/perceptions.js"></script>
+  </body>
+</html>
