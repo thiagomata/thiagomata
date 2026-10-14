@@ -117,7 +117,7 @@ menu li:nth-child(1) {
     padding-top: 200px;
     grid-area: brand;
     font-family: Oswald, Arial, Helvetica, sans-serif;
-    h3 {
+    h3, h1 {
       /* background-image: url("../img/rokt-white.svg"); */
       background-size: contain;
       background-repeat: no-repeat;
@@ -716,3 +716,105 @@ menu li {
     width: 70%;
   }
 }
+/* Macquarie case study shares the homepage's vector treatment. */
+.macquarie #summary {
+  background-image: url("../img/macquarie-background.webp");
+  background-position: center;
+    background-size: cover;
+    background-color: #111315;
+    background-repeat: no-repeat;
+  height: auto;
+  min-height: 650px;
+  padding-top: 110px;
+  gap: 20px;
+}
+.macquarie #summary .brand {
+  padding-top: 30px;
+  height: auto;
+}
+.macquarie #summary .brand img {
+  display: block;
+  width: 260px;
+  max-width: 100%;
+  height: auto;
+  filter: invert(1);
+  margin-bottom: 32px;
+}
+.macquarie #summary h1 {
+  font-family: Teko, sans-serif;
+  font-size: 45px;
+  line-height: 1.1;
+  max-width: 650px;
+}
+.macquarie p {
+  text-align: left;
+  word-spacing: normal;
+}
+.macquarie #introduction {
+  padding: 75px 5%;
+  max-width: 900px;
+  margin-inline: auto;
+}
+.macquarie #introduction h2 {
+  display: block;
+  font-family: Teko, sans-serif;
+  font-size: 35px;
+  text-transform: uppercase;
+  margin-bottom: 32px;
+}
+.macquarie #introduction .content {
+  padding: 0;
+  width: 100%;
+}
+.macquarie #introduction .content p {
+  padding: 0;
+  text-align: left;
+}
+.macquarie #delivery section {
+  display: block;
+}
+.macquarie #impact, .macquarie #other-cases {
+  background-color: #17191b;
+}
+
+.macquarie .macquarie-case-section {
+  padding: 75px 5%;
+}
+.macquarie .macquarie-case-section .description {
+  max-width: 900px;
+  margin-inline: auto;
+}
+.macquarie .macquarie-case-section h2 {
+  font-family: Teko, sans-serif;
+  font-size: 35px;
+  text-transform: uppercase;
+  min-height: 0;
+  padding-bottom: 32px;
+}
+.macquarie #introduction p + p,
+.macquarie .macquarie-case-section p + p {
+  margin-top: 24px;
+}
+.macquarie #assurance {
+  background-color: #17191b;
+  color: white;
+}
+.macquarie .macquarie-case-section p {
+  max-width: 650px;
+}
+
+@media screen and (min-width: 63em) {
+  .macquarie #introduction .content p + p {
+    margin-top: 0;
+  }
+}
+
+.macquarie .macquarie-case-section h3 {
+  font-family: Roboto, sans-serif;
+  font-size: 1.3rem;
+  margin-top: 32px;
+  margin-bottom: 12px;
+  max-width: 650px;
+}
+
+#summary .brand h1 { font-size: 2rem; font-weight: bold; }

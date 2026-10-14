@@ -1,0 +1,1212 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Kent scale — triangular model cards</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- Bootstrap -->
+    <meta charset="utf-8" />
+    <link href="css/bootstrap.min.css" rel="stylesheet" media="screen" />
+    <script src="https://d3js.org/d3.v4.min.js"></script>
+    <style>
+      header {
+        padding: 20px;
+      }
+      @media print {
+        header {
+          display: none;
+        }
+        div.card-back {
+          transform: rotate(180deg);
+          -webkit-transform: rotate(180deg);
+        }
+        div.dimension {
+          page-break-after: always;
+        }
+      }
+
+      div.card {
+        padding: 10px;
+        border-width: 2px;
+        border-color: rgb(100, 100, 100);
+        border-style: solid;
+        width: 960px;
+        min-height: 600px;
+        margin-left: 0px;
+      }
+      div.dimension {
+        margin: 0;
+        margin-left: 0;
+        -webkit-box-shadow: 35px 36px 27px -27px rgba(158, 158, 158, 1);
+        -moz-box-shadow: 35px 36px 27px -27px rgba(158, 158, 158, 1);
+        box-shadow: 35px 36px 27px -27px rgba(158, 158, 158, 1);
+        width: 984px;
+      }
+      div.card-front {
+      }
+      div.card-back {
+        margin-bottom: 30px;
+      }
+      table.scrum-table-values {
+        border-collapse: inherit;
+      }
+      .scrum-table-values td {
+        width: 30px;
+        height: 30px;
+        border-color: rgb(200, 200, 200);
+        border-style: solid;
+        border-width: 1px;
+        text-align: center;
+        vertical-align: center;
+      }
+      .center-block {
+        float: none !important;
+      }
+      .scrum-table-values td.td-header {
+        background-color: rgb(100, 100, 200);
+        color: white;
+        border-color: rgb(120, 120, 230);
+      }
+      .scrum-table-values {
+        margin: 0 auto;
+        border-radius: 5px;
+        margin: 0px auto;
+        float: none;
+      }
+      td.pessimist-label-td,
+      td.table-title-label-td,
+      td.optimist-label-td,
+      td.label-empty-td {
+        border-style: none;
+      }
+      td.empty-cross-td {
+        border-width: 0px;
+        background-color: rgb(100, 100, 200);
+      }
+      td.emptyvalue {
+        background-color: rgb(255, 255, 255);
+        border-color: rgb(255, 255, 255);
+      }
+      td.pessimist-label-td {
+        /* Safari */
+        -webkit-transform: rotate(-90deg);
+
+        /* Firefox */
+        -moz-transform: rotate(-90deg);
+
+        /* IE */
+        -ms-transform: rotate(-90deg);
+
+        /* Opera */
+        -o-transform: rotate(-90deg);
+
+        /* Internet Explorer */
+        filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=3);
+      }
+      .line {
+        fill: none;
+        stroke: rgb(100, 100, 100);
+        stroke-width: 4px;
+      }
+
+      .area {
+        stroke: rgb(100, 100, 100);
+        stroke-width: 4px;
+        fill: lightsteelblue;
+      }
+
+      .grid line {
+        stroke: rgba(150, 150, 240, 0.1);
+        stroke-width: 5px;
+      }
+    </style>
+
+    <meta name="description" content="Estimation cards based on an explicitly assumed triangular model of Sherman Kent’s reference probability scale." />
+    <link rel="canonical" href="https://thiagomata.com/projects/probability/kent-cards.html" />
+</head>
+  <body>
+<noscript>
+<section style="padding:24px;overflow-x:auto">
+<h2>Expected-estimate lookup tables</h2>
+<p>JavaScript is disabled. These static tables remain available. Rows are pessimistic estimates; columns are optimistic estimates. Values are normalized weighted means rounded to whole numbers.</p>
+<p>Kent’s bounds are used with an assumed triangular shape, not observed CIA data.</p>
+<h3>Certain</h3>
+<table>
+<thead>
+<tr>
+<th scope="col">Pessimistic / optimistic</th>
+<th scope="col">1</th>
+<th scope="col">2</th>
+<th scope="col">3</th>
+<th scope="col">5</th>
+<th scope="col">8</th>
+<th scope="col">13</th>
+<th scope="col">20</th>
+<th scope="col">30</th>
+<th scope="col">50</th>
+<th scope="col">100</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<th scope="row">1</th>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+</tr>
+<tr>
+<th scope="row">2</th>
+<td>1</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+</tr>
+<tr>
+<th scope="row">3</th>
+<td>1</td>
+<td>2</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+</tr>
+<tr>
+<th scope="row">5</th>
+<td>1</td>
+<td>2</td>
+<td>3</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+</tr>
+<tr>
+<th scope="row">8</th>
+<td>1</td>
+<td>2</td>
+<td>3</td>
+<td>5</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+</tr>
+<tr>
+<th scope="row">13</th>
+<td>1</td>
+<td>2</td>
+<td>3</td>
+<td>5</td>
+<td>8</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+</tr>
+<tr>
+<th scope="row">20</th>
+<td>1</td>
+<td>2</td>
+<td>3</td>
+<td>5</td>
+<td>8</td>
+<td>13</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+</tr>
+<tr>
+<th scope="row">30</th>
+<td>1</td>
+<td>2</td>
+<td>3</td>
+<td>5</td>
+<td>8</td>
+<td>13</td>
+<td>20</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+</tr>
+<tr>
+<th scope="row">50</th>
+<td>1</td>
+<td>2</td>
+<td>3</td>
+<td>5</td>
+<td>8</td>
+<td>13</td>
+<td>20</td>
+<td>30</td>
+<td>—</td>
+<td>—</td>
+</tr>
+<tr>
+<th scope="row">100</th>
+<td>1</td>
+<td>2</td>
+<td>3</td>
+<td>5</td>
+<td>8</td>
+<td>13</td>
+<td>20</td>
+<td>30</td>
+<td>50</td>
+<td>—</td>
+</tr>
+</tbody>
+</table>
+<h3>Almost certain</h3>
+<table>
+<thead>
+<tr>
+<th scope="col">Pessimistic / optimistic</th>
+<th scope="col">1</th>
+<th scope="col">2</th>
+<th scope="col">3</th>
+<th scope="col">5</th>
+<th scope="col">8</th>
+<th scope="col">13</th>
+<th scope="col">20</th>
+<th scope="col">30</th>
+<th scope="col">50</th>
+<th scope="col">100</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<th scope="row">1</th>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+</tr>
+<tr>
+<th scope="row">2</th>
+<td>1</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+</tr>
+<tr>
+<th scope="row">3</th>
+<td>1</td>
+<td>2</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+</tr>
+<tr>
+<th scope="row">5</th>
+<td>1</td>
+<td>2</td>
+<td>3</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+</tr>
+<tr>
+<th scope="row">8</th>
+<td>1</td>
+<td>2</td>
+<td>3</td>
+<td>5</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+</tr>
+<tr>
+<th scope="row">13</th>
+<td>2</td>
+<td>3</td>
+<td>4</td>
+<td>6</td>
+<td>8</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+</tr>
+<tr>
+<th scope="row">20</th>
+<td>2</td>
+<td>3</td>
+<td>4</td>
+<td>6</td>
+<td>9</td>
+<td>13</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+</tr>
+<tr>
+<th scope="row">30</th>
+<td>3</td>
+<td>4</td>
+<td>5</td>
+<td>7</td>
+<td>10</td>
+<td>14</td>
+<td>21</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+</tr>
+<tr>
+<th scope="row">50</th>
+<td>4</td>
+<td>5</td>
+<td>6</td>
+<td>8</td>
+<td>11</td>
+<td>16</td>
+<td>22</td>
+<td>31</td>
+<td>—</td>
+<td>—</td>
+</tr>
+<tr>
+<th scope="row">100</th>
+<td>8</td>
+<td>9</td>
+<td>10</td>
+<td>12</td>
+<td>14</td>
+<td>19</td>
+<td>26</td>
+<td>35</td>
+<td>54</td>
+<td>—</td>
+</tr>
+</tbody>
+</table>
+<h3>Probable</h3>
+<table>
+<thead>
+<tr>
+<th scope="col">Pessimistic / optimistic</th>
+<th scope="col">1</th>
+<th scope="col">2</th>
+<th scope="col">3</th>
+<th scope="col">5</th>
+<th scope="col">8</th>
+<th scope="col">13</th>
+<th scope="col">20</th>
+<th scope="col">30</th>
+<th scope="col">50</th>
+<th scope="col">100</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<th scope="row">1</th>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+</tr>
+<tr>
+<th scope="row">2</th>
+<td>1</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+</tr>
+<tr>
+<th scope="row">3</th>
+<td>2</td>
+<td>2</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+</tr>
+<tr>
+<th scope="row">5</th>
+<td>2</td>
+<td>3</td>
+<td>4</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+</tr>
+<tr>
+<th scope="row">8</th>
+<td>3</td>
+<td>4</td>
+<td>4</td>
+<td>6</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+</tr>
+<tr>
+<th scope="row">13</th>
+<td>4</td>
+<td>5</td>
+<td>6</td>
+<td>7</td>
+<td>9</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+</tr>
+<tr>
+<th scope="row">20</th>
+<td>6</td>
+<td>7</td>
+<td>7</td>
+<td>9</td>
+<td>11</td>
+<td>15</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+</tr>
+<tr>
+<th scope="row">30</th>
+<td>8</td>
+<td>9</td>
+<td>10</td>
+<td>11</td>
+<td>14</td>
+<td>17</td>
+<td>23</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+</tr>
+<tr>
+<th scope="row">50</th>
+<td>13</td>
+<td>14</td>
+<td>15</td>
+<td>16</td>
+<td>19</td>
+<td>22</td>
+<td>28</td>
+<td>35</td>
+<td>—</td>
+<td>—</td>
+</tr>
+<tr>
+<th scope="row">100</th>
+<td>26</td>
+<td>27</td>
+<td>27</td>
+<td>29</td>
+<td>31</td>
+<td>35</td>
+<td>40</td>
+<td>48</td>
+<td>63</td>
+<td>—</td>
+</tr>
+</tbody>
+</table>
+<h3>Chances about even</h3>
+<table>
+<thead>
+<tr>
+<th scope="col">Pessimistic / optimistic</th>
+<th scope="col">1</th>
+<th scope="col">2</th>
+<th scope="col">3</th>
+<th scope="col">5</th>
+<th scope="col">8</th>
+<th scope="col">13</th>
+<th scope="col">20</th>
+<th scope="col">30</th>
+<th scope="col">50</th>
+<th scope="col">100</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<th scope="row">1</th>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+</tr>
+<tr>
+<th scope="row">2</th>
+<td>2</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+</tr>
+<tr>
+<th scope="row">3</th>
+<td>2</td>
+<td>3</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+</tr>
+<tr>
+<th scope="row">5</th>
+<td>3</td>
+<td>4</td>
+<td>4</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+</tr>
+<tr>
+<th scope="row">8</th>
+<td>5</td>
+<td>5</td>
+<td>6</td>
+<td>7</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+</tr>
+<tr>
+<th scope="row">13</th>
+<td>7</td>
+<td>8</td>
+<td>8</td>
+<td>9</td>
+<td>11</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+</tr>
+<tr>
+<th scope="row">20</th>
+<td>11</td>
+<td>11</td>
+<td>12</td>
+<td>13</td>
+<td>14</td>
+<td>17</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+</tr>
+<tr>
+<th scope="row">30</th>
+<td>16</td>
+<td>16</td>
+<td>17</td>
+<td>18</td>
+<td>19</td>
+<td>22</td>
+<td>25</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+</tr>
+<tr>
+<th scope="row">50</th>
+<td>26</td>
+<td>26</td>
+<td>27</td>
+<td>28</td>
+<td>29</td>
+<td>32</td>
+<td>35</td>
+<td>40</td>
+<td>—</td>
+<td>—</td>
+</tr>
+<tr>
+<th scope="row">100</th>
+<td>51</td>
+<td>51</td>
+<td>52</td>
+<td>53</td>
+<td>54</td>
+<td>57</td>
+<td>60</td>
+<td>65</td>
+<td>75</td>
+<td>—</td>
+</tr>
+</tbody>
+</table>
+<h3>Probably not</h3>
+<table>
+<thead>
+<tr>
+<th scope="col">Pessimistic / optimistic</th>
+<th scope="col">1</th>
+<th scope="col">2</th>
+<th scope="col">3</th>
+<th scope="col">5</th>
+<th scope="col">8</th>
+<th scope="col">13</th>
+<th scope="col">20</th>
+<th scope="col">30</th>
+<th scope="col">50</th>
+<th scope="col">100</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<th scope="row">1</th>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+</tr>
+<tr>
+<th scope="row">2</th>
+<td>2</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+</tr>
+<tr>
+<th scope="row">3</th>
+<td>2</td>
+<td>3</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+</tr>
+<tr>
+<th scope="row">5</th>
+<td>4</td>
+<td>4</td>
+<td>4</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+</tr>
+<tr>
+<th scope="row">8</th>
+<td>6</td>
+<td>6</td>
+<td>7</td>
+<td>7</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+</tr>
+<tr>
+<th scope="row">13</th>
+<td>9</td>
+<td>10</td>
+<td>10</td>
+<td>11</td>
+<td>12</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+</tr>
+<tr>
+<th scope="row">20</th>
+<td>14</td>
+<td>15</td>
+<td>15</td>
+<td>16</td>
+<td>16</td>
+<td>18</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+</tr>
+<tr>
+<th scope="row">30</th>
+<td>21</td>
+<td>22</td>
+<td>22</td>
+<td>23</td>
+<td>23</td>
+<td>25</td>
+<td>27</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+</tr>
+<tr>
+<th scope="row">50</th>
+<td>35</td>
+<td>36</td>
+<td>36</td>
+<td>37</td>
+<td>37</td>
+<td>39</td>
+<td>41</td>
+<td>44</td>
+<td>—</td>
+<td>—</td>
+</tr>
+<tr>
+<th scope="row">100</th>
+<td>70</td>
+<td>71</td>
+<td>71</td>
+<td>72</td>
+<td>72</td>
+<td>74</td>
+<td>76</td>
+<td>79</td>
+<td>85</td>
+<td>—</td>
+</tr>
+</tbody>
+</table>
+<h3>Almost certainly not</h3>
+<table>
+<thead>
+<tr>
+<th scope="col">Pessimistic / optimistic</th>
+<th scope="col">1</th>
+<th scope="col">2</th>
+<th scope="col">3</th>
+<th scope="col">5</th>
+<th scope="col">8</th>
+<th scope="col">13</th>
+<th scope="col">20</th>
+<th scope="col">30</th>
+<th scope="col">50</th>
+<th scope="col">100</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<th scope="row">1</th>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+</tr>
+<tr>
+<th scope="row">2</th>
+<td>2</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+</tr>
+<tr>
+<th scope="row">3</th>
+<td>3</td>
+<td>3</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+</tr>
+<tr>
+<th scope="row">5</th>
+<td>5</td>
+<td>5</td>
+<td>5</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+</tr>
+<tr>
+<th scope="row">8</th>
+<td>8</td>
+<td>8</td>
+<td>8</td>
+<td>8</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+</tr>
+<tr>
+<th scope="row">13</th>
+<td>12</td>
+<td>12</td>
+<td>12</td>
+<td>12</td>
+<td>13</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+</tr>
+<tr>
+<th scope="row">20</th>
+<td>19</td>
+<td>19</td>
+<td>19</td>
+<td>19</td>
+<td>19</td>
+<td>20</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+</tr>
+<tr>
+<th scope="row">30</th>
+<td>28</td>
+<td>28</td>
+<td>28</td>
+<td>28</td>
+<td>28</td>
+<td>29</td>
+<td>29</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+</tr>
+<tr>
+<th scope="row">50</th>
+<td>47</td>
+<td>47</td>
+<td>47</td>
+<td>47</td>
+<td>47</td>
+<td>47</td>
+<td>48</td>
+<td>49</td>
+<td>—</td>
+<td>—</td>
+</tr>
+<tr>
+<th scope="row">100</th>
+<td>93</td>
+<td>93</td>
+<td>93</td>
+<td>93</td>
+<td>94</td>
+<td>94</td>
+<td>94</td>
+<td>95</td>
+<td>97</td>
+<td>—</td>
+</tr>
+</tbody>
+</table>
+<h3>Impossible</h3>
+<table>
+<thead>
+<tr>
+<th scope="col">Pessimistic / optimistic</th>
+<th scope="col">1</th>
+<th scope="col">2</th>
+<th scope="col">3</th>
+<th scope="col">5</th>
+<th scope="col">8</th>
+<th scope="col">13</th>
+<th scope="col">20</th>
+<th scope="col">30</th>
+<th scope="col">50</th>
+<th scope="col">100</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<th scope="row">1</th>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+</tr>
+<tr>
+<th scope="row">2</th>
+<td>2</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+</tr>
+<tr>
+<th scope="row">3</th>
+<td>3</td>
+<td>3</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+</tr>
+<tr>
+<th scope="row">5</th>
+<td>5</td>
+<td>5</td>
+<td>5</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+</tr>
+<tr>
+<th scope="row">8</th>
+<td>8</td>
+<td>8</td>
+<td>8</td>
+<td>8</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+</tr>
+<tr>
+<th scope="row">13</th>
+<td>13</td>
+<td>13</td>
+<td>13</td>
+<td>13</td>
+<td>13</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+</tr>
+<tr>
+<th scope="row">20</th>
+<td>20</td>
+<td>20</td>
+<td>20</td>
+<td>20</td>
+<td>20</td>
+<td>20</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+</tr>
+<tr>
+<th scope="row">30</th>
+<td>30</td>
+<td>30</td>
+<td>30</td>
+<td>30</td>
+<td>30</td>
+<td>30</td>
+<td>30</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+</tr>
+<tr>
+<th scope="row">50</th>
+<td>50</td>
+<td>50</td>
+<td>50</td>
+<td>50</td>
+<td>50</td>
+<td>50</td>
+<td>50</td>
+<td>50</td>
+<td>—</td>
+<td>—</td>
+</tr>
+<tr>
+<th scope="row">100</th>
+<td>100</td>
+<td>100</td>
+<td>100</td>
+<td>100</td>
+<td>100</td>
+<td>100</td>
+<td>100</td>
+<td>100</td>
+<td>100</td>
+<td>—</td>
+</tr>
+</tbody>
+</table>
+</section>
+</noscript>
+    <!-- load the d3.js library -->
+    <header>
+      <h1>Kent scale — triangular model cards</h1>
+      <p>
+        Modeled distributions, not observed CIA data.
+        <a href="cards.html">Survey cards</a> ·
+        <a href="calculator.html">Calculator</a> ·
+        <a
+          href="https://www.cia.gov/resources/csi/static/Words-of-Estimative-Probability.pdf#page=8"
+          >Original reference</a
+        >
+      </p>
+    </header>
+    <script>
+      window.cardDataSource = "data/kent-triangular.csv";
+      window.cardWeightLabel = "Modeled weight (%)";
+      window.cardReferences = {
+        Certain: { value: 100, from: 100, to: 100 },
+        "Almost certain": { value: 93, from: 87, to: 99 },
+        Probable: { value: 75, from: 63, to: 87 },
+        "Chances about even": { value: 50, from: 40, to: 60 },
+        "Probably not": { value: 30, from: 20, to: 40 },
+        "Almost certainly not": { value: 7, from: 2, to: 12 },
+        Impossible: { value: 0, from: 0, to: 0 },
+      };
+    </script>
+    <script src="js/perceptions.js"></script>
+  </body>
+</html>
