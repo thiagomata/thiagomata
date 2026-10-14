@@ -411,7 +411,13 @@ body {
         background-repeat: no-repeat;
         background-position: left top;
         h3 {
-            display: none;
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            overflow: hidden;
+            clip-path: inset(50%);
+            white-space: nowrap;
         }
     }
     .company-name[data-icon-type=before-name] {
