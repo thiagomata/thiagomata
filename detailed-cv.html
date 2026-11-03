@@ -1,0 +1,1017 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thiago Mata - Detailed CV</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500&family=Inter:wght@400;500;600&display=swap">
+
+    <meta name="description" content="Thiago Mata’s detailed CV: full experience, research, publications, certifications, and awards." />
+    <link rel="canonical" href="https://thiagomata.com/detailed-cv.html" />
+
+    <style>
+        :root {
+            --ink: #111315;
+            --muted: #5b6168;
+            --rule: #e9ecef;
+            --accent: #4444dd;
+            --paper: #ffffff;
+            --desk: #f1f3f5;
+            --shade: #f3f4fa;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html {
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
+
+        body {
+            margin: 0;
+            background: var(--desk);
+            color: var(--ink);
+            font-family: Inter, "Helvetica Neue", Arial, sans-serif;
+            font-size: 9.4pt;
+            line-height: 1.45;
+        }
+
+        a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        a:hover {
+            color: var(--accent);
+        }
+
+        .more {
+            color: var(--accent);
+            white-space: nowrap;
+        }
+
+        .more::after {
+            content: " →";
+        }
+
+        .item a:not(.more) {
+            text-decoration: underline;
+            text-decoration-color: rgba(68, 68, 221, .35);
+            text-decoration-thickness: 1.5px;
+            text-underline-offset: 2px;
+        }
+
+        .item a:hover,
+        .more:hover {
+            text-decoration-color: var(--accent);
+        }
+
+        .toolbar {
+            width: 210mm;
+            margin: 16px auto -8px;
+            text-align: right;
+            font-size: 9pt;
+        }
+
+        .toolbar a {
+            color: var(--accent);
+        }
+
+        .toolbar a + a {
+            margin-left: 4mm;
+        }
+
+        .toolbar a:hover {
+            text-decoration: underline;
+        }
+
+        .page {
+            width: 210mm;
+            margin: 24px auto;
+            padding: 10mm 16mm 12mm;
+            background: var(--paper);
+            box-shadow: 0 2px 18px rgba(0, 0, 0, .08);
+            border-top: 5px solid var(--accent);
+        }
+
+        /* Header */
+
+        header {
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 6mm;
+            align-items: end;
+            margin: -10mm -16mm 0;
+            padding: 9mm 16mm 6mm;
+            background: var(--shade);
+        }
+
+        h1 {
+            margin: 0;
+            font-family: "Playfair Display", Georgia, serif;
+            font-weight: 500;
+            font-size: 30pt;
+            line-height: 1;
+        }
+
+        .role {
+            margin: 2mm 0 0;
+            font-size: 11pt;
+            font-weight: 500;
+            color: var(--muted);
+            letter-spacing: .3px;
+        }
+
+        .contact {
+            margin: 0;
+            padding: 0;
+            list-style: none;
+            display: grid;
+            grid-template-rows: repeat(4, auto);
+            grid-auto-flow: column;
+            column-gap: 6mm;
+            font-size: 8.6pt;
+            line-height: 1.5;
+            color: var(--muted);
+        }
+
+        .summary p {
+            margin: 4mm 0 0;
+            font-size: 10.2pt;
+            line-height: 1.55;
+        }
+
+        .summary .quiet {
+            margin-top: 3mm;
+        }
+
+        /* Sections */
+
+        section {
+            margin-top: 7mm;
+        }
+
+        h2 {
+            margin: 0 0 3mm;
+            padding-bottom: 1mm;
+            font-size: 8.4pt;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1.4px;
+            color: var(--accent);
+            border-bottom: 1px solid var(--rule);
+            break-after: avoid;
+        }
+
+        h3 {
+            margin: 5mm 0 2mm;
+            font-size: 8.4pt;
+            font-weight: 600;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            break-after: avoid;
+        }
+
+        .item {
+            break-inside: avoid;
+        }
+
+        .item + .item {
+            margin-top: 4mm;
+        }
+
+        .compact .item + .item {
+            margin-top: 2mm;
+        }
+
+        .item-head {
+            display: flex;
+            justify-content: space-between;
+            gap: 4mm;
+        }
+
+        .item-title {
+            font-weight: 500;
+        }
+
+        .item-date {
+            flex-shrink: 0;
+            color: var(--muted);
+            font-size: 8.6pt;
+        }
+
+        .item-sub {
+            color: var(--muted);
+            font-size: 8.8pt;
+        }
+
+        .item p {
+            margin: 1mm 0 0;
+        }
+
+        .item ul {
+            margin: 1.5mm 0 0;
+            padding-left: 4.5mm;
+        }
+
+        .item li + li {
+            margin-top: .8mm;
+        }
+
+        .stack {
+            margin-top: 1.5mm;
+            color: var(--muted);
+            font-size: 8.4pt;
+        }
+
+        .stack .more {
+            margin-left: 2mm;
+        }
+
+        .quiet {
+            color: var(--muted);
+            font-size: 8.8pt;
+        }
+
+        /* Skills */
+
+        .skills {
+            display: grid;
+            grid-template-columns: 34mm 1fr;
+            gap: 1.5mm 5mm;
+            margin: 0;
+        }
+
+        .skills dt {
+            font-weight: 500;
+        }
+
+        .skills dd {
+            margin: 0;
+        }
+
+        /* Tag filter */
+
+        .js .tag.clickable {
+            cursor: pointer;
+            text-decoration: underline dotted rgba(68, 68, 221, .5);
+            text-underline-offset: 2px;
+        }
+
+        .js .tag.clickable:hover,
+        .tag.active {
+            color: var(--accent);
+        }
+
+        .tag.active {
+            font-weight: 600;
+        }
+
+        .filter-bar {
+            position: sticky;
+            top: 0;
+            z-index: 1;
+            margin: 0 0 3mm;
+            padding: 2mm 3mm;
+            background: var(--shade);
+            border-left: 3px solid var(--accent);
+        }
+
+        .filter-bar[hidden],
+        .filtered-out {
+            display: none;
+        }
+
+        .filter-clear {
+            margin-left: 3mm;
+            font: inherit;
+            color: var(--accent);
+            background: none;
+            border: 0;
+            padding: 0;
+            cursor: pointer;
+        }
+
+        .filter-clear::after {
+            content: " ×";
+        }
+
+        /* Phone width */
+
+        @media screen and (max-width: 820px) {
+            body {
+                font-size: 10.5pt;
+            }
+
+            .toolbar {
+                width: auto;
+                margin: 0;
+                padding: 12px 16px 0;
+                background: var(--paper);
+            }
+
+            .page {
+                width: auto;
+                margin: 0;
+                padding: 24px 16px;
+                box-shadow: none;
+            }
+
+            header {
+                margin: -24px -16px 0;
+                padding: 24px 16px;
+                grid-template-columns: 1fr;
+            }
+
+            .contact {
+                grid-template-rows: none;
+                grid-auto-flow: row;
+            }
+
+            .item-head {
+                flex-direction: column;
+                gap: 0;
+            }
+
+            .skills {
+                grid-template-columns: 1fr;
+            }
+
+            .skills dd {
+                margin-bottom: 2mm;
+            }
+        }
+
+        @page {
+            size: A4;
+            margin: 12mm 0;
+        }
+
+        @page :first {
+            margin-top: 0;
+        }
+
+        @media print {
+            body {
+                background: var(--paper);
+            }
+
+            .toolbar,
+            .filter-bar {
+                display: none;
+            }
+
+            .filtered-out {
+                display: block;
+            }
+
+            .js .tag.clickable {
+                text-decoration: none;
+            }
+
+            .page {
+                margin: 0;
+                padding-top: 0;
+                padding-bottom: 0;
+                border-top: 0;
+                box-shadow: none;
+            }
+
+            header {
+                margin-top: 0;
+                border-top: 5px solid var(--accent);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <nav class="toolbar">
+        <a href="./one-page-cv.html">One-page version</a>
+        <a href="./pdf/thiago-mata-detailed-cv.pdf" download>Download PDF</a>
+    </nav>
+    <main class="page">
+        <header>
+            <div>
+                <h1>Thiago Mata</h1>
+                <p class="role">Technology Leader</p>
+            </div>
+            <ul class="contact">
+                <li>Sydney, Australia · Australian Citizen</li>
+                <li><a href="tel:+61413065180">+61 413 065 180</a></li>
+                <li><a href="mailto:thiago.henrique.mata@gmail.com">thiago.henrique.mata@gmail.com</a></li>
+                <li><a href="https://thiagomata.com">thiagomata.com</a></li>
+                <li><a href="https://www.linkedin.com/in/thiagomata/">linkedin.com/in/thiagomata</a></li>
+                <li><a href="https://github.com/thiagomata">github.com/thiagomata</a></li>
+                <li><a href="https://orcid.org/0009-0002-7366-939X">orcid.org/0009-0002-7366-939X</a></li>
+            </ul>
+        </header>
+
+        <div class="summary">
+            <p>
+                Technology leader who connects engineering to business outcomes. Over twenty years across startups,
+                ad-tech at billions of transactions, and regulated banking have shaped how I choose what to build,
+                what not to build, and where to invest, and how I lead teams that decide well today and better
+                tomorrow, always favouring clarity over cleverness and reliability over novelty.
+            </p>
+            <p>
+                My background is in distributed systems, real-time data, and cloud platforms, from public systems
+                used by every university in Brazil to bot detection at the edge of a global ad-tech platform.
+                Alongside that work, I publish research on formal verification, using machine-checked proofs to
+                show software is correct rather than only testing it, which shapes how I think about reliability.
+            </p>
+            <p class="quiet">
+                This is the full version of my CV. For a summary, see the
+                <a class="more" href="./one-page-cv.html">one-page CV</a>
+            </p>
+        </div>
+
+        <section id="experience">
+            <h2>Experience</h2>
+            <div class="filter-bar" hidden>
+                Showing experience with <strong class="filter-name"></strong>
+                <button type="button" class="filter-clear">Show all</button>
+            </div>
+
+            <div class="item">
+                <div class="item-head">
+                    <span class="item-title">Senior Manager, <a href="https://www.macquarie.com.au/">Macquarie Bank</a></span>
+                    <span class="item-date">Sydney · 2024–Present</span>
+                </div>
+                <ul>
+                    <li>Lead a new, high-performing team with strong retention and fast onboarding, setting team and
+                        individual goals together and tracking progress through regular evaluations.</li>
+                    <li>Delivered new banking products while reshaping how the team builds them, cutting production
+                        incidents through testing, observability, graceful degradation, and clearer code.</li>
+                    <li>Built data services that combine real-time events and daily snapshots into a single, consistent
+                        view of customer accounts for Banking and Financial Services.</li>
+                    <li>Contributed to a new digital term deposit experience that reduced account opening from days to
+                        minutes.</li>
+                    <li>Interview engineering candidates as part of the hiring panel.</li>
+                </ul>
+                <div class="stack">
+                    <span class="tag">Java</span>, <span class="tag">Kafka</span>, <span class="tag">gRPC</span>, <span class="tag">Protobuf</span>, <span class="tag">BigQuery</span>, <span class="tag">Apache Beam</span>, <span class="tag">Dataflow</span>, <span class="tag">Spanner</span>, <span class="tag">Pub/Sub</span>, <span class="tag">Cloud Functions</span>,
+                    <span class="tag">Elasticsearch</span>, <span class="tag">Dynatrace</span>, <span class="tag">Docker</span>, <span class="tag">Helm</span>, <span class="tag">Kubernetes</span>
+                    <a class="more" href="./cases/macquarie-term-deposits.html">Case study</a>
+                </div>
+            </div>
+
+            <div class="item">
+                <div class="item-head">
+                    <span class="item-title">Senior Software Engineer, <a href="https://www.rokt.com">Rokt</a></span>
+                    <span class="item-date">Sydney · 2019–2024 · 5 years 5 months</span>
+                </div>
+                <ul>
+                    <li>Led the Bot Detection team within Traffic Resilience: a real-time service on the critical path of all
+                        company traffic, designed for graceful degradation so it would never go down or block legitimate
+                        users. It combined
+                        real-time and offline analysis, rate limiting, local residency enforcement, and anomaly
+                        detection on Kubernetes edge clusters.</li>
+                    <li>Built the Identity System, which groups customer interactions for behaviour analysis, and the
+                        Attribution System, which links interactions to advertiser conversions and feeds campaign
+                        metrics to machine learning models.</li>
+                    <li>Worked on the Customer Data Platform, a real-time distributed system that cleans, validates,
+                        and enriches customer data, and later on anomaly detection for key business metrics.</li>
+                    <li>Interviewed engineering candidates as part of the hiring panel.</li>
+                </ul>
+                <div class="stack">
+                    <span class="tag">Java</span>, <span class="tag">Scala</span>, <span class="tag">Python</span>, <span class="tag">Go</span>, <span class="tag">Spark</span>, <span class="tag">Kafka</span>, <span class="tag">Gremlin</span>, <span class="tag">Neptune</span>, <span class="tag">Redshift</span>, <span class="tag">DynamoDB</span>, <span class="tag">SQS/SNS</span>, <span class="tag">EKS</span>,
+                    <span class="tag">CloudFormation</span>, <span class="tag">Terraform</span>, <span class="tag">Elasticsearch</span>, <span class="tag">Redis</span>, <span class="tag">HBase</span>, <span class="tag">Grafana</span>, <span class="tag">Prometheus</span>, <span class="tag">Datadog</span>, <span class="tag">Buildkite</span>,
+                    <span class="tag">Helm</span>, <span class="tag">Istio</span>, <span class="tag">Envoy</span>, <span class="tag">gRPC</span>
+                    <a class="more" href="./cases/rokt-bot-detection.html">Bot detection</a>
+                    <a class="more" href="./cases/rokt-identity.html">Identity</a>
+                    <a class="more" href="./cases/rokt-attribution.html">Attribution</a>
+                </div>
+            </div>
+
+            <div class="item">
+                <div class="item-head">
+                    <span class="item-title">Senior Data Engineer, <a href="https://www.sli-systems.com/">SLI Systems</a></span>
+                    <span class="item-date">Christchurch · 2017–2019 · 1 year 8 months</span>
+                </div>
+                <ul>
+                    <li>Migrated core data services from Apache Spark to Apache Beam on Google Cloud, making them
+                        faster and cheaper and strengthening the company's position in its acquisition.</li>
+                    <li>Turned data scientists' models into production SQL and Spark Streaming jobs, and measured the
+                        impact and cost of each new feature through online and offline tests.</li>
+                </ul>
+                <div class="stack">
+                    <span class="tag">Java</span>, <span class="tag">Python</span>, <span class="tag">BigQuery</span>, <span class="tag">Apache Beam</span>, <span class="tag">Dataflow</span>, <span class="tag">Cloud Storage</span>, <span class="tag">Spanner</span>, <span class="tag">Pub/Sub</span>, <span class="tag">Elasticsearch</span>,
+                    <span class="tag">Jenkins</span>, <span class="tag">Docker</span>, <span class="tag">Helm</span>, <span class="tag">Kubernetes</span>
+                    <a class="more" href="./cases/sli-to-the-cloud.html">Case study</a>
+                </div>
+            </div>
+
+            <div class="item">
+                <div class="item-head">
+                    <span class="item-title">Chief Technology Officer, <a href="http://ideiabigdata.com">Ideia Big Data</a></span>
+                    <span class="item-date">Brasília · 2014–2017 · 3 years</span>
+                </div>
+                <ul>
+                    <li>Led engineering across three offices in three states, taking the company's research,
+                        microtargeting, and statistics products from concept to their first production-ready
+                        versions.</li>
+                    <li>Defined the technical strategy and reported it to investors; the products combined public
+                        demographic data with distributed systems, machine learning, and cloud streaming.</li>
+                    <li>Hired the engineering team and created its career ladder, defining the responsibilities and
+                        expected competencies for each level, along with the training policy and development process
+                        that prepared the company for its merger with Pinion.</li>
+                    <li>Negotiated with cloud providers and led the migration to a new one, cutting infrastructure costs
+                        while improving scale, reliability, and observability.</li>
+                    <li>Validated features with clients through engagement and feedback.</li>
+                </ul>
+                <div class="stack">
+                    <span class="tag">Python</span>, <span class="tag">R</span>, <span class="tag">Scala</span>, <span class="tag">PHP</span>, <span class="tag">Node.js</span>, <span class="tag">Spark</span>, <span class="tag">Hadoop</span>, <span class="tag">Cloudera</span>, <span class="tag">Postgres</span>, <span class="tag">MongoDB</span>, <span class="tag">Redis</span>, <span class="tag">Elasticsearch</span>,
+                    <span class="tag">AWS</span>, <span class="tag">Docker</span>, <span class="tag">Grafana</span>, <span class="tag">Angular</span>, <span class="tag">D3.js</span>
+                    <a class="more" href="./cases/ideia-alexandria.html">Case study</a>
+                </div>
+            </div>
+
+            <div class="item">
+                <div class="item-head">
+                    <span class="item-title">Senior Programmer, Adjetiva</span>
+                    <span class="item-date">Brasília · 2014 · 10 months</span>
+                </div>
+                <p>Part of the team behind SAT-JF14, a mobile app that won three Cannes Lions. Also built the Embratur
+                    brand channel, mobile apps for World Cup events, educational games, and the Fiat EcoDrive desktop
+                    app.</p>
+                <div class="stack"><span class="tag">Java</span>, <span class="tag">Node.js</span>, <span class="tag">Angular</span>, <span class="tag">PHP</span>, <span class="tag">Laravel</span>, <span class="tag">Postgres</span>, <span class="tag">Cordova</span>, <span class="tag">Phaser</span>, <span class="tag">Scrum</span></div>
+            </div>
+
+            <div class="item">
+                <div class="item-head">
+                    <span class="item-title">Co-Founder, OtimiCar</span>
+                    <span class="item-date">Brasília · 2013–2014 · 4 months</span>
+                </div>
+                <p>Specified and built the first server for a device that turns any car into a smart car, syncing car
+                    data with partners, sending maintenance recommendations to owners, and reporting to partners on
+                    their customers and products.</p>
+                <div class="stack">
+                    <span class="tag">Java</span>, <span class="tag">Node.js</span>, <span class="tag">MongoDB</span>, <span class="tag">Postgres</span>, <span class="tag">REST</span>, <span class="tag">SOAP</span>, <span class="tag">IoT</span>
+                    <a class="more" href="./cases/otimicar-data-sync.html">Case study</a>
+                </div>
+            </div>
+
+            <div class="item">
+                <div class="item-head">
+                    <span class="item-title">Senior Coordinator, Grupo 954</span>
+                    <span class="item-date">Brasília · 2012–2013 · 1 year 6 months</span>
+                </div>
+                <p>Led the engineering team, interviewed candidates, and modelled the company's estimation,
+                    specification, and development processes, building web applications for data analysis clients,
+                    including General Motors.</p>
+                <div class="stack"><span class="tag">PHP</span>, <span class="tag">Oracle</span>, <span class="tag">SQL Server</span>, <span class="tag">REST</span>, <span class="tag">UML</span>, <span class="tag">BPMN</span>, <span class="tag">Scrum</span></div>
+            </div>
+
+            <div class="item">
+                <div class="item-head">
+                    <span class="item-title">Process Analyst, <a href="http://www.inep.gov.br">INEP</a></span>
+                    <span class="item-date">Brasília · 2009–2012 · 3 years 1 month</span>
+                </div>
+                <p>Led a team of engineers on high-availability, high-volume systems with many concurrent users, including E-MEC, which
+                    handles accreditation and quality assurance for every university in Brazil, and Revalida, the
+                    national exam for revalidating foreign medical diplomas.</p>
+                <div class="stack">
+                    <span class="tag">PHP</span>, <span class="tag">Zend</span>, <span class="tag">Laravel</span>, <span class="tag">Java</span>, <span class="tag">JBoss Seam</span>, <span class="tag">Oracle</span>, <span class="tag">Redis</span>, <span class="tag">Memcached</span>, <span class="tag">BPMN</span>, <span class="tag">Scrum</span>
+                    <a class="more" href="./cases/mec-education-platform.html">Case study</a>
+                </div>
+            </div>
+
+            <h3>Earlier experience</h3>
+            <div class="compact">
+                <div class="item">
+                    <div class="item-head">
+                        <span class="item-title">Analyst and Web Developer, SECOM, Presidency of Brazil</span>
+                        <span class="item-date">Brasília · 2008–2009 · 7 months</span>
+                    </div>
+                    <p>Requirements, modelling, prototyping, and web development. <span class="quiet tags"><span class="tag">PHP</span>, <span class="tag">Zend</span>, <span class="tag">Oracle</span>,
+                        <span class="tag">Postgres</span></span></p>
+                </div>
+
+                <div class="item">
+                    <div class="item-head">
+                        <span class="item-title">Database Administrator, <a href="https://www.sicoob.com.br/">Bancoob</a></span>
+                        <span class="item-date">Brasília · 2007–2008 · 1 year 2 months</span>
+                    </div>
+                    <p>Built the credit portfolio transfer system for a high volume of financial transactions and ran
+                        the accounting close, using stored procedures, memory tables, and bulk loading. <span class="quiet tags"><span class="tag">SQL Server</span>, <span class="tag">Visual Basic</span>, <span class="tag">Java</span></span></p>
+                </div>
+
+                <div class="item">
+                    <div class="item-head">
+                        <span class="item-title">Web Developer, <a href="http://www.mec.gov.br/">Ministry of Education</a></span>
+                        <span class="item-date">Brasília · 2006–2007 · 1 year</span>
+                    </div>
+                    <p>Built the professional education supervision system and the integrated planning, budget, and
+                        finance system, with fast reports over real-time and batch data. <span class="quiet tags"><span class="tag">PHP</span>, <span class="tag">Zend</span>,
+                        <span class="tag">Postgres</span>, <span class="tag">SVG</span></span></p>
+                </div>
+
+                <div class="item">
+                    <div class="item-head">
+                        <span class="item-title">Senior Developer, <a href="https://www.dentsucreative.com/">AgênciaClick/Isobar</a></span>
+                        <span class="item-date">Brasília · 2005–2006 · 1 year</span>
+                    </div>
+                    <p>Built SISAC, a system for monitoring the Presidency of Brazil's communication actions, plus the
+                        BrazilTour site and the Atlantic Forest NGO Network site. <span class="quiet tags"><span class="tag">PHP</span>, <span class="tag">Postgres</span>,
+                        <span class="tag">Oracle</span></span></p>
+                </div>
+
+                <div class="item">
+                    <div class="item-head">
+                        <span class="item-title">Developer, SAMU</span>
+                        <span class="item-date">Brasília · 2005 · 6 months</span>
+                    </div>
+                    <p>Front-end developer on the ambulance request system of an emergency call centre that connects
+                        patient, ambulance crew, and medical team in one call. <span class="quiet tags"><span class="tag">Java</span>, <span class="tag">Struts</span>, <span class="tag">XUL</span></span></p>
+                </div>
+
+                <div class="item">
+                    <div class="item-head">
+                        <span class="item-title">Teacher, Studio On-Line</span>
+                        <span class="item-date">Brasília · 2004–2010 · 6 years</span>
+                    </div>
+                    <p>Taught web development. <span class="quiet tags"><span class="tag">PHP</span>, <span class="tag">MySQL</span>, <span class="tag">HTML</span>, <span class="tag">CSS</span>, <span class="tag">JavaScript</span></span></p>
+                </div>
+
+                <div class="item">
+                    <div class="item-head">
+                        <span class="item-title">Developer, M.S.D.</span>
+                        <span class="item-date">Brasília · 2003–2004 · 11 months</span>
+                    </div>
+                    <p>Built computer-based training. <span class="quiet tags"><span class="tag">Authorware</span>, <span class="tag">Flash</span>, <span class="tag">ToolBook</span>, <span class="tag">JavaScript</span></span></p>
+                </div>
+            </div>
+        </section>
+
+        <section>
+            <h2>Skills</h2>
+            <dl class="skills">
+                <dt>Leadership</dt>
+                <dd>Technical strategy, hiring and interviewing, people management, goal setting and performance reviews, investor reporting, vendor negotiation, distributed teams, career paths, mentoring, process design, cost
+                    optimisation, reliability of critical real-time systems, risk and compliance in regulated environments</dd>
+                <dt>Languages</dt>
+                <dd><span class="tag">Scala</span>, <span class="tag">Java</span>, <span class="tag">Python</span>, <span class="tag">Go</span>, <span class="tag">JavaScript</span>, <span class="tag">Node.js</span>, <span class="tag">PHP</span>, <span class="tag">R</span>, <span class="tag">C#</span>, <span class="tag">Haskell</span></dd>
+                <dt>Data</dt>
+                <dd><span class="tag">Spark</span>, <span class="tag">Apache Beam</span>, <span class="tag">Hadoop</span>, <span class="tag">Kafka</span>, <span class="tag">BigQuery</span>, <span class="tag">Redshift</span>, <span class="tag">Athena</span>, <span class="tag">EMR</span>, <span class="tag">Bigtable</span>, <span class="tag">Spanner</span></dd>
+                <dt>Databases</dt>
+                <dd><span class="tag">Postgres</span>, <span class="tag">MySQL</span>, <span class="tag">Oracle</span>, <span class="tag">SQL Server</span>, <span class="tag">MongoDB</span>, <span class="tag">DynamoDB</span>, <span class="tag">Neptune</span>, <span class="tag">HBase</span>, <span class="tag">Redis</span>, <span class="tag">Elasticsearch</span></dd>
+                <dt>Cloud</dt>
+                <dd><span class="tag">AWS</span> (<span class="tag">EC2</span>, <span class="tag">EKS</span>, <span class="tag">Lambda</span>, <span class="tag">SQS/SNS</span>, <span class="tag">CloudFormation</span>, <span class="tag">CloudWatch</span>), <span class="tag">Google Cloud</span>, <span class="tag">Oracle Cloud</span>, <span class="tag">Terraform</span></dd>
+                <dt>Platform</dt>
+                <dd><span class="tag">Kubernetes</span>, <span class="tag">Docker</span>, <span class="tag">Helm</span>, <span class="tag">Istio</span>, <span class="tag">Envoy</span>, <span class="tag">gRPC</span>, <span class="tag">Jenkins</span>, <span class="tag">Buildkite</span></dd>
+                <dt>Observability</dt>
+                <dd><span class="tag">Grafana</span>, <span class="tag">Prometheus</span>, <span class="tag">Datadog</span>, <span class="tag">Dynatrace</span></dd>
+                <dt>Verification</dt>
+                <dd><span class="tag">Stainless</span> (<span class="tag">Scala</span>), <span class="tag">Dafny</span></dd>
+            </dl>
+        </section>
+
+        <section>
+            <h2>Research</h2>
+            <p class="quiet">Preprints on Zenodo, 2026, each backed by machine-checked proofs in the
+                <a class="more" href="https://github.com/thiagomata/prime-numbers">prime-numbers</a> project.</p>
+            <div class="compact">
+                <div class="item"><a href="https://doi.org/10.5281/zenodo.22955130">Division and Modulo from Recursive Normalization</a></div>
+                <div class="item"><a href="https://doi.org/10.5281/zenodo.22955770">Using Formal Verification to Prove Properties of Lists Recursively Defined</a></div>
+                <div class="item"><a href="https://doi.org/10.5281/zenodo.22746791">Formal Verification of Discrete Integration Properties from First Principles</a></div>
+                <div class="item"><a href="https://doi.org/10.5281/zenodo.22865440">Formal Verification of Cyclic Lists</a></div>
+                <div class="item"><a href="https://doi.org/10.5281/zenodo.22868422">Formal Verification of Cycle Integral Properties from First Principles</a></div>
+                <div class="item"><a href="https://doi.org/10.5281/zenodo.22929219">Formal Verification of Euclid's Theorem on the Infinitude of Primes</a></div>
+                <div class="item"><a href="https://doi.org/10.5281/zenodo.22955781">Formal Verification of Sieve Sequence Stages and Their Transitions</a></div>
+                <div class="item"><a href="https://doi.org/10.5281/zenodo.22955791">Relaxed Almost-Prime Production in Sieve Sequences</a></div>
+                <div class="item"><a href="https://doi.org/10.5281/zenodo.22955785">Structural Properties and Signed Boundaries of 2-Gaps in Sieve Sequences</a></div>
+                <div class="item"><a href="https://doi.org/10.5281/zenodo.22955797">Survival Frontiers in Balanced 2-Gap Companion Processes</a></div>
+            </div>
+
+            <h3>Earlier publications</h3>
+            <div class="compact">
+                <div class="item">
+                    <div class="item-head">
+                        <span>Critérios de Usabilidade e Acessibilidade para Avaliação de Aplicações Educacionais 3D na Web</span>
+                        <span class="item-date">2015</span>
+                    </div>
+                    <div class="item-sub">CBIE-LACLO 2015 · Honourable Mention, Best Published Articles</div>
+                </div>
+                <div class="item">
+                    <div class="item-head">
+                        <span>Definition of Computational Criteria to Evaluation of 3D Anatomical Web Manikins for Teaching in Health Science and for Medical Applications</span>
+                        <span class="item-date">2013</span>
+                    </div>
+                    <div class="item-sub">PAHCE, Pan American Health Care Exchanges</div>
+                </div>
+                <div class="item">
+                    <div class="item-head">
+                        <span>Accessibility for Web 3D Anatomical Manikins</span>
+                        <span class="item-date">2013</span>
+                    </div>
+                    <div class="item-sub">SETI, First Symposium on Education and Inclusive Technology</div>
+                </div>
+                <div class="item">
+                    <div class="item-head">
+                        <span><a href="https://doi.org/10.5007/1807-0221.2012v9n14p44">Definition of Criteria for Evaluating 3D Anatomical Manikins on the Web for Education in Healthcare or Medical Applications</a></span>
+                        <span class="item-date">2012</span>
+                    </div>
+                    <div class="item-sub">Extensio: Electronic Journal of Extension</div>
+                </div>
+            </div>
+        </section>
+
+        <section id="projects">
+            <h2>Selected projects</h2>
+            <div class="item">
+                <div class="item-head">
+                    <span class="item-title"><a href="https://thiagomata.github.io/perceptions-of-probability/calculator.html">Perceptions of Probability</a></span>
+                    <span class="item-date">2018–2026</span>
+                </div>
+                <p>An interactive tool for estimating under uncertainty: it turns optimistic and pessimistic estimates
+                    and a plain-language likelihood, such as "probable", into a range instead of a single number.</p>
+                <div class="stack">
+                    <span class="tag">JavaScript</span>, <span class="tag">Statistics</span>
+                    <a class="more" href="https://github.com/thiagomata/perceptions-of-probability">Source</a>
+                </div>
+            </div>
+            <div class="item">
+                <div class="item-head">
+                    <span class="item-title"><a href="https://thiagomata.github.io/parallax/">Parallax Engine</a></span>
+                    <span class="item-date">2025–2026</span>
+                </div>
+                <p>A deterministic, testable 3D scene engine for the browser, with real-time head tracking from a
+                    webcam that shifts the scene's perspective as the viewer moves.</p>
+                <div class="stack">
+                    <span class="tag">TypeScript</span>, <span class="tag">3D graphics</span>, <span class="tag">computer vision</span>
+                    <a class="more" href="https://github.com/thiagomata/parallax">Source</a>
+                </div>
+            </div>
+        </section>
+
+        <section>
+            <h2>Education</h2>
+            <div class="item">
+                <div class="item-head">
+                    <span class="item-title">Master's, Biomedical Engineering</span>
+                    <span class="item-date">2011–2013</span>
+                </div>
+                <div class="item-sub"><a href="https://www.unb.br/">Universidade de Brasília</a> · four publications ·
+                    <a href="https://repositorio.unb.br/handle/10482/15036">thesis</a></div>
+            </div>
+            <div class="item">
+                <div class="item-head">
+                    <span class="item-title">Graduate Degree, Computer Science</span>
+                    <span class="item-date">2002–2008</span>
+                </div>
+                <div class="item-sub"><a href="https://www.unb.br/">Universidade de Brasília</a></div>
+            </div>
+        </section>
+
+        <section>
+            <h2>Certifications and Courses</h2>
+            <p class="quiet">Certificates are available in the
+                <a class="more" href="https://github.com/thiagomata/courses-and-certifications">courses-and-certifications</a> repository.</p>
+
+            <h3>Certifications and specialisations</h3>
+            <div class="compact">
+                <div class="item">
+                    <div class="item-head">
+                        <span><a href="https://github.com/thiagomata/courses-and-certifications/blob/main/cloud-computing/aws-certified-solutions-archietct/AWS%20Certified%20Solutions%20Architect%20-%20Associate%20certificate.pdf">AWS Certified Solutions Architect – Associate</a></span>
+                        <span class="item-date">2022–2025</span>
+                    </div>
+                    <div class="item-sub">Amazon Web Services</div>
+                </div>
+                <div class="item">
+                    <div class="item-head">
+                        <span><a href="https://github.com/thiagomata/courses-and-certifications/blob/main/go/00-uci-programming-with-google-go/certificate.pdf">Programming with Google Go</a></span>
+                        <span class="item-date">2023</span>
+                    </div>
+                    <div class="item-sub">Specialisation · University of California, Irvine</div>
+                </div>
+                <div class="item">
+                    <div class="item-head">
+                        <span><a href="https://github.com/thiagomata/courses-and-certifications/blob/main/data-science/specialization/data-science-foundations-using-R.pdf">Data Science: Foundations Using R</a></span>
+                        <span class="item-date">2025</span>
+                    </div>
+                    <div class="item-sub">Specialisation · Johns Hopkins University</div>
+                </div>
+            </div>
+
+            <h3>Leadership and management</h3>
+            <div class="compact">
+                <div class="item">
+                    <div class="item-head">
+                        <span><a href="https://coursera.org/verify/8TQFHRMJPWJS">Managing Project Risks and Changes</a></span>
+                        <span class="item-date">2020</span>
+                    </div>
+                    <div class="item-sub">University of California, Irvine</div>
+                </div>
+            </div>
+
+            <h3>Functional and parallel programming</h3>
+            <div class="compact">
+                <div class="item">
+                    <div class="item-head">
+                        <span class="item-title">Functional Programming in Scala</span>
+                        <span class="item-date">2016–2024</span>
+                    </div>
+                    <div class="item-sub">Courses from the specialisation · École Polytechnique Fédérale de Lausanne</div>
+                    <p><a href="https://github.com/thiagomata/courses-and-certifications/blob/main/functional-programming/functional-programming-principals-in-scala/certificate.pdf">Functional Programming Principles in Scala</a> (2016),
+                        <a href="https://github.com/thiagomata/courses-and-certifications/blob/main/functional-programming/functional-program-design-in-scala/certificate.pdf">Functional Program Design in Scala</a> (2021),
+                        <a href="https://github.com/thiagomata/courses-and-certifications/blob/main/functional-programming/parallel-programming/certificate.pdf">Parallel Programming</a> (2024)</p>
+                </div>
+                <div class="item">
+                    <div class="item-head">
+                        <span><a href="https://github.com/thiagomata/courses-and-certifications/blob/main/functional-programming/functional-programming-with-streams-in-java-9/certificate.pdf">Functional Programming with Streams in Java 9</a></span>
+                        <span class="item-date">2017</span>
+                    </div>
+                    <div class="item-sub">Udemy</div>
+                </div>
+            </div>
+
+            <h3>Cloud and data</h3>
+            <div class="compact">
+                <div class="item">
+                    <div class="item-head">
+                        <span>Introduction to Graph Databases, Cypher, and Neo4j</span>
+                        <span class="item-date">2020</span>
+                    </div>
+                    <div class="item-sub">Pluralsight</div>
+                </div>
+                <div class="item">
+                    <div class="item-head">
+                        <span><a href="https://github.com/thiagomata/courses-and-certifications/blob/main/cloud-computing/aws-fundamentals-going-cloud-native/certificate.pdf">AWS Fundamentals: Going Cloud-Native</a></span>
+                        <span class="item-date">2019</span>
+                    </div>
+                    <div class="item-sub">Amazon Web Services</div>
+                </div>
+                <div class="item">
+                    <div class="item-head">
+                        <span><a href="https://github.com/thiagomata/courses-and-certifications/blob/main/cloud-computing/leveraging-unstructed-data-with-cloud-dataproc-on-google/certificate.pdf">Leveraging Unstructured Data with Cloud Dataproc</a></span>
+                        <span class="item-date">2017</span>
+                    </div>
+                    <div class="item-sub">Google Cloud</div>
+                </div>
+                <div class="item">
+                    <div class="item-head">
+                        <span><a href="https://github.com/thiagomata/courses-and-certifications/blob/main/cloud-computing/google-cloud-big-data-machine-learning-fundamentals/certificate.pdf">Big Data and Machine Learning Fundamentals</a></span>
+                        <span class="item-date">2017</span>
+                    </div>
+                    <div class="item-sub">Google Cloud</div>
+                </div>
+                <div class="item">
+                    <div class="item-head">
+                        <span><a href="https://github.com/thiagomata/courses-and-certifications/blob/main/functional-programming/apache-spark-and-scala-do-big-data/certificate.pdf">Apache Spark 2.0 + Scala: DO Big Data Analytics &amp; ML</a></span>
+                        <span class="item-date">2017</span>
+                    </div>
+                    <div class="item-sub">Udemy</div>
+                </div>
+            </div>
+
+            <h3>Data science and machine learning</h3>
+            <div class="compact">
+                <div class="item">
+                    <div class="item-head">
+                        <span><a href="https://github.com/thiagomata/courses-and-certifications/blob/main/data-science/08-pratical-machine-learning/certificate.pdf">Practical Machine Learning</a></span>
+                        <span class="item-date">2019</span>
+                    </div>
+                    <div class="item-sub">Johns Hopkins University</div>
+                </div>
+                <div class="item">
+                    <div class="item-head">
+                        <span><a href="https://github.com/thiagomata/courses-and-certifications/blob/main/data-science/06-regression-model/certificate.pdf">Regression Models</a></span>
+                        <span class="item-date">2019</span>
+                    </div>
+                    <div class="item-sub">Johns Hopkins University</div>
+                </div>
+                <div class="item">
+                    <div class="item-head">
+                        <span>Deep Learning in Python</span>
+                        <span class="item-date">2017</span>
+                    </div>
+                    <div class="item-sub">DataCamp</div>
+                </div>
+                <div class="item">
+                    <div class="item-head">
+                        <span class="item-title">Statistics with R</span>
+                        <span class="item-date">2016–2023</span>
+                    </div>
+                    <div class="item-sub">Courses from the specialisation · Duke University</div>
+                    <p><a href="https://github.com/thiagomata/courses-and-certifications/blob/main/data-science/07-introduction-to-probability-and-data-with-r/certificate.pdf">Introduction to Probability and Data with R</a> (2016),
+                        <a href="https://github.com/thiagomata/courses-and-certifications/blob/main/data-science/09-linear-regression-and-modeling/certificate.pdf">Linear Regression and Modeling</a> (2023)</p>
+                </div>
+                <div class="item">
+                    <div class="item-head">
+                        <span><a href="https://github.com/thiagomata/courses-and-certifications/blob/main/data-science/00-introduction-to-artificial-intelligence/certificate.pdf">Introduction to Artificial Intelligence, Advanced Track</a></span>
+                        <span class="item-date">2011</span>
+                    </div>
+                    <div class="item-sub">Stanford University</div>
+                </div>
+            </div>
+
+            <h3>Other</h3>
+            <div class="compact">
+                <div class="item">
+                    <div class="item-head">
+                        <span><a href="https://github.com/thiagomata/courses-and-certifications/blob/main/smart-contracts/smart-contracts-with-solidity/certificate.pdf">Smart Contracts with Solidity: Create an Ethereum Contract</a></span>
+                        <span class="item-date">2024</span>
+                    </div>
+                    <div class="item-sub">Guided project · Coursera</div>
+                </div>
+            </div>
+        </section>
+
+        <section>
+            <h2>Awards</h2>
+            <div class="item">
+                <div class="item-head">
+                    <span class="item-title">Cannes Lions: Gold, Silver, and Bronze</span>
+                    <span class="item-date">2014</span>
+                </div>
+                <p>Gold in Mobile (Media, Entertainment and Leisure), Silver in PR (Use of Digital Platforms), and
+                    Bronze in Promo &amp; Activation (New Product Launch) for SAT-JF14, the Record Collection campaign
+                    for John Frusciante's album, built at Adjetiva.</p>
+            </div>
+            <div class="item">
+                <div class="item-head">
+                    <span class="item-title">Honourable Mention, Best Published Articles</span>
+                    <span class="item-date">2015</span>
+                </div>
+                <div class="item-sub">Latin American Conference on Learning Technologies (LACLO)</div>
+            </div>
+        </section>
+
+        <section>
+            <h2>Languages</h2>
+            <p>Portuguese (native), English (fluent)</p>
+        </section>
+    </main>
+
+    <script>
+        // Clicking a tag filters roles and projects to those that list it.
+        // The filter is mirrored in ?q= so a filtered view can be shared; unknown terms fall back to text search.
+        (() => {
+            document.documentElement.classList.add("js");
+            const aliases = { postgresql: "postgres" };
+            const key = (tag) => {
+                const k = tag.textContent.trim().toLowerCase();
+                return aliases[k] || k;
+            };
+            const items = [...document.querySelectorAll("#experience .item, #projects .item")];
+            const itemTags = new Map(items.map((item) => [item, new Set([...item.querySelectorAll(".tag")].map(key))]));
+            const used = new Set([...itemTags.values()].flatMap((tags) => [...tags]));
+            const bar = document.querySelector(".filter-bar");
+            let active = null;
+
+            const matches = (item, k) => used.has(k) ? itemTags.get(item).has(k) : item.textContent.toLowerCase().includes(k);
+
+            const apply = (k, label, scroll = true) => {
+                active = k;
+                items.forEach((item) => item.classList.toggle("filtered-out", k !== null && !matches(item, k)));
+                document.querySelectorAll(".tag").forEach((t) => t.classList.toggle("active", key(t) === k));
+                document.querySelectorAll("#experience h3, #projects").forEach((el) => {
+                    const scope = el.tagName === "H3" ? el.nextElementSibling : el;
+                    el.classList.toggle("filtered-out", k !== null && !scope.querySelector(".item:not(.filtered-out)"));
+                });
+                bar.hidden = k === null;
+                if (k !== null) {
+                    bar.querySelector(".filter-name").textContent = label;
+                    if (scroll) document.getElementById("experience").scrollIntoView({ behavior: "smooth" });
+                }
+                const url = new URL(location.href);
+                if (k === null) url.searchParams.delete("q");
+                else url.searchParams.set("q", label);
+                history.replaceState(null, "", url);
+            };
+
+            document.querySelectorAll(".tag").forEach((tag) => {
+                if (!used.has(key(tag))) return;
+                tag.classList.add("clickable");
+                tag.setAttribute("role", "button");
+                tag.tabIndex = 0;
+                const toggle = () => active === key(tag) ? apply(null) : apply(key(tag), tag.textContent.trim());
+                tag.addEventListener("click", toggle);
+                tag.addEventListener("keydown", (e) => {
+                    if (e.key === "Enter" || e.key === " ") {
+                        e.preventDefault();
+                        toggle();
+                    }
+                });
+            });
+
+            bar.querySelector(".filter-clear").addEventListener("click", () => apply(null));
+
+            const query = new URLSearchParams(location.search).get("q");
+            if (query && query.trim()) {
+                const k = aliases[query.trim().toLowerCase()] || query.trim().toLowerCase();
+                const tag = [...document.querySelectorAll(".tag.clickable")].find((t) => key(t) === k);
+                apply(k, tag ? tag.textContent.trim() : query.trim(), false);
+            }
+        })();
+    </script>
+</body>
+
+</html>

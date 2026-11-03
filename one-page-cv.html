@@ -208,6 +208,25 @@
             font-size: 8.8pt;
         }
 
+        .toolbar {
+            width: 210mm;
+            margin: 16px auto -8px;
+            text-align: right;
+            font-size: 9pt;
+        }
+
+        .toolbar a {
+            color: var(--accent);
+        }
+
+        .toolbar a + a {
+            margin-left: 4mm;
+        }
+
+        .toolbar a:hover {
+            text-decoration: underline;
+        }
+
         /* Phone width */
 
         @media screen and (max-width: 820px) {
@@ -221,6 +240,13 @@
                 margin: 0;
                 padding: 24px 16px;
                 box-shadow: none;
+            }
+
+            .toolbar {
+                width: auto;
+                margin: 0;
+                padding: 12px 16px 0;
+                background: var(--paper);
             }
 
             header {
@@ -253,11 +279,19 @@
                 margin: 0;
                 box-shadow: none;
             }
+
+            .toolbar {
+                display: none;
+            }
         }
     </style>
 </head>
 
 <body>
+    <nav class="toolbar">
+        <a href="./detailed-cv.html">Detailed version</a>
+        <a href="./pdf/thiago-mata-one-page-cv.pdf" download>Download PDF</a>
+    </nav>
     <main class="page">
         <header>
             <div>
@@ -292,8 +326,8 @@
                             <span class="item-title">Senior Manager, <a href="https://www.macquarie.com.au/">Macquarie Bank</a></span>
                             <span class="item-date">Sydney · 2024–Present</span>
                         </div>
-                        <p>Delivered new banking products while reshaping how the team builds them, cutting
-                            production incidents through testing, observability, and clearer code.</p>
+                        <p>Lead the team delivering new banking products, reshaping how it builds them and cutting
+                            production incidents through testing, observability, graceful degradation, and clearer code.</p>
                     </div>
 
                     <div class="item">
@@ -301,8 +335,8 @@
                             <span class="item-title">Senior Software Engineer, <a href="https://www.rokt.com">Rokt</a></span>
                             <span class="item-date">Sydney · 2019–2024</span>
                         </div>
-                        <p>Built the identity and attribution systems and led bot detection on a platform processing
-                            billions of transactions.</p>
+                        <p>Built the identity and attribution systems and led bot detection, a real-time service on the
+                            critical path of a platform processing billions of transactions.</p>
                     </div>
 
                     <div class="item">
@@ -319,7 +353,7 @@
                             <span class="item-title">Chief Technology Officer, <a href="http://ideiabigdata.com">Ideia Big Data</a></span>
                             <span class="item-date">Brasília · 2014–2017</span>
                         </div>
-                        <p>Led engineering across three offices in three states, from concept to the first
+                        <p>Hired and led engineering across three offices in three states, from concept to the first
                             production-ready products. Reported strategy to investors and shaped the team structure
                             and career paths that prepared the company for its merger with Pinion.</p>
                     </div>
@@ -382,7 +416,7 @@
                     <h2>Skills</h2>
                     <dl>
                         <dt>Leadership</dt>
-                        <dd>Technical strategy, investor reporting, distributed teams, career paths</dd>
+                        <dd>Technical strategy, hiring, people management, investor reporting, distributed teams, career paths</dd>
                         <dt>Cloud &amp; delivery</dt>
                         <dd>AWS, GCP, Kubernetes, Docker, Terraform, CloudFormation, CI/CD</dd>
                         <dt>Data</dt>
@@ -409,8 +443,8 @@
                 <section>
                     <h2>Certifications</h2>
                     <div class="item">
-                        <div class="item-title"><a href="https://github.com/thiagomata/courses-and-certifications/blob/main/cloud-computing/aws-certified-solutions-archietct/AWS%20Certified%20Solutions%20Architect%20-%20Associate%20certificate.pdf">AWS Solutions Architect Associate</a></div>
-                        <div class="item-sub">2022</div>
+                        <div class="item-title"><a href="https://github.com/thiagomata/courses-and-certifications/blob/main/cloud-computing/aws-certified-solutions-archietct/AWS%20Certified%20Solutions%20Architect%20-%20Associate%20certificate.pdf">AWS Certified Solutions Architect – Associate</a></div>
+                        <div class="item-sub">2022–2025</div>
                     </div>
                     <div class="item">
                         <div class="item-title"><a href="https://github.com/thiagomata/courses-and-certifications/blob/main/go/00-uci-programming-with-google-go/certificate.pdf">Programming with Google Go</a></div>
