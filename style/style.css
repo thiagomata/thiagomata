@@ -253,6 +253,9 @@ body {
         background-size: cover;
         background-position: bottom right;
         --logo-height: 60px;
+        --effect-color-red: 33;
+        --effect-color-green: 30;
+        --effect-color-blue: 30;
         border-image:  var(--border-image);
     }
     section[data-company=ideia] {
@@ -1082,14 +1085,25 @@ p {
     background-color: #111315;
     background-repeat: no-repeat;
 }
-/* Live background drawn by js/macquarie-rings.js; the webp stays as the fallback. */
-#top-companies section[data-company="macquarie"].is-live {
+/* Live backgrounds drawn by js/macquarie-rings.js and js/sli-blobs.js;
+   the static image stays as the fallback. */
+#top-companies section.is-live {
     position: relative;
     isolation: isolate;
     overflow: hidden;
     background-image: none;
 }
-#top-companies section[data-company="macquarie"] .live-bg {
+/* The readability gradient (--border-image) is painted by the section itself, under
+   the live background; repeat it on a layer above the animation and below the text. */
+#top-companies section.is-live::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    border-image: var(--border-image);
+    pointer-events: none;
+}
+#top-companies section .live-bg {
     position: absolute;
     inset: 0;
     width: 100%;
@@ -1097,6 +1111,15 @@ p {
     z-index: -1;
     pointer-events: none;
 }
+#top-companies section[data-company="sli"] .live-bg circle {
+    fill: #BEBCBF;
+    transform-box: fill-box;
+    transform-origin: center;
+    transition: fill 1800ms ease, transform 2200ms cubic-bezier(.6, 0, .3, 1);
+}
+#top-companies section[data-company="sli"] .live-bg circle[data-colour="lavender"] { fill: #BBB3DC; }
+#top-companies section[data-company="sli"] .live-bg circle[data-colour="white"] { fill: #FFFFFF; }
+#top-companies section[data-company="sli"] .live-bg .shade { mix-blend-mode: multiply; }
 #top-companies section[data-company="macquarie"] .live-bg .lines {
     stroke-opacity: 0.25;
     opacity: 0.85;
