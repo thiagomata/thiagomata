@@ -19,7 +19,7 @@ tomorrow, always favouring clarity over cleverness and reliability over novelty.
 ### Macquarie Bank · Senior Manager · 2024–Present
 
 <div style="background-color: white; display: flex; justify-content: center; align-items: center; height: 100px;">
-<img src="./img/macquarie-horizontal.svg" alt="Macquarie Bank" style="width:260px;"/>
+<img src="./img/macquarie-horizontal.svg" alt="Macquarie Bank" style="width:80%; height:90px; object-fit:contain;"/>
 </div>
 
 Lead a new, high-performing team delivering banking products, cutting production incidents through
