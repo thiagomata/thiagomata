@@ -4,7 +4,7 @@
 
 | &nbsp;    | &nbsp;                                              |
 |-----------|-----------------------------------------------------|
-| Company:  | IDEIA                                               |
+| Company:  | SLI Systems                                         |
 | Position: | Senior Data Engineer                                |
 | Summary:  | We developed new AI products and migrated the existing ones to the cloud. In this new infrastructure, I implemented many of the improvements proposed by the AI team. |
 

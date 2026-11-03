@@ -57,7 +57,7 @@ I developed high-performance, high-availability services in a platform that proc
 
 | &nbsp;    | &nbsp;                           |
 |-----------|----------------------------------|
-| Position: | Senior Data Enginner             |
+| Position: | Senior Data Engineer             |
 | Duration: | 1.5 Years                        |
 | Goal:     | Moving data streams to the cloud |
 
