@@ -1,0 +1,239 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Ideia street (three.js)</title>
+    <style>
+        /* The ideia-street.html scene rebuilt with three.js: same street, buildings, trees and
+           scroll-driven camera, plus a real depth buffer (no flicker) and fog in the distance. */
+        html, body {
+            margin: 0;
+            background: #0d0f1a;
+            color: #cfd3e6;
+            font: 14px/1.4 system-ui, sans-serif;
+        }
+        .track {
+            height: 250vh;          /* scroll distance for the whole camera move */
+        }
+        .viewport {
+            position: sticky;
+            top: 0;
+            height: 100vh;
+            overflow: hidden;
+        }
+        canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+        .hint {
+            position: absolute;
+            left: 16px;
+            bottom: 16px;
+            margin: 0;
+            opacity: .6;
+        }
+    </style>
+    <script type="importmap">
+        {
+            "imports": {
+                "three": "https://cdn.jsdelivr.net/npm/three@0.187.0/build/three.module.min.js",
+                "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.187.0/examples/jsm/"
+            }
+        }
+    </script>
+</head>
+<body>
+    <div class="track">
+        <div class="viewport">
+            <canvas id="scene" aria-hidden="true"></canvas>
+            <p class="hint">Scroll to lift the camera</p>
+        </div>
+    </div>
+    <script type="module">
+        import * as THREE from "three";
+        import { mergeGeometries } from "three/addons/utils/BufferGeometryUtils.js";
+
+        // Same layout as ideia-street.html, in the same units (1 unit = 1 CSS px there).
+        // The street runs along -Z; the origin is the point the camera looks at.
+        const LENGTH = 6000;            // street length
+        const AHEAD = 5000;             // how much of it is in front of the origin
+        const SKY = 0x141728;
+
+        // Camera: from a person in the street to someone on a rooftop.
+        const STREET = { pitch: -3, distance: 440 };   // eye about 23 units above the road
+        const ROOF = { pitch: -26, distance: 800 };    // eye about 350 units up
+        const YAW = 4;                                  // degrees off the street axis (keeps the camera over the road)
+
+        const canvas = document.getElementById("scene");
+        const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+        const scene = new THREE.Scene();
+        scene.background = new THREE.Color(SKY);
+        scene.fog = new THREE.Fog(SKY, 1200, 5200);
+        const camera = new THREE.PerspectiveCamera(44, 1, 1, 9000);
+
+        scene.add(new THREE.HemisphereLight(0x8e95c9, 0x1a1d2b, 1.6));
+        const moon = new THREE.DirectionalLight(0xbfc6ff, 1.2);
+        moon.position.set(-0.6, 1, 0.35);
+        scene.add(moon);
+
+        // Seeded random numbers, so the city is the same on every load.
+        let seed = 7;
+        const random = () => {
+            seed = (seed + 0x6D2B79F5) | 0;
+            let t = Math.imul(seed ^ (seed >>> 15), 1 | seed);
+            t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+            return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+        };
+        const between = (a, b) => a + Math.floor(random() * (b - a + 1));
+        const choose = list => list[Math.floor(random() * list.length)];
+        const toX = x => x - 1000, toZ = y => y - AHEAD;
+
+        // Windows: one tile with a random mix of lit and dark windows, repeated over every wall.
+        // The colour map is the wall (tinted per building); the emissive map makes windows glow.
+        const tile = (draw) => {
+            const c = document.createElement("canvas");
+            c.width = c.height = 256;
+            draw(c.getContext("2d"));
+            const texture = new THREE.CanvasTexture(c);
+            texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
+            texture.colorSpace = THREE.SRGBColorSpace;
+            texture.anisotropy = renderer.capabilities.getMaxAnisotropy();
+            return texture;
+        };
+        const CELL = 32, lit = [];
+        for (let i = 0; i < 64; i++) lit.push(random() < 0.62);
+        const windows = (ctx, on, off) => {
+            for (let i = 0; i < 64; i++) {
+                ctx.fillStyle = lit[i] ? on : off;
+                ctx.fillRect((i % 8) * CELL + 9, Math.floor(i / 8) * CELL + 8, 14, 16);
+            }
+        };
+        const wallMap = tile(ctx => { ctx.fillStyle = "#fff"; ctx.fillRect(0, 0, 256, 256); windows(ctx, "#fff", "#555"); });
+        const glowMap = tile(ctx => { ctx.fillStyle = "#000"; ctx.fillRect(0, 0, 256, 256); windows(ctx, "#ffcd78", "#000"); });
+
+        // A box whose wall UVs are in world units / 256, so windows keep the same size on every
+        // building; the roof samples a window-free corner of the tile.
+        const box = (w, h, d, colour) => {
+            const g = new THREE.BoxGeometry(w, h, d);
+            const uv = g.attributes.uv;
+            const faces = [[d, h], [d, h], null, null, [w, h], [w, h]];   // +x, -x, +y, -y, +z, -z
+            faces.forEach((size, face) => {
+                for (let v = face * 4; v < face * 4 + 4; v++) {
+                    if (size) uv.setXY(v, uv.getX(v) * size[0] / 256, uv.getY(v) * size[1] / 256);
+                    else uv.setXY(v, 0.01, 0.01);
+                }
+            });
+            const c = new THREE.Color(colour), colours = [];
+            for (let i = 0; i < g.attributes.position.count; i++) colours.push(c.r, c.g, c.b);
+            g.setAttribute("color", new THREE.Float32BufferAttribute(colours, 3));
+            return g;
+        };
+
+        const palette = ["#3b4166", "#463a5e", "#2f4a5c", "#4b4458", "#383d52"];
+        const buildings = [];
+        const building = (x, y, w, d, h) => {
+            const g = box(w, h, d, choose(palette));
+            g.translate(toX(x + w / 2), h / 2, toZ(y + d / 2));
+            buildings.push(g);
+        };
+        for (const [side, x0, x1] of [["left", 620, 880], ["right", 1120, 1380]]) {
+            for (let y = 40; y < LENGTH - 100;) {
+                const d = between(110, 210), w = between(170, 260), h = choose([90, 140, 180, 220, 260, 320, 400]);
+                building(side === "left" ? x1 - w : x0, y, w, d, h);
+                y += d + between(14, 40);
+            }
+            for (let y = 80; y < LENGTH - 100;) {
+                const d = between(150, 260), w = between(180, 300), h = choose([200, 280, 360, 460]);
+                building(side === "left" ? x0 - w - 30 : x1 + 30, y, w, d, h);
+                y += d + between(20, 60);
+            }
+        }
+        scene.add(new THREE.Mesh(mergeGeometries(buildings), new THREE.MeshLambertMaterial({
+            map: wallMap, vertexColors: true, emissiveMap: glowMap, emissive: 0xffffff,
+        })));
+
+        // Ground, sidewalks, road and the dashed centre line.
+        const flat = (w, d, colour, x, z, y) => {
+            const mesh = new THREE.Mesh(new THREE.PlaneGeometry(w, d), new THREE.MeshLambertMaterial({ color: colour }));
+            mesh.rotation.x = -Math.PI / 2;
+            mesh.position.set(x, y, z);
+            scene.add(mesh);
+            return mesh;
+        };
+        const middle = toZ(LENGTH / 2);
+        flat(4000, LENGTH + 4000, "#1a1d2b", 0, middle, 0);
+        flat(240, LENGTH, "#34374a", 0, middle, 0.3);
+        flat(160, LENGTH, "#23263a", 0, middle, 0.6);
+        const dashes = new THREE.InstancedMesh(new THREE.PlaneGeometry(6, 40), new THREE.MeshBasicMaterial({ color: "#c9b676" }), Math.ceil(LENGTH / 90));
+        const place = new THREE.Object3D();
+        for (let i = 0; i < dashes.count; i++) {
+            place.rotation.set(-Math.PI / 2, 0, 0);
+            place.position.set(0, 0.9, toZ(i * 90 + 20));
+            place.updateMatrix();
+            dashes.setMatrixAt(i, place.matrix);
+        }
+        scene.add(dashes);
+
+        // Trees on both sidewalks: one instanced mesh for trunks, one for canopies.
+        const spots = [];
+        for (const x of [900, 1100]) for (let y = 90; y < LENGTH - 100; y += 170) spots.push([toX(x), toZ(y)]);
+        const trunks = new THREE.InstancedMesh(new THREE.BoxGeometry(10, 36, 10), new THREE.MeshLambertMaterial({ color: "#4a3426" }), spots.length);
+        const canopies = new THREE.InstancedMesh(new THREE.BoxGeometry(36, 44, 36), new THREE.MeshLambertMaterial({ color: "#2f6b4f" }), spots.length);
+        spots.forEach(([x, z], i) => {
+            place.rotation.set(0, 0, 0);
+            place.position.set(x, 18, z); place.updateMatrix(); trunks.setMatrixAt(i, place.matrix);
+            place.position.set(x, 36 + 22, z); place.updateMatrix(); canopies.setMatrixAt(i, place.matrix);
+        });
+        scene.add(trunks, canopies);
+
+        // A few cars.
+        for (const [x, y, colour] of [[945, LENGTH - 1580, "#c4483e"], [1025, LENGTH - 1020, "#d9b44a"], [945, LENGTH - 2600, "#4f8fc4"], [1025, LENGTH - 3700, "#c4483e"], [945, LENGTH - 4800, "#d9b44a"]]) {
+            const car = new THREE.Mesh(new THREE.BoxGeometry(30, 22, 56), new THREE.MeshLambertMaterial({ color: colour }));
+            car.position.set(toX(x + 15), 11, toZ(y + 28));
+            scene.add(car);
+        }
+
+        // Scroll progress 0..1 moves the camera between the two views. The camera orbits the
+        // origin: it sits `distance` away from it, looking at it with the given pitch.
+        const still = window.matchMedia("(prefers-reduced-motion: reduce)");
+        const progress = () => {
+            if (still.matches) return 0;
+            const max = document.documentElement.scrollHeight - window.innerHeight;
+            return max > 0 ? Math.min(Math.max(window.scrollY / max, 0), 1) : 0;
+        };
+        const lerp = (a, b, t) => a + (b - a) * t;
+        const render = () => {
+            const t = progress();
+            const pitch = THREE.MathUtils.degToRad(lerp(STREET.pitch, ROOF.pitch, t));
+            const distance = lerp(STREET.distance, ROOF.distance, t);
+            const yaw = THREE.MathUtils.degToRad(YAW);
+            camera.position.set(
+                Math.sin(yaw) * Math.cos(pitch) * distance,
+                -Math.sin(pitch) * distance,
+                Math.cos(yaw) * Math.cos(pitch) * distance,
+            );
+            camera.lookAt(0, 0, 0);
+            renderer.render(scene, camera);
+        };
+
+        // Only draw when something changes: on scroll and on resize.
+        let frame = null;
+        const request = () => { if (frame === null) frame = requestAnimationFrame(() => { frame = null; render(); }); };
+        const resize = () => {
+            const { clientWidth: w, clientHeight: h } = canvas;
+            renderer.setSize(w, h, false);
+            camera.aspect = w / h;
+            camera.updateProjectionMatrix();
+            request();
+        };
+        window.addEventListener("scroll", request, { passive: true });
+        window.addEventListener("resize", resize);
+        still.addEventListener("change", request);
+        resize();
+    </script>
+</body>
+</html>
