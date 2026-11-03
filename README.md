@@ -18,12 +18,20 @@ tomorrow, always favouring clarity over cleverness and reliability over novelty.
 
 ### Macquarie Bank · Senior Manager · 2024–Present
 
+<div style="background-color: white; display: flex; justify-content: center; align-items: center; height: 100px;">
+<img src="./img/macquarie.svg" style="height:90px;"/>
+</div>
+
 Lead a new, high-performing team delivering banking products, cutting production incidents through
 testing, observability, graceful degradation, and clearer code.
 
 - [Term Deposits](./cases/macquarie-term-deposits.md)
 
 ### Rokt · Senior Software Engineer · 2019–2024
+
+<div style="background-color: white; display: flex; justify-content: center; align-items: center; height: 100px;">
+<img src="./img/rokt.svg" style="height:90px;"/>
+</div>
 
 Led bot detection, a real-time service on the critical path of all company traffic, designed for
 graceful degradation, and built the identity and attribution systems of a platform processing
@@ -35,12 +43,20 @@ billions of transactions.
 
 ### SLI Systems · Senior Data Engineer · 2017–2019
 
+<div style="background-color: black; display: flex; justify-content: center; align-items: center; height: 100px;">
+<img src="./img/sli.svg"  style="height:90px;"/>
+</div>
+
 Migrated core data services to Google Cloud, making them faster and cheaper and strengthening the
 company's position in its acquisition.
 
 - [To the Cloud](./cases/sli-to-the-cloud.md)
 
 ### Ideia Big Data · Chief Technology Officer · 2014–2017
+
+<div style="background-color: white; display: flex; justify-content: center; align-items: center; height: 100px;">
+<img src="./img/ideia.svg" style="height:90px;"/>
+</div>
 
 Hired and led engineering across three offices in three states, from concept to the first
 production-ready products. Reported strategy to investors and created the career ladder that
@@ -50,11 +66,19 @@ prepared the company for its merger with Pinion.
 
 ### OtimiCar · Co-Founder · 2013–2014
 
+<div style="background-color: black; display: flex; justify-content: center; align-items: center; height: 100px;">
+<img src="./img/otimicar-with-text.svg"  style="height:90px;"/>
+</div>
+
 Specified and built the first server for a device that turns any car into a smart car.
 
 - [Data Sharing](./cases/otimicar-data-sync.md)
 
 ### Earlier · 2003–2013
+
+<div style="background-color: black; display: flex; justify-content: center; align-items: center; height: 100px;">
+<img src="./img/mec.svg"  style="height:90px;"/>&nbsp;&nbsp;<img src="./img/inep.svg"  style="height:90px;"/>
+</div>
 
 Led teams on high-availability public systems such as E-MEC and Revalida at INEP and the Ministry of
 Education, built credit portfolio transfers at Bancoob, and taught web development for six years.
