@@ -1,0 +1,126 @@
+/*
+ * The OtimiCar scene (built by js/otimicar/scene.js): the car from img/car4.svg in pieces, in
+ * front of a speedometer. One speed drives everything that turns: the needle points at it and
+ * the wheels spin in proportion to it. The body rides on its suspension while the wheels stay
+ * on the ground, and smoke drifts back from the exhaust.
+ *
+ * The stage keeps the illustration's shape (its viewBox is 1151 x 532) and covers its container
+ * like the static image did: filling it, anchored at the bottom, 22% from the left. Pieces are
+ * placed in the illustration's units.
+ */
+
+.otimicar-scene {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    container-type: size;
+}
+
+.otimicar-stage {
+    --view-width: 1151;
+    --view-height: 532;
+    --stage-width: max(100cqw, 100cqh * 1151 / 532);
+    --wheel-turn: 0deg;                  /* set by the script */
+    --needle-turn: 0deg;
+    position: absolute;
+    bottom: 0;
+    left: calc((100cqw - var(--stage-width)) * 0.22);
+    width: var(--stage-width);
+    aspect-ratio: 1151 / 532;
+    container-type: inline-size;         /* lets the smoke move in units of the stage's width */
+    /* The sky and ground from the illustration, behind the pieces. */
+    background: linear-gradient(#01928A, #015E5C 80%, #FACE63);
+}
+
+.otimicar-stage img {
+    position: absolute;
+    display: block;
+}
+
+/* Full-size pieces, drawn over the whole illustration. */
+.otimicar-stage .whole {
+    inset: 0;
+    width: 100%;
+    height: 100%;
+}
+
+/* A piece cropped from the illustration, placed at its crop. */
+.otimicar-stage .crop {
+    left: calc(var(--x) / var(--view-width) * 100%);
+    top: calc(var(--y) / var(--view-height) * 100%);
+    width: calc(var(--width) / var(--view-width) * 100%);
+    height: calc(var(--height) / var(--view-height) * 100%);
+}
+.otimicar-stage .far-wheel.front { --x: 237; --y: 347; --width: 150; --height: 152; }
+.otimicar-stage .far-wheel.rear { --x: 649; --y: 336; --width: 150; --height: 152; }
+/* Black panel behind the car at arch height; it covers the gap that opens above a
+   tyre when the body rides up. */
+.otimicar-stage .arch-panel { --x: 315; --y: 330; --width: 667; --height: 44; }
+.otimicar-stage .tyre.front { --x: 455; --y: 348; --width: 150; --height: 152; }
+.otimicar-stage .tyre.rear { --x: 851; --y: 339; --width: 150; --height: 152; }
+
+/* The speedometer sits behind the car, its lower half hidden by the body. */
+.otimicar-stage .speedometer { --x: 600; --y: 35; --width: 400; --height: 400; }
+.otimicar-stage .speedometer.needle { transform: rotate(var(--needle-turn)); }
+
+/* The wheel faces are true circles, centred on each rim and squashed to the rim's width to sit
+   in perspective. The disc and spokes turn first, then get squashed, so the wheel turns without
+   changing shape; the caliper does not turn. */
+.otimicar-stage .wheel {
+    --rim-height: 104;
+    --x: calc(var(--centre-x) - var(--rim-height) / 2);
+    --y: calc(var(--centre-y) - var(--rim-height) / 2);
+    --width: var(--rim-height);
+    --height: var(--rim-height);
+    transform: scaleX(var(--squash));
+}
+.otimicar-stage .wheel.turns { transform: scaleX(var(--squash)) rotate(var(--wheel-turn)); }
+.otimicar-stage .wheel.front { --centre-x: 542.5; --centre-y: 429; --squash: calc(81 / 104); }
+.otimicar-stage .wheel.rear { --centre-x: 939; --centre-y: 420; --squash: calc(80 / 104); }
+
+/* Smoke: soft puffs leaving the exhaust at the back of the car and drifting away behind it,
+   growing and fading. Each puff starts at a different moment of the same loop. */
+.otimicar-stage .exhaust {
+    --x: 1000;
+    --y: 440;
+    --width: 0;
+    --height: 0;
+    position: absolute;
+}
+.otimicar-stage .puff {
+    position: absolute;
+    left: -2cqw;
+    top: -2cqw;
+    width: 4cqw;
+    height: 4cqw;
+    border-radius: 50%;
+    background: radial-gradient(rgba(214, 220, 218, 0.85), rgba(214, 220, 218, 0) 70%);
+    filter: blur(0.25cqw);
+    opacity: 0;
+    animation: otimicar-smoke 3.2s ease-out infinite;
+    animation-delay: calc(var(--puff) * -0.32s);
+}
+@keyframes otimicar-smoke {
+    0% { transform: translate(0, 0) scale(0.35); opacity: 0.9; }
+    100% { transform: translate(9cqw, -4cqw) scale(3); opacity: 0; }
+}
+
+/* The body rises and settles smoothly on its suspension (a share of the height). */
+.otimicar-stage .body {
+    animation: otimicar-ride 1.6s ease-in-out infinite alternate;
+}
+@keyframes otimicar-ride {
+    to { transform: translateY(-0.9%); }
+}
+
+/* Paused while off screen (the script toggles this), and still for reduced motion. */
+.otimicar-stage.paused .body,
+.otimicar-stage.paused .puff {
+    animation-play-state: paused;
+}
+@media (prefers-reduced-motion: reduce) {
+    .otimicar-stage .body,
+    .otimicar-stage .puff {
+        animation: none;
+    }
+}
