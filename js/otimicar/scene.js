@@ -1,9 +1,8 @@
 // The OtimiCar scene: the car in pieces in front of a speedometer (styles in style/otimicar.css).
-// One speed drives the needle and the wheels, so they always agree.
+// One speed (js/otimicar/speed.js) drives the needle and the wheels, so they always agree.
+import { MILLISECONDS_PER_SECOND } from "../shared/frame-rate.js";
+import { CRUISING_KMH, SPEED_KMH, needleAngle, speedAt, turnWheels } from "./speed.js";
 
-const SPEED_KMH = { low: 150, high: 175, cycleSeconds: 5.2 };    // drifts smoothly between these
-const DIAL = { maxKmh: 240, sweepDegrees: 240 };                  // 0 km/h 120 degrees left of up
-const WHEEL_DEGREES_PER_SECOND_PER_KMH = 2.5;                     // one turn every 0.9 s at 160 km/h
 const MAX_STEP_SECONDS = 0.1;                                     // after a pause, carry on, don't jump
 const SMOKE_PUFFS = 10;
 
@@ -25,13 +24,6 @@ const PIECES = [
     ]),
     { file: "car", classes: "whole body" },
 ];
-
-const speedAt = seconds => {
-    const middle = (SPEED_KMH.low + SPEED_KMH.high) / 2;
-    const swing = (SPEED_KMH.high - SPEED_KMH.low) / 2;
-    return middle - swing * Math.cos(2 * Math.PI * seconds / SPEED_KMH.cycleSeconds);
-};
-const needleAngle = speed => speed / DIAL.maxKmh * DIAL.sweepDegrees - DIAL.sweepDegrees / 2;
 
 function buildStage(imageFolder) {
     const stage = document.createElement("div");
@@ -78,11 +70,11 @@ export function start(container, imageFolder) {
     const still = window.matchMedia("(prefers-reduced-motion: reduce)");
     const frame = now => {
         frameRequest = null;
-        const seconds = now / 1000;
+        const seconds = now / MILLISECONDS_PER_SECOND;
         const step = last === null ? 0 : Math.min(seconds - last, MAX_STEP_SECONDS);
         last = seconds;
         const speed = speedAt(seconds);
-        wheelAngle = (wheelAngle + speed * WHEEL_DEGREES_PER_SECOND_PER_KMH * step) % 360;
+        wheelAngle = turnWheels(wheelAngle, speed, step);
         show(speed);
         if (onScreen && !still.matches) frameRequest = requestAnimationFrame(frame);
     };
@@ -90,7 +82,7 @@ export function start(container, imageFolder) {
         stage.classList.toggle("paused", !onScreen);
         if (still.matches) window.logAnimation?.("otimicar", "still", "reduced motion");
         else window.logAnimation?.("otimicar", onScreen ? "running" : "paused", onScreen ? "" : "off screen");
-        if (still.matches) show((SPEED_KMH.low + SPEED_KMH.high) / 2);
+        if (still.matches) show(CRUISING_KMH);
         else if (onScreen && frameRequest === null) {
             last = null;
             frameRequest = requestAnimationFrame(frame);
