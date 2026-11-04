@@ -28,8 +28,11 @@ WATER_TOP = 1080
 # The ripple: a band of noise that tiles the water and slides down by exactly one band per cycle,
 # so the loop never jumps. It only pushes the reflections sideways, like wind on the water.
 RIPPLE_BAND_HEIGHT = 300
-RIPPLE = f"""<filter id="ripple" filterUnits="userSpaceOnUse" primitiveUnits="userSpaceOnUse" x="0" y="{WATER_TOP}" width="{WIDTH}" height="{HEIGHT - WATER_TOP}">
-    <feTurbulence type="fractalNoise" baseFrequency="0.004 0.03" numOctaves="2" seed="4" stitchTiles="stitch" x="0" y="{WATER_TOP}" width="{WIDTH}" height="{RIPPLE_BAND_HEIGHT}" result="band" />
+# Sliding the bands down leaves an empty strip, up to one band tall, at the top of the filter: the
+# filter starts one band above the water, so that strip never reaches the reflections.
+RIPPLE_TOP = WATER_TOP - RIPPLE_BAND_HEIGHT
+RIPPLE = f"""<filter id="ripple" filterUnits="userSpaceOnUse" primitiveUnits="userSpaceOnUse" x="0" y="{RIPPLE_TOP}" width="{WIDTH}" height="{HEIGHT - RIPPLE_TOP}">
+    <feTurbulence type="fractalNoise" baseFrequency="0.004 0.03" numOctaves="2" seed="4" stitchTiles="stitch" x="0" y="{RIPPLE_TOP}" width="{WIDTH}" height="{RIPPLE_BAND_HEIGHT}" result="band" />
     <feTile in="band" result="noise" />
     <feOffset in="noise" dx="0" result="sliding">
         <animate attributeName="dy" from="0" to="{RIPPLE_BAND_HEIGHT}" dur="6s" repeatCount="indefinite" />
