@@ -121,12 +121,20 @@ body {
 
     section {
         background-color: black;
-        background-image: url("../img/bridge-6-animated.svg");
-        /* Off screen, the still picture (see js/pause-offscreen.js). */
+        /* The bridge in three layers (tools/bridge-layers.py), front to back: the bridge, the
+           water with its rippling reflections, and the sky. Only the water moves. */
+        background-image:
+            url("../img/bridge/bridge.svg"),
+            url("../img/bridge/water-animated.svg"),
+            url("../img/bridge/background-only.svg");
+        /* Off screen, still water (see js/pause-offscreen.js). */
         &.is-paused {
-            background-image: url("../img/bridge-6.svg");
+            background-image:
+                url("../img/bridge/bridge.svg"),
+                url("../img/bridge/water.svg"),
+                url("../img/bridge/background-only.svg");
         }
-        background-position: bottom center;;
+        background-position: bottom center;
         --border-gradient-color: var(--gradient-color, rgb(1, 37, 37));
         background-size: cover;
         background-repeat: no-repeat;
