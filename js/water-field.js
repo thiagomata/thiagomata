@@ -1,125 +1,129 @@
-// A canvas wave field, after the wave technique from desarrollolibre.net (canvas +
-// requestAnimationFrame): ~110 parallel polylines, each point a superposition of
-// cosines with different frequencies and phases. A slow wave of light travels
-// through the field; scrolling quickens it about threefold, and it settles back.
-// The container keeps its static image as the no-JS fallback (reduced motion keeps
-// one still frame).
+// The Macquarie card's wave field on a canvas: parallel lines rippling like water, with a band of
+// light travelling through them; scrolling stirs it and it settles back. The maths lives in
+// js/macquarie/waves.js; this file only draws it, at most 30 times a second, while the card is on
+// screen. The card keeps its static image as the no-JS fallback; reduced motion keeps one still
+// frame.
+import { MILLISECONDS_PER_FRAME, isTimeToDraw, pixelRatio } from "./shared/frame-rate.js";
+import {
+    LINES, POINT_SPACING, advance, linePoint, lineStyle, pointsAcross, restingY, settle, stir,
+} from "./macquarie/waves.js";
+
 const DEFAULTS = {
-    lines: 110,
-    stroke: "c3b9a6",                  // stroke colour, rgb hex
-    base: ["#111315", "#1c1d1e"],      // background gradient
-    fade: [[0.30, 0], [0.65, 0.5], [1, 1]], // left-to-right stroke gradient (quiet under copy)
-    glow: 0.45,
-    yAnchor: 0.55
+    stroke: "#c3b9a6",
+    background: ["#111315", "#1c1d1e"],                // a diagonal gradient
+    /** The lines fade in from left to right, staying quiet under the card's text: [position, opacity]. */
+    fade: [[0.30, 0], [0.65, 0.5], [1, 1]],
+    glow: 0.45,                                        // how bright the band of light is
+    middleLine: 0.55,                                  // where the middle line sits, as a share of the height
 };
+/** Scrolling past the card moves the field up or down by this much at most, in pixels. */
+const SCROLL_DRIFT = 60;
+const MIDDLE = 0.5;
+/** After a pause, carry on instead of jumping ahead. */
+const MAX_STEP_MILLISECONDS = 4 * MILLISECONDS_PER_FRAME;
 
-const CALM_SPEED = 0.0006, STIR_SPEED = 0.004;
-const STIR = 0.0025, SETTLE = 1200, DRIFT = 60;
-const CLOCK_CALM = 0.054, CLOCK_STIR = 0.126, AMP_STIR = 1.4;
+/** How far the card has scrolled through the screen: 0 entering at the bottom, 1 leaving at the top. */
+function scrollProgress(card) {
+    const box = card.getBoundingClientRect();
+    const progress = (window.innerHeight - box.top) / (window.innerHeight + box.height);
+    return Math.min(Math.max(progress, 0), 1);
+}
 
-const hash = n => { const x = Math.sin(n * 127.1 + 311.7) * 43758.5453; return x - Math.floor(x); };
+/** The stroke colour with each fade stop's opacity, as a CSS rgba(). */
+function rgba(hexColour, opacity) {
+    const [red, green, blue] = [1, 3, 5].map(start => parseInt(hexColour.slice(start, start + 2), 16));
+    return `rgba(${red}, ${green}, ${blue}, ${opacity})`;
+}
 
 export function start(card, options = {}) {
     if (!card) return;
-    const o = { ...DEFAULTS, ...options };
+    const settings = { ...DEFAULTS, ...options };
+    const name = card.dataset.company || "water";
 
     const canvas = document.createElement("canvas");
     canvas.setAttribute("class", "live-bg");
     canvas.setAttribute("aria-hidden", "true");
     card.prepend(canvas);
     card.classList.add("is-live");
-    const ctx = canvas.getContext("2d");
+    const context = canvas.getContext("2d");
 
-    let w = 1, h = 1, dpr = 1, stroke = null, base = null;
-    let phase = 0, clock = 0, energy = 0, lastY = window.scrollY, lastT = null, frame = null;
+    let cardWidth = 1, cardHeight = 1, ratio = 1, strokeStyle = null, backgroundStyle = null;
+    let lightPhase = 0, wavesClock = 0, energy = 0, lastScrollY = window.scrollY;
 
-    const scrollProgress = () => {
-        const box = card.getBoundingClientRect();
-        const p = (window.innerHeight - box.top) / (window.innerHeight + box.height);
-        return Math.min(Math.max(p, 0), 1);
-    };
-
-    const draw = (phase, t, energy, progress) => {
-        if (w < 2) return;
-        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-        ctx.fillStyle = base;
-        ctx.fillRect(0, 0, w, h);
-
-        const amp = 1 + AMP_STIR * energy;
-        const y0 = h * o.yAnchor + (progress - 0.5) * DRIFT;
-        const maxJ = Math.min(w, Math.ceil((Math.sqrt(1 + 0.032 * (w + 20)) - 1) / 0.016));
-        ctx.strokeStyle = stroke;
-
-        for (let i = -o.lines / 2; i < o.lines / 2; i++) {
-            const n = i + o.lines / 2;
-            ctx.lineWidth = 0.6 + 0.8 * hash(n * 7 + 2);
-            ctx.globalAlpha = 0.18 + 0.2 * hash(n * 11 + 5)
-                + (o.glow + 0.2 * energy) * Math.max(Math.sin(phase - n * 0.09), 0) ** 4;
-            ctx.beginPath();
-            ctx.moveTo(0, y0 + i * 1.1);
-            for (let j = 0; j <= maxJ; j += 10) {
-                ctx.lineTo(
-                    10 * Math.cos(i) + j + 0.008 * j * j,
-                    y0 + i * 1.1
-                        + j * 0.22 * amp * Math.cos(j / 50 - t / 50 - i / 118)
-                        + (i * 0.9) * amp * Math.cos(j / 25 - (i + t) / 65));
+    const draw = () => {
+        context.setTransform(ratio, 0, 0, ratio, 0, 0);
+        context.fillStyle = backgroundStyle;
+        context.fillRect(0, 0, cardWidth, cardHeight);
+        const middleY = cardHeight * settings.middleLine + (scrollProgress(card) - MIDDLE) * SCROLL_DRIFT;
+        const lastPoint = pointsAcross(cardWidth);
+        context.strokeStyle = strokeStyle;
+        for (let line = 0; line < LINES; line++) {
+            const offset = line - LINES / 2;          // from the middle line
+            const { width, opacity } = lineStyle(line, lightPhase, energy, settings.glow);
+            context.lineWidth = width;
+            context.globalAlpha = opacity;
+            context.beginPath();
+            context.moveTo(0, restingY(offset, middleY));
+            for (let along = 0; along <= lastPoint; along += POINT_SPACING) {
+                const point = linePoint(offset, along, wavesClock, energy, middleY);
+                context.lineTo(point.x, point.y);
             }
-            ctx.stroke();
+            context.stroke();
         }
-        ctx.globalAlpha = 1;
+        context.globalAlpha = 1;
     };
 
     const fit = () => {
         const box = card.getBoundingClientRect();
-        dpr = Math.min(window.devicePixelRatio || 1, 2);
-        w = Math.max(1, Math.round(box.width));
-        h = Math.max(1, Math.round(box.height));
-        canvas.width = w * dpr;
-        canvas.height = h * dpr;
-        const rgb = [o.stroke.slice(0, 2), o.stroke.slice(2, 4), o.stroke.slice(4, 6)]
-            .map(hex => parseInt(hex, 16)).join(",");
-        stroke = ctx.createLinearGradient(0, 0, w, 0);
-        for (const [at, alpha] of o.fade) stroke.addColorStop(at, `rgba(${rgb},${alpha})`);
-        base = ctx.createLinearGradient(0, 0, w, h);
-        base.addColorStop(0, o.base[0]);
-        base.addColorStop(1, o.base[1]);
-        // Repaint the still frame if the animation is not running, so a resize or
-        // reduced-motion state never leaves a blank canvas.
-        if (frame === null) draw(phase, clock, energy, scrollProgress());
+        ratio = pixelRatio();
+        cardWidth = Math.max(1, Math.round(box.width));
+        cardHeight = Math.max(1, Math.round(box.height));
+        canvas.width = cardWidth * ratio;
+        canvas.height = cardHeight * ratio;
+        strokeStyle = context.createLinearGradient(0, 0, cardWidth, 0);
+        for (const [position, opacity] of settings.fade) strokeStyle.addColorStop(position, rgba(settings.stroke, opacity));
+        backgroundStyle = context.createLinearGradient(0, 0, cardWidth, cardHeight);
+        backgroundStyle.addColorStop(0, settings.background[0]);
+        backgroundStyle.addColorStop(1, settings.background[1]);
+        draw();       // a resize never leaves a blank canvas, even when paused
     };
 
+    let frameRequest = null, lastFrame = null, lastDrawn = null;
     const loop = now => {
-        const dt = lastT === null ? 16 : Math.min(now - lastT, 64);
-        lastT = now;
-        energy *= Math.exp(-dt / SETTLE);
-        phase += dt * (CALM_SPEED + STIR_SPEED * energy);
-        clock += dt * (CLOCK_CALM + CLOCK_STIR * energy);
-        draw(phase, clock, energy, scrollProgress());
-        frame = requestAnimationFrame(loop);
+        frameRequest = requestAnimationFrame(loop);
+        const step = lastFrame === null ? MILLISECONDS_PER_FRAME : Math.min(now - lastFrame, MAX_STEP_MILLISECONDS);
+        lastFrame = now;
+        energy = settle(energy, step);
+        const moved = advance(energy, step);
+        lightPhase += moved.light;
+        wavesClock += moved.waves;
+        if (!isTimeToDraw(now, lastDrawn)) return;
+        lastDrawn = now;
+        draw();
     };
 
     const still = window.matchMedia("(prefers-reduced-motion: reduce)");
-    const name = card.dataset.company || "water";
     const startLoop = () => {
         if (still.matches) return window.logAnimation?.(name, "still", "reduced motion");
-        if (frame === null) { lastT = null; frame = requestAnimationFrame(loop); }
+        if (frameRequest === null) {
+            lastFrame = null;
+            frameRequest = requestAnimationFrame(loop);
+        }
         window.logAnimation?.(name, "running");
     };
     const stopLoop = () => {
-        if (frame !== null) cancelAnimationFrame(frame);
-        frame = null;
+        if (frameRequest !== null) cancelAnimationFrame(frameRequest);
+        frameRequest = null;
         window.logAnimation?.(name, "paused", "off screen");
     };
 
     window.addEventListener("scroll", () => {
-        energy = Math.min(1, energy + Math.abs(window.scrollY - lastY) * STIR);
-        lastY = window.scrollY;
+        energy = stir(energy, Math.abs(window.scrollY - lastScrollY));
+        lastScrollY = window.scrollY;
     }, { passive: true });
 
     fit();
     new ResizeObserver(fit).observe(card);
-    new IntersectionObserver(([entry]) => entry.isIntersecting ? startLoop() : stopLoop()).observe(card);
-    still.addEventListener("change", () => still.matches
-        ? (stopLoop(), draw(phase, clock, energy, scrollProgress()))
-        : startLoop());
+    new IntersectionObserver(([entry]) => (entry.isIntersecting ? startLoop() : stopLoop())).observe(card);
+    still.addEventListener("change", () => (still.matches ? (stopLoop(), draw()) : startLoop()));
 }
