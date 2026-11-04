@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Bridge ripple rate</title>
+    <style>
+        /* The Useful card's bridge with its water rippling at different rates: smooth (as often as
+           the screen redraws, as on the site now), and stepped to 30 or 15 frames a second like
+           the other live cards. The stepped versions are made here from img/bridge/water-animated.svg
+           by turning its smooth slide into steps. Show one at a time to compare how each feels. */
+        html, body {
+            margin: 0;
+            background: #0d0f1a;
+            color: #e8e8e8;
+            font: 15px/1.4 Roboto, system-ui, sans-serif;
+        }
+        main {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 16px;
+            padding: 16px;
+        }
+        h2 {
+            margin: 0 0 8px;
+            font-size: 1rem;
+            font-weight: 500;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #aab;
+        }
+        /* Like the card on the page: the picture covers it, anchored at the bottom. */
+        .card {
+            height: 670px;
+            background-color: black;
+            background-position: bottom center;
+            background-size: cover;
+            background-repeat: no-repeat;
+        }
+        .hidden .card {
+            visibility: hidden;
+        }
+    </style>
+</head>
+<body>
+    <main></main>
+    <script type="module">
+        const LAYERS = "../img/bridge/";
+        const WATER = `${LAYERS}water-animated.svg`;
+        /** The rates to compare, in frames a second; null is smooth. */
+        const RATES = [null, 30, 15];
+
+        /**
+         * The water with its slide turned into `framesPerSecond` steps: the same distance, in
+         * evenly spaced jumps that stop just short of one band, so the loop still never jumps back.
+         */
+        function stepped(svg, framesPerSecond) {
+            const document = new DOMParser().parseFromString(svg, "image/svg+xml");
+            const slide = document.querySelector("animate");
+            const band = Number(slide.getAttribute("to"));
+            const seconds = parseFloat(slide.getAttribute("dur"));
+            const steps = Math.round(seconds * framesPerSecond);
+            const values = Array.from({ length: steps }, (_, step) => (band * step / steps).toFixed(3));
+            slide.removeAttribute("from");
+            slide.removeAttribute("to");
+            slide.setAttribute("values", values.join(";"));
+            slide.setAttribute("calcMode", "discrete");
+            return new XMLSerializer().serializeToString(document);
+        }
+
+        const water = await (await fetch(WATER)).text();
+        for (const rate of RATES) {
+            const waterUrl = rate === null
+                ? WATER
+                : URL.createObjectURL(new Blob([stepped(water, rate)], { type: "image/svg+xml" }));
+            const section = document.createElement("section");
+            section.innerHTML = `
+                <h2>${rate === null ? "Smooth (as on the site now)" : `${rate} frames a second`}</h2>
+                <label><input type="checkbox" ${rate === null ? "checked" : ""} /> show</label>
+                <div class="card"></div>`;
+            section.querySelector(".card").style.backgroundImage =
+                [`${LAYERS}bridge.svg`, waterUrl, `${LAYERS}background-only.svg`].map(url => `url("${url}")`).join(", ");
+            const toggle = section.querySelector("input");
+            section.classList.toggle("hidden", !toggle.checked);
+            toggle.addEventListener("change", () => section.classList.toggle("hidden", !toggle.checked));
+            document.querySelector("main").append(section);
+        }
+    </script>
+</body>
+</html>
