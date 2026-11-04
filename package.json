@@ -4,7 +4,8 @@
     "description": "Personal site and CVs of Thiago Mata",
     "type": "module",
     "scripts": {
-        "test": "node --test \"test/**/*.test.js\""
+        "test": "node --test \"test/**/*.test.js\"",
+        "serve": "python3 tools/serve.py"
     },
     "engines": {
         "node": ">=20"

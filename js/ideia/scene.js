@@ -122,6 +122,8 @@ export function start(container) {
         onScreen = entry.isIntersecting;
         if (onScreen) requestFrame();
         else pause();
+        if (stillPreference.matches) window.logAnimation?.("ideia", "still", "reduced motion");
+        else window.logAnimation?.("ideia", onScreen ? "running" : "paused", onScreen ? "" : "off screen");
     }).observe(container);
     stillPreference.addEventListener("change", () => { pause(); requestFrame(); });
 

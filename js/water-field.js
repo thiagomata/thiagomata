@@ -99,8 +99,17 @@ export function start(card, options = {}) {
     };
 
     const still = window.matchMedia("(prefers-reduced-motion: reduce)");
-    const startLoop = () => { if (frame === null && !still.matches) { lastT = null; frame = requestAnimationFrame(loop); } };
-    const stopLoop = () => { if (frame !== null) cancelAnimationFrame(frame); frame = null; };
+    const name = card.dataset.company || "water";
+    const startLoop = () => {
+        if (still.matches) return window.logAnimation?.(name, "still", "reduced motion");
+        if (frame === null) { lastT = null; frame = requestAnimationFrame(loop); }
+        window.logAnimation?.(name, "running");
+    };
+    const stopLoop = () => {
+        if (frame !== null) cancelAnimationFrame(frame);
+        frame = null;
+        window.logAnimation?.(name, "paused", "off screen");
+    };
 
     window.addEventListener("scroll", () => {
         energy = Math.min(1, energy + Math.abs(window.scrollY - lastY) * STIR);

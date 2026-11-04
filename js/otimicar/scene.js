@@ -88,6 +88,8 @@ export function start(container, imageFolder) {
     };
     const run = () => {
         stage.classList.toggle("paused", !onScreen);
+        if (still.matches) window.logAnimation?.("otimicar", "still", "reduced motion");
+        else window.logAnimation?.("otimicar", onScreen ? "running" : "paused", onScreen ? "" : "off screen");
         if (still.matches) show((SPEED_KMH.low + SPEED_KMH.high) / 2);
         else if (onScreen && frameRequest === null) {
             last = null;

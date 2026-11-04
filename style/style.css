@@ -121,7 +121,11 @@ body {
 
     section {
         background-color: black;
-        background-image: url("../img/bridge-6.svg");
+        background-image: url("../img/bridge-6-animated.svg");
+        /* Off screen, the still picture (see js/pause-offscreen.js). */
+        &.is-paused {
+            background-image: url("../img/bridge-6.svg");
+        }
         background-position: bottom center;;
         --border-gradient-color: var(--gradient-color, rgb(1, 37, 37));
         background-size: cover;
@@ -246,6 +250,9 @@ body {
     section[data-company=rokt] {
         --icon: url("../img/rokt-white.svg");
         --background-image: url("../img/rokt-animated.svg");
+        &.is-paused {
+            --background-image: url("../img/rokt-new.svg");
+        }
     }
     section[data-company=sli] {
         --icon: url("../img/sli.svg");
@@ -289,6 +296,9 @@ body {
     section[data-company=mec] {
         --icon: url("../img/mec.svg");
         --background-image: url("../img/bsb7-animated.svg");
+        &.is-paused {
+            --background-image: url("../img/bsb7.svg");
+        }
         background-size: cover;
         background-position: bottom center;
         --effect-color-red: 23;

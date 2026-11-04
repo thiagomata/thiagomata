@@ -108,8 +108,16 @@
 
     const still = window.matchMedia("(prefers-reduced-motion: reduce)");
     let timer = null;
-    const start = () => { if (timer === null && !still.matches) timer = setInterval(() => { flip(); connect(); }, TICK); };
-    const stop = () => { clearInterval(timer); timer = null; };
+    const start = () => {
+        if (still.matches) return window.logAnimation?.("sli", "still", "reduced motion");
+        if (timer === null) timer = setInterval(() => { flip(); connect(); }, TICK);
+        window.logAnimation?.("sli", "running");
+    };
+    const stop = () => {
+        clearInterval(timer);
+        timer = null;
+        window.logAnimation?.("sli", "paused", "off screen");
+    };
     new IntersectionObserver(([entry]) => entry.isIntersecting ? start() : stop()).observe(card);
     still.addEventListener("change", () => still.matches ? stop() : start());
 })();
