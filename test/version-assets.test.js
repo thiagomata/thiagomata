@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { describe, it } from "node:test";
-import { assetVersions, contentVersion, stampPage } from "../tools/version-assets.js";
+import { assetVersions, contentVersion, stampPage, stampStyle, styleFiles } from "../tools/version-assets.js";
 
 const PAGE = `<link rel="stylesheet" href="./style/site.css" />
 <script type="importmap">
@@ -33,8 +33,25 @@ describe("asset versions", () => {
         });
     });
 
+    it("stamps a style's pictures, and leaves other references alone", () => {
+        const versions = new Map([["./img/bridge/water.svg", "dddd4444"]]);
+        const css = 'a { background: url("../img/bridge/water.svg?v=00000000"), url("../img/other.svg"), url("https://cdn.example/x.svg"); }';
+        assert.equal(stampStyle(css, versions),
+            'a { background: url("../img/bridge/water.svg?v=dddd4444"), url("../img/other.svg"), url("https://cdn.example/x.svg"); }');
+    });
+
+    it("stamps the page's pictures", () => {
+        const versions = new Map([["./img/logo.svg", "eeee5555"]]);
+        assert.equal(stampPage('<img src="./img/logo.svg" />', versions), '<img src="./img/logo.svg?v=eeee5555" />');
+    });
+
     it("is stamped with the current version of every file (run `npm run stamp` after changing one)", () => {
+        const versions = assetVersions();
+        for (const style of styleFiles()) {
+            const css = readFileSync(new URL(`../${style}`, import.meta.url), "utf8");
+            assert.equal(stampStyle(css, versions), css, `${style} is not stamped`);
+        }
         const page = readFileSync(new URL("../index.html", import.meta.url), "utf8");
-        assert.equal(stampPage(page, assetVersions()), page);
+        assert.equal(stampPage(page, versions), page, "index.html is not stamped");
     });
 });

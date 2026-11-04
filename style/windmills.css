@@ -42,7 +42,7 @@
     bottom: 0;
     width: var(--stage-width);
     aspect-ratio: 4294 / 2474;
-    background: url("../img/simple2-no-sails.svg") center / 100% 100% no-repeat;
+    background: url("../img/simple2-no-sails.svg?v=ad56f248") center / 100% 100% no-repeat;
 }
 
 .windmills-stage .windmill-aurora,

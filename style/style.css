@@ -124,15 +124,15 @@ body {
         /* The bridge in three layers (tools/bridge-layers.py), front to back: the bridge, the
            water with its rippling reflections, and the sky. Only the water moves. */
         background-image:
-            url("../img/bridge/bridge.svg"),
-            url("../img/bridge/water-animated.svg"),
-            url("../img/bridge/background-only.svg");
+            url("../img/bridge/bridge.svg?v=f8a5bd32"),
+            url("../img/bridge/water-animated.svg?v=89db5dc9"),
+            url("../img/bridge/background-only.svg?v=d4d8492a");
         /* Off screen, still water (see js/pause-offscreen.js). */
         &.is-paused {
             background-image:
-                url("../img/bridge/bridge.svg"),
-                url("../img/bridge/water.svg"),
-                url("../img/bridge/background-only.svg");
+                url("../img/bridge/bridge.svg?v=f8a5bd32"),
+                url("../img/bridge/water.svg?v=3fb0371b"),
+                url("../img/bridge/background-only.svg?v=d4d8492a");
         }
         background-position: bottom center;
         --border-gradient-color: var(--gradient-color, rgb(1, 37, 37));
@@ -177,7 +177,7 @@ body {
     }
 
     .value-reliable {
-        background-image: url("../img/car-boy.svg");
+        background-image: url("../img/car-boy.svg?v=cc5d838f");
         background-color: rgb(97, 93, 158);
         background-size: contain;
         background-position-x: 90%;
@@ -186,14 +186,14 @@ body {
     }
 
     .value-elegant {
-        background-image: url("../img/simple2.svg");
+        background-image: url("../img/simple2.svg?v=a342b2fa");
         background-color: rgb(1, 37, 37);
         --gradient-color: rgb(2, 28, 46);
         background-size: cover;
         background-position: bottom right;
     }
     .value-thrifty {
-        background-image: url("../img/coin-girl.svg");
+        background-image: url("../img/coin-girl.svg?v=f597b31c");
         background-color: rgb(76, 76, 76);
         background-size: contain;
         background-position-x: 90%;
@@ -256,15 +256,15 @@ body {
     }
 
     section[data-company=rokt] {
-        --icon: url("../img/rokt-white.svg");
-        --background-image: url("../img/rokt-animated.svg");
+        --icon: url("../img/rokt-white.svg?v=808a7850");
+        --background-image: url("../img/rokt-animated.svg?v=0be97863");
         &.is-paused {
-            --background-image: url("../img/rokt-new.svg");
+            --background-image: url("../img/rokt-new.svg?v=5d55f3ef");
         }
     }
     section[data-company=sli] {
-        --icon: url("../img/sli.svg");
-        --background-image: url("../img/sli-bg.svg");
+        --icon: url("../img/sli.svg?v=55746700");
+        --background-image: url("../img/sli-bg.svg?v=194c86b0");
         background-size: cover;
         background-position: bottom right;
         --logo-height: 60px;
@@ -274,8 +274,8 @@ body {
         border-image:  var(--border-image);
     }
     section[data-company=ideia] {
-        --icon: url("../img/ideia-white.svg");
-        --background-image: url("../img/people-night.svg");
+        --icon: url("../img/ideia-white.svg?v=3093e7ba");
+        --background-image: url("../img/people-night.svg?v=2a961aa4");
         background-size: cover;
         background-position: bottom center;
 
@@ -291,8 +291,8 @@ body {
         --effect-color-blue: 62;
         border-image:  var(--border-image);
         background-color: rgb(1,62,62);
-        --icon: url("../img/otimicar.svg");
-        --background-image: url("../img/car4.svg");
+        --icon: url("../img/otimicar.svg?v=652bc618");
+        --background-image: url("../img/car4.svg?v=557fd216");
         background-size: cover;
         /* background-position: bottom center; */
         background-position: 22% bottom;
@@ -302,10 +302,10 @@ body {
     }
 
     section[data-company=mec] {
-        --icon: url("../img/mec.svg");
-        --background-image: url("../img/bsb7-animated.svg");
+        --icon: url("../img/mec.svg?v=bf64ca76");
+        --background-image: url("../img/bsb7-animated.svg?v=65af7ba6");
         &.is-paused {
-            --background-image: url("../img/bsb7.svg");
+            --background-image: url("../img/bsb7.svg?v=301f6a37");
         }
         background-size: cover;
         background-position: bottom center;
@@ -316,7 +316,7 @@ body {
     }
 
     section[data-company=isobar] {
-        --icon: url("../img/otimicar.svg");
+        --icon: url("../img/otimicar.svg?v=652bc618");
         background-size: cover;
         background-position: bottom left;
         p {
@@ -1093,7 +1093,7 @@ p {
 
 /* Macquarie: quiet copy area with restrained vector arcs. */
 #top-companies section[data-company="macquarie"] {
-    --background-image: url("../img/macquarie-background.webp");
+    --background-image: url("../img/macquarie-background.webp?v=b566aa43");
     height: auto;
     min-height: 670px;
     padding: clamp(24px, 4vw, 48px);
@@ -1200,11 +1200,11 @@ p {
 #projects [data-project="parallax"] {
     background-image:
         linear-gradient(90deg, rgba(13, 15, 18, .94), rgba(13, 15, 18, .68) 42%, rgba(13, 15, 18, .08)),
-        url("../img/parallax-depth.webp");
+        url("../img/parallax-depth.webp?v=fd9b9225");
     background-position: center;
 }
-#projects [data-project="probability"] { background-image: url("../img/project-probability.svg"); }
-#projects [data-project="primes"] { background-image: url("../img/project-primes.svg"); }
+#projects [data-project="probability"] { background-image: url("../img/project-probability.svg?v=540ab036"); }
+#projects [data-project="primes"] { background-image: url("../img/project-primes.svg?v=86458081"); }
 #projects h3 { font-size: 30px; margin: 0 0 36px; }
 #projects h4 {
     font-family: Teko, sans-serif;
@@ -1243,7 +1243,7 @@ p {
     #projects [data-project="parallax"] {
         background-image:
             linear-gradient(90deg, rgba(13, 15, 18, .90), rgba(13, 15, 18, .45)),
-            url("../img/parallax-depth.webp");
+            url("../img/parallax-depth.webp?v=fd9b9225");
         background-position: center;
     }
 }
