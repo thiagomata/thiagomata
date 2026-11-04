@@ -3,7 +3,7 @@ import { describe, it } from "node:test";
 import {
     CURTAINS, RAYS, STARS, STAR_SKY_BOTTOM, curtainBrightness, placeRays, placeStars, rayOpacity, starOpacity,
 } from "../js/windmills/aurora.js";
-import { BLADES, HEIGHT, bladeShape, bladesFor, plantBlades } from "../js/windmills/grass.js";
+import { BLADES, HEIGHT, bladeShape, bladesFor, bladesToDraw, plantBlades } from "../js/windmills/grass.js";
 import { HORIZON_Y, PICTURE, WINDMILLS, isBehindAWindmill, isOnRoad } from "../js/windmills/picture.js";
 import { SAIL_SPEED, sailSpeedAt, windAt } from "../js/windmills/wind.js";
 
@@ -94,6 +94,19 @@ describe("windmills: the grass", () => {
         assert.ok(back.every(blade => isBehindAWindmill(blade.x, blade.y)));
         assert.ok(front.every(blade => !isBehindAWindmill(blade.x, blade.y)));
         assert.ok(back.length > 0 && front.length > 0);
+    });
+
+    it("draws every blade on a wide card, and fewer, evenly spread, on a narrow one", () => {
+        const desktop = 1200, phone = 360, tiny = 100;
+        assert.deepEqual(bladesToDraw(blades, desktop), blades);
+        const onPhone = bladesToDraw(blades, phone);
+        assert.ok(onPhone.length < blades.length * 0.5 && onPhone.length >= blades.length * 0.36, `${onPhone.length}`);
+        assert.ok(onPhone.every(blade => blades.includes(blade)), "a subset, in the same order");
+        assert.equal(bladesToDraw(blades, tiny).length, bladesToDraw(blades, phone / 2).length, "never fewer than the fewest share");
+        // Spread across the field's depth: the near half keeps about half of the drawn blades.
+        const middleY = blades[blades.length >> 1].y;
+        const near = onPhone.filter(blade => blade.y >= middleY).length;
+        assert.ok(Math.abs(near / onPhone.length - 0.5) < 0.05, `${near} of ${onPhone.length} near`);
     });
 
     it("bends blades away from their root, and stiffer blades less", () => {

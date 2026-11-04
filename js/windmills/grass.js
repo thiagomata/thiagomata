@@ -24,6 +24,12 @@ const BEND = { calm: 0.05, gust: 0.32 };
 /** Stiffer blades bend less. */
 const STIFFNESS = [0.6, 1.4];
 const CURLED_SHARE = 0.3;
+/**
+ * On a narrower card each blade is only a pixel or two wide and they blend together, so fewer are
+ * drawn: all of them from this width (in CSS pixels) up, down to a share of them on a phone.
+ */
+const FULL_GRASS_WIDTH = 1000;
+const FEWEST_BLADES_SHARE = 0.4;
 /** Blades are planted a little past the picture's sides and bottom, so its edges are covered. */
 const OVERHANG = { sides: 50, bottom: 40 };
 
@@ -109,6 +115,15 @@ const FIELD = plantBlades();
 export const bladesFor = (layer, blades = FIELD) =>
     blades.filter(blade => isBehindAWindmill(blade.x, blade.y) === (layer === "back"));
 
+/**
+ * The blades worth drawing on a card `widthPixels` wide: all of them on a wide card, an evenly
+ * spread share of them on a narrow one (spread across the field's depth, as `blades` go far to near).
+ */
+export function bladesToDraw(blades, widthPixels) {
+    const share = Math.min(Math.max(widthPixels / FULL_GRASS_WIDTH, FEWEST_BLADES_SHARE), 1);
+    return blades.filter((_, index) => Math.floor((index + 1) * share) > Math.floor(index * share));
+}
+
 export class Grass {
     /** A canvas for one layer of the grass ("back" or "front"), added to `container`. */
     constructor(container, layer) {
@@ -117,12 +132,15 @@ export class Grass {
         this.canvas.setAttribute("aria-hidden", "true");
         this.context = this.canvas.getContext("2d");
         this.blades = bladesFor(layer);
+        this.drawn = this.blades;
         container.append(this.canvas);
     }
 
-    resize(widthPixels, heightPixels) {
+    /** Sizes the canvas; `shownWidth` is how much of it the card shows, which sets how many blades are drawn. */
+    resize(widthPixels, heightPixels, shownWidth = widthPixels) {
         this.canvas.width = Math.round(widthPixels * pixelRatio());
         this.canvas.height = Math.round(heightPixels * pixelRatio());
+        this.drawn = bladesToDraw(this.blades, shownWidth);
     }
 
     draw(seconds) {
@@ -130,6 +148,6 @@ export class Grass {
         scaleToPicture(context, canvas);
         context.clearRect(0, 0, PICTURE.width, PICTURE.height);
         context.lineCap = "round";
-        for (const blade of this.blades) drawBlade(context, blade, seconds);
+        for (const blade of this.drawn) drawBlade(context, blade, seconds);
     }
 }

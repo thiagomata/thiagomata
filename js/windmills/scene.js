@@ -147,7 +147,9 @@ export function start(container, { grass = "none", windmillsImage = "", aurora: 
         const { clientWidth: widthPixels, clientHeight: heightPixels } = container;
         if (!widthPixels || !heightPixels) return;
         renderer.setSize(widthPixels, heightPixels, false);
-        for (const layer of grassLayers) layer.resize(widthPixels, heightPixels);
+        // The picture keeps its shape and its frame crops it: the card shows only this much of it.
+        const shownWidth = Math.min(widthPixels, container.parentElement?.clientWidth ?? widthPixels);
+        for (const layer of grassLayers) layer.resize(widthPixels, heightPixels, shownWidth);
         aurora?.resize(widthPixels, heightPixels);
         draw(performance.now() / MILLISECONDS_PER_SECOND);
     };
