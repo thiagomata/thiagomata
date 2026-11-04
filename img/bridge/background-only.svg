@@ -3,7 +3,7 @@
         <path transform="matrix(1 0 0 1 0 0)" d="M0 0L2174 0L2174 1781L0 1781Z" fill="#FFFFFF" />
         <g>
             <g clip-path="url(#clip1)">
-                <path transform="matrix(1 0 0 1 -2 0)" d="M0 0L2174 0L2174 1781L0 1781L0 0Z" fill="url(#paint2)" />
+                <path transform="matrix(1 0 0 1 -2 0)" d="M-20 0L2194 0L2194 1781L-20 1781L-20 0Z" fill="url(#paint2)" />
             </g>
             <g clip-path="url(#clip1)">
                 <path transform="matrix(0.989 -0.147 0.147 0.989 -383 929.414)"

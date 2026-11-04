@@ -126,13 +126,13 @@ body {
         background-image:
             url("../img/bridge/bridge.svg?v=f8a5bd32"),
             url("../img/bridge/water-animated.svg?v=ab8b3c37"),
-            url("../img/bridge/background-only.svg?v=d4d8492a");
+            url("../img/bridge/background-only.svg?v=d6078e84");
         /* Off screen, still water (see js/pause-offscreen.js). */
         &.is-paused {
             background-image:
                 url("../img/bridge/bridge.svg?v=f8a5bd32"),
                 url("../img/bridge/water.svg?v=3fb0371b"),
-                url("../img/bridge/background-only.svg?v=d4d8492a");
+                url("../img/bridge/background-only.svg?v=d6078e84");
         }
         background-position: bottom center;
         --border-gradient-color: var(--gradient-color, rgb(1, 37, 37));

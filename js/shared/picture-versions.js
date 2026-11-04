@@ -4,7 +4,7 @@
 const VERSIONS = {
     "./img/bot1.jpg": "0c6df888",
     "./img/boy-reading.jpg": "a09e596a",
-    "./img/bridge/background-only.svg": "d4d8492a",
+    "./img/bridge/background-only.svg": "d6078e84",
     "./img/bridge/bridge.svg": "f8a5bd32",
     "./img/bridge/water-animated.svg": "ab8b3c37",
     "./img/bridge/water.svg": "3fb0371b",
