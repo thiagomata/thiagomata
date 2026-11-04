@@ -101,24 +101,13 @@ function addSails(scene) {
     });
 }
 
-function windmillBodies(container, image) {
-    const bodies = document.createElement("img");
-    bodies.className = "windmill-bodies";
-    bodies.src = image;
-    bodies.alt = "";
-    container.append(bodies);
-}
-
 /**
  * Draws the sails over the picture inside `container` (positioned, with the picture's shape)
  * and turns them while the container is on screen. Throws if WebGL is unavailable.
  *
- * `grass` adds the field's grass, and then the wind (js/windmills/wind.js) drives both the grass
- * and the sails' speed:
- *   - "layered": grass behind and in front of the windmills; the container's background is the
- *     field without windmills, and `windmillsImage` draws their bodies between the two layers;
- *   - "front": only the grass that grows in front of the windmills, over a picture that already
- *     has its own grass and windmills (so nothing is drawn over a windmill from behind).
+ * `grass: "front"` adds the swaying grass that grows in front of the windmills, over a picture
+ * that already has its own grass and windmills (so nothing is drawn over a windmill from behind);
+ * the wind (js/windmills/wind.js) then drives both the grass and the sails' speed.
  *
  * `aurora` adds the northern lights over the sky, under everything else; it needs
  * `windmillsImage` to keep the windmills dark.
@@ -136,16 +125,10 @@ export function start(container, { grass = "none", windmillsImage = "", aurora: 
     const camera = new THREE.OrthographicCamera(0, PICTURE.width, 0, -PICTURE.height, -CAMERA_DEPTH, CAMERA_DEPTH);
     const sails = addSails(scene);
 
-    // Layers, back to front: aurora, back grass and windmill bodies (layered grass only), the
-    // sails, then the front grass.
+    // Layers, back to front: aurora, sails, then the front grass.
     const aurora = withAurora ? new Aurora(container, windmillsImage) : null;
-    const grassLayers = [];
-    if (grass === "layered") {
-        grassLayers.push(new Grass(container, "back"));
-        windmillBodies(container, windmillsImage);
-    }
     container.append(canvas);
-    if (windy) grassLayers.push(new Grass(container, "front"));
+    const grassLayers = windy ? [new Grass(container, "front")] : [];
 
     // Turns the sails by the time since the last frame: steadily, or with the wind at each hub.
     const turnSails = (seconds, stepSeconds) => {
