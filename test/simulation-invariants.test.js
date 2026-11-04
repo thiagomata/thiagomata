@@ -22,7 +22,8 @@ function footprint({ x, z, lane }) {
     };
 }
 
-const overlap = (a, b) => Math.abs(a.x - b.x) < a.halfX + b.halfX && Math.abs(a.z - b.z) < a.halfZ + b.halfZ;
+const overlap = (first, second) =>
+    Math.abs(first.x - second.x) < first.halfX + second.halfX && Math.abs(first.z - second.z) < first.halfZ + second.halfZ;
 const onRoad = ({ x, z }) => Math.abs(x) < ROAD_HALF_WIDTH || Math.abs(z) < ROAD_HALF_WIDTH;
 const inJunctionArea = ({ x, z }) => Math.abs(x) <= CROSSING_OUTER_EDGE && Math.abs(z) <= CROSSING_OUTER_EDGE;
 

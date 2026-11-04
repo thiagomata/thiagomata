@@ -1,28 +1,29 @@
-// The windmills' sails for the Elegant card, drawn with three.js over img/simple2-no-sails.svg
-// (the picture without its sails). Each windmill gets four lattice sails turning in a plane seen
-// at an angle, like in the original drawing.
+// The windmills' live layers, over the windmill picture (js/windmills/picture.js): sails turning in
+// three.js, and optionally the swaying grass (grass.js) and the northern lights (aurora.js).
 //
-// The canvas covers the picture exactly; an orthographic camera maps one world unit to one unit
-// of the picture's viewBox (4294 x 2474), so positions below are read straight off the picture.
+// Each windmill's four lattice sails turn in a plane seen at an angle, as in the drawing. The
+// canvases cover the picture exactly, and an orthographic camera maps one world unit to one
+// picture unit, so positions are read straight off the drawing.
 import * as THREE from "three";
 import { mergeGeometries } from "three/addons/utils/BufferGeometryUtils.js";
+import { FULL_TURN } from "../shared/motion.js";
+import { Aurora } from "./aurora.js";
 import { Grass } from "./grass.js";
-import { windAt } from "./wind.js";
+import { MAX_PIXEL_RATIO, PICTURE, WINDMILLS } from "./picture.js";
+import { sailSpeedAt } from "./wind.js";
 
-export const PICTURE = { width: 4294, height: 2474 };
-
-/** Where each windmill's sails turn (their hub, in picture units) and how big they are. */
-const WINDMILLS = [
-    { name: "left", hub: [1603, 1870], sailLength: 260 },
-    { name: "right", hub: [2936, 1895], sailLength: 450 },
-];
-
+const SAILS_PER_WINDMILL = 4;
 /** The sails' plane turns this far away from the viewer, as in the drawing. */
 const SAIL_PLANE_TURN_DEGREES = 55;
+/** One turn of the sails at their normal speed. */
 const SECONDS_PER_TURN = 9;
-/** With the wind: the sails turn this much slower in still air and faster in a full gust. */
-const WIND_SPEED_RANGE = [0.5, 1.6];
-const MAX_STEP_SECONDS = 0.1;       // after a pause, carry on instead of jumping
+/** Without wind (no grass), the sails turn at their normal speed. */
+const STEADY_SPEED = 1;
+/** After a pause, carry on from where the sails were instead of jumping ahead. */
+const MAX_STEP_SECONDS = 0.1;
+const MILLISECONDS_PER_SECOND = 1000;
+/** The camera sees this far in front of and behind the picture's plane (the sails turn in depth). */
+const CAMERA_DEPTH = 2000;
 
 /** A sail, as shares of its length: the stock (the arm) and the lattice beside it. */
 const SAIL = {
@@ -33,6 +34,7 @@ const SAIL = {
     crossBars: 16,
     hubRadius: 0.06,
 };
+const HUB_SEGMENTS = 24;
 const COLOURS = {
     stock: "#2b2416",
     lattice: "#4a4331",
@@ -41,36 +43,70 @@ const COLOURS = {
 };
 const CLOTH_OPACITY = 0.45;
 
-/** Four sails pointing up, right, down and left from the hub, in the XY plane. */
-function sailRig(length) {
+/** Flat colour on both sides, like the drawing. */
+const flatMaterial = (colour, extra = {}) => new THREE.MeshBasicMaterial({ color: colour, side: THREE.DoubleSide, ...extra });
+
+/** One sail's parts, pointing up from the hub: the stock, the lattice bars and the cloth. */
+function sailParts(length) {
     const bar = (width, height, x, y) => new THREE.PlaneGeometry(width, height).translate(x, y, 0);
-    const stock = [], lattice = [], cloth = [];
-    const { stockWidth, latticeStart, latticeWidth, barWidth, crossBars } = SAIL;
-    const start = latticeStart * length, panel = length - start, side = latticeWidth * length;
+    const stockWidth = SAIL.stockWidth * length;
+    const latticeFrom = SAIL.latticeStart * length;
+    const latticeLength = length - latticeFrom;
+    const latticeWidth = SAIL.latticeWidth * length;
+    const barWidth = SAIL.barWidth * length;
+    const latticeMiddleX = stockWidth / 2 + latticeWidth / 2;
+    const latticeMiddleY = latticeFrom + latticeLength / 2;
 
-    for (let sail = 0; sail < 4; sail++) {
-        const turn = (geometry) => geometry.rotateZ(sail * Math.PI / 2);
-        stock.push(turn(bar(stockWidth * length, length, 0, length / 2)));
-        // The lattice: two rails along the sail and bars across it, beside the stock.
-        const middleX = stockWidth * length / 2 + side / 2;
-        for (const railX of [stockWidth * length / 2 + side, middleX]) {
-            lattice.push(turn(bar(barWidth * length, panel, railX, start + panel / 2)));
+    // The lattice: two rails along the sail (its middle and its outer edge) and bars across it.
+    const rails = [latticeMiddleX, stockWidth / 2 + latticeWidth]
+        .map(railX => bar(barWidth, latticeLength, railX, latticeMiddleY));
+    const crossBars = Array.from({ length: SAIL.crossBars + 1 }, (_, index) =>
+        bar(latticeWidth, barWidth, latticeMiddleX, latticeFrom + latticeLength * index / SAIL.crossBars));
+    return {
+        stock: [bar(stockWidth, length, 0, length / 2)],
+        lattice: [...rails, ...crossBars],
+        cloth: [bar(latticeWidth, latticeLength, latticeMiddleX, latticeMiddleY)],
+    };
+}
+
+/** A windmill's sails, evenly spaced around the hub in the XY plane, as one turning group. */
+function sailRig(length) {
+    const parts = { stock: [], lattice: [], cloth: [] };
+    for (let sail = 0; sail < SAILS_PER_WINDMILL; sail++) {
+        const angle = sail * FULL_TURN / SAILS_PER_WINDMILL;
+        for (const [name, geometries] of Object.entries(sailParts(length))) {
+            parts[name].push(...geometries.map(geometry => geometry.rotateZ(angle)));
         }
-        for (let cross = 0; cross <= crossBars; cross++) {
-            const y = start + panel * cross / crossBars;
-            lattice.push(turn(bar(side, barWidth * length, middleX, y)));
-        }
-        cloth.push(turn(bar(side, panel, middleX, start + panel / 2)));
     }
-
     const rig = new THREE.Group();
-    rig.add(new THREE.Mesh(mergeGeometries(cloth), new THREE.MeshBasicMaterial({
-        color: COLOURS.cloth, transparent: true, opacity: CLOTH_OPACITY, side: THREE.DoubleSide, depthWrite: false,
+    rig.add(new THREE.Mesh(mergeGeometries(parts.cloth), flatMaterial(COLOURS.cloth, {
+        transparent: true, opacity: CLOTH_OPACITY, depthWrite: false,
     })));
-    rig.add(new THREE.Mesh(mergeGeometries(lattice), new THREE.MeshBasicMaterial({ color: COLOURS.lattice, side: THREE.DoubleSide })));
-    rig.add(new THREE.Mesh(mergeGeometries(stock), new THREE.MeshBasicMaterial({ color: COLOURS.stock, side: THREE.DoubleSide })));
-    rig.add(new THREE.Mesh(new THREE.CircleGeometry(SAIL.hubRadius * length, 24), new THREE.MeshBasicMaterial({ color: COLOURS.hub })));
+    rig.add(new THREE.Mesh(mergeGeometries(parts.lattice), flatMaterial(COLOURS.lattice)));
+    rig.add(new THREE.Mesh(mergeGeometries(parts.stock), flatMaterial(COLOURS.stock)));
+    rig.add(new THREE.Mesh(new THREE.CircleGeometry(SAIL.hubRadius * length, HUB_SEGMENTS), flatMaterial(COLOURS.hub)));
     return rig;
+}
+
+/** Each windmill's sails, on their hub, in the plane seen at an angle. */
+function addSails(scene) {
+    return WINDMILLS.map(({ hub: [hubX, hubY], sailLength }) => {
+        const rig = sailRig(sailLength);
+        const plane = new THREE.Group();
+        plane.position.set(hubX, -hubY, 0);         // the picture's y points down, the world's up
+        plane.rotation.y = THREE.MathUtils.degToRad(SAIL_PLANE_TURN_DEGREES);
+        plane.add(rig);
+        scene.add(plane);
+        return { rig, hubX, angle: 0 };
+    });
+}
+
+function windmillBodies(container, image) {
+    const bodies = document.createElement("img");
+    bodies.className = "windmill-bodies";
+    bodies.src = image;
+    bodies.alt = "";
+    container.append(bodies);
 }
 
 /**
@@ -83,71 +119,81 @@ function sailRig(length) {
  *     field without windmills, and `windmillsImage` draws their bodies between the two layers;
  *   - "front": only the grass that grows in front of the windmills, over a picture that already
  *     has its own grass and windmills (so nothing is drawn over a windmill from behind).
+ *
+ * `aurora` adds the northern lights over the sky, under everything else; it needs
+ * `windmillsImage` to keep the windmills dark.
  */
-export function start(container, { grass = "none", windmillsImage = "" } = {}) {
-    const withGrass = grass !== "none";
+export function start(container, { grass = "none", windmillsImage = "", aurora: withAurora = false } = {}) {
+    const windy = grass !== "none";
     const canvas = document.createElement("canvas");
     canvas.className = "windmill-sails";
     canvas.setAttribute("aria-hidden", "true");
     const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, MAX_PIXEL_RATIO));
 
     const scene = new THREE.Scene();
-    // Picture units, y pointing down like the SVG: (0, 0) is the picture's top-left corner.
-    const camera = new THREE.OrthographicCamera(0, PICTURE.width, 0, -PICTURE.height, -2000, 2000);
+    // The camera's view is the picture: (0, 0) at its top-left corner, y pointing down.
+    const camera = new THREE.OrthographicCamera(0, PICTURE.width, 0, -PICTURE.height, -CAMERA_DEPTH, CAMERA_DEPTH);
+    const sails = addSails(scene);
 
-    const spinners = WINDMILLS.map(({ hub, sailLength }) => {
-        const spinner = sailRig(sailLength);
-        const plane = new THREE.Group();
-        plane.position.set(hub[0], -hub[1], 0);
-        plane.rotation.y = THREE.MathUtils.degToRad(SAIL_PLANE_TURN_DEGREES);
-        plane.add(spinner);
-        scene.add(plane);
-        return { spinner, hubX: hub[0], angle: 0 };
-    });
-    // With grass, the layers go back to front: back grass, the windmills' bodies, the sails,
-    // then the front grass (the container's background is the field without the windmills).
+    // Layers, back to front: aurora, back grass and windmill bodies (layered grass only), the
+    // sails, then the front grass.
+    const aurora = withAurora ? new Aurora(container, windmillsImage) : null;
     const grassLayers = [];
     if (grass === "layered") {
         grassLayers.push(new Grass(container, "back"));
-        const bodies = document.createElement("img");
-        bodies.className = "windmill-bodies";
-        bodies.src = windmillsImage;
-        bodies.alt = "";
-        container.append(bodies);
+        windmillBodies(container, windmillsImage);
     }
+    container.append(canvas);
+    if (windy) grassLayers.push(new Grass(container, "front"));
 
-    const still = window.matchMedia("(prefers-reduced-motion: reduce)");
-    let onScreen = false, frameRequest = null, last = null;
     // Turns the sails by the time since the last frame: steadily, or with the wind at each hub.
-    const turnSails = (seconds, step) => {
-        for (const sails of spinners) {
-            const speed = withGrass
-                ? WIND_SPEED_RANGE[0] + (WIND_SPEED_RANGE[1] - WIND_SPEED_RANGE[0]) * windAt(sails.hubX, seconds)
-                : 1;
-            sails.angle -= 2 * Math.PI * speed * step / SECONDS_PER_TURN;
-            sails.spinner.rotation.z = sails.angle;
+    const turnSails = (seconds, stepSeconds) => {
+        for (const windmill of sails) {
+            const speed = windy ? sailSpeedAt(windmill.hubX, seconds) : STEADY_SPEED;
+            windmill.angle -= FULL_TURN * speed * stepSeconds / SECONDS_PER_TURN;
+            windmill.rig.rotation.z = windmill.angle;
         }
     };
     const draw = seconds => {
+        aurora?.draw(seconds);
         renderer.render(scene, camera);
         for (const layer of grassLayers) layer.draw(seconds);
     };
+    const resize = () => {
+        const { clientWidth: widthPixels, clientHeight: heightPixels } = container;
+        if (!widthPixels || !heightPixels) return;
+        renderer.setSize(widthPixels, heightPixels, false);
+        for (const layer of grassLayers) layer.resize(widthPixels, heightPixels);
+        aurora?.resize(widthPixels, heightPixels);
+        draw(performance.now() / MILLISECONDS_PER_SECOND);
+    };
+    animateWhileVisible(container, { turnSails, draw });
+    new ResizeObserver(resize).observe(container);
+    resize();
+}
+
+/** Runs the animation while `container` is on screen; with reduced motion, shows a still frame. */
+function animateWhileVisible(container, { turnSails, draw }) {
+    const still = window.matchMedia("(prefers-reduced-motion: reduce)");
+    let onScreen = false, frameRequest = null, lastSeconds = null;
+
     const frame = now => {
         frameRequest = null;
-        const seconds = now / 1000;
-        turnSails(seconds, last === null ? 0 : Math.min(seconds - last, MAX_STEP_SECONDS));
-        last = seconds;
+        const seconds = now / MILLISECONDS_PER_SECOND;
+        const stepSeconds = lastSeconds === null ? 0 : Math.min(seconds - lastSeconds, MAX_STEP_SECONDS);
+        lastSeconds = seconds;
+        turnSails(seconds, stepSeconds);
         draw(seconds);
         if (onScreen && !still.matches) frameRequest = requestAnimationFrame(frame);
     };
-    const run = () => {
+    const update = () => {
         if (still.matches) {
             draw(0);
             window.logAnimation?.("elegant", "still", "reduced motion");
         } else if (onScreen) {
             if (frameRequest === null) {
-                last = null;
+                lastSeconds = null;
                 frameRequest = requestAnimationFrame(frame);
             }
             window.logAnimation?.("elegant", "running");
@@ -155,22 +201,9 @@ export function start(container, { grass = "none", windmillsImage = "" } = {}) {
             window.logAnimation?.("elegant", "paused", "off screen");
         }
     };
-    const resize = () => {
-        const { clientWidth: width, clientHeight: height } = container;
-        if (!width || !height) return;
-        renderer.setSize(width, height, false);
-        for (const layer of grassLayers) layer.resize(width, height);
-        draw(performance.now() / 1000);
-    };
-
-    new ResizeObserver(resize).observe(container);
     new IntersectionObserver(([entry]) => {
         onScreen = entry.isIntersecting;
-        run();
+        update();
     }).observe(container);
-    still.addEventListener("change", run);
-
-    container.append(canvas);
-    if (withGrass) grassLayers.push(new Grass(container, "front"));
-    resize();
+    still.addEventListener("change", update);
 }

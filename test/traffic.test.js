@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
-import { seededRandom } from "../js/ideia/random.js";
+import { seededRandom } from "../js/shared/random.js";
 import { CLEARANCE, CROSS_GREEN, MAIN_GREEN } from "../js/ideia/signals.js";
 import { TICKS_PER_SECOND, TICK_SECONDS } from "../js/ideia/simulation.js";
 import { CAR_LENGTH, DRIVING, Traffic, brakingDistance, crossLane, mainLane } from "../js/ideia/traffic.js";

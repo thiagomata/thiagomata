@@ -1,7 +1,7 @@
 // The whole simulation (traffic and crowd), advanced in fixed ticks counted by an integer.
 // The scene draws it; the tests run it without drawing anything.
 import { Crowd } from "./crowd.js";
-import { seededRandom } from "./random.js";
+import { seededRandom } from "../shared/random.js";
 import { Traffic } from "./traffic.js";
 
 export const TICKS_PER_SECOND = 60;

@@ -10,7 +10,7 @@ import { buildCity } from "./city.js";
 import { crowdSizeFor } from "./crowd.js";
 import { CrowdView } from "./crowd-view.js";
 import { COLOURS } from "./plan.js";
-import { seededRandom } from "./random.js";
+import { seededRandom } from "../shared/random.js";
 import { Simulation, TICK_SECONDS } from "./simulation.js";
 
 const MAX_TICKS_PER_FRAME = 6;          // after a long pause, resume instead of fast-forwarding

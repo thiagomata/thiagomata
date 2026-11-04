@@ -5,7 +5,7 @@ import {
     waitingSpot, zebraRoute,
 } from "../js/ideia/crowd.js";
 import { CROSSING_OUTER_EDGE, ROAD_HALF_WIDTH } from "../js/ideia/plan.js";
-import { seededRandom } from "../js/ideia/random.js";
+import { seededRandom } from "../js/shared/random.js";
 import { CYCLE, WALK, secondsIntoWalk } from "../js/ideia/signals.js";
 
 /** Is this world point on a road (either street), rather than on a sidewalk? */

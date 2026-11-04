@@ -1,7 +1,7 @@
 /*
  * The Elegant card's live windmills (js/windmills-card.js and js/windmills/scene.js): the picture
- * without its sails keeps its hand-drawn grass, the sails turn over it in three.js, and procedural
- * grass sways in front of the windmills with the same wind.
+ * without its sails keeps its hand-drawn grass, the northern lights ripple over its sky, the sails
+ * turn in three.js, and procedural grass sways in front of the windmills with the same wind.
  *
  * The stage keeps the picture's shape (its viewBox is 4294 x 2474) and covers the card like the
  * static image did: filling it, anchored at the bottom right. The card keeps its static picture
@@ -45,10 +45,16 @@
     background: url("../img/simple2-no-sails.svg") center / 100% 100% no-repeat;
 }
 
+.windmills-stage .windmill-aurora,
 .windmills-stage .windmill-sails,
 .windmills-stage .windmill-grass {
     position: absolute;
     inset: 0;
     width: 100%;
     height: 100%;
+}
+
+/* The northern lights add light to the drawing's own sky. */
+.windmills-stage .windmill-aurora {
+    mix-blend-mode: screen;
 }
