@@ -1085,7 +1085,7 @@ p {
     background-color: #111315;
     background-repeat: no-repeat;
 }
-/* Live backgrounds drawn by js/macquarie-rings.js and js/sli-blobs.js;
+/* Live backgrounds drawn by js/macquarie-waves.js and js/sli-blobs.js;
    the static image stays as the fallback. */
 #top-companies section.is-live {
     position: relative;
@@ -1120,12 +1120,11 @@ p {
 #top-companies section[data-company="sli"] .live-bg circle[data-colour="lavender"] { fill: #BBB3DC; }
 #top-companies section[data-company="sli"] .live-bg circle[data-colour="white"] { fill: #FFFFFF; }
 #top-companies section[data-company="sli"] .live-bg .shade { mix-blend-mode: multiply; }
-#top-companies section[data-company="macquarie"] .live-bg .lines {
-    stroke-opacity: 0.25;
-    opacity: 0.85;
+#top-companies section[data-company="macquarie"] .live-bg {
+    opacity: 0.9;
     transition: opacity 600ms ease;
 }
-#top-companies section[data-company="macquarie"]:hover .live-bg .lines {
+#top-companies section[data-company="macquarie"]:hover .live-bg {
     opacity: 1;
 }
 #top-companies section[data-company="macquarie"] .company-name {
