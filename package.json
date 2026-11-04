@@ -5,7 +5,8 @@
     "type": "module",
     "scripts": {
         "test": "node --test \"test/**/*.test.js\"",
-        "serve": "python3 tools/serve.py"
+        "serve": "python3 tools/serve.py",
+        "stamp": "node tools/version-assets.js"
     },
     "engines": {
         "node": ">=20"
