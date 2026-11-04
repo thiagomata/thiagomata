@@ -12,12 +12,18 @@
 
     <meta name="description" content="Thiago Mata’s software engineering experience, case studies, projects, and experiments in data platforms, reliable systems, and technical delivery." />
     <link rel="canonical" href="https://thiagomata.com/" />
-    <!-- three.js for the live Ideia background, fetched only when that card gets close. -->
+    <!-- three.js for the live Ideia and Elegant backgrounds, fetched once the page has loaded.
+         Each file is pinned by its hash, so a changed file on the CDN is refused, not run. -->
     <script type="importmap">
         {
             "imports": {
                 "three": "https://cdn.jsdelivr.net/npm/three@0.187.0/build/three.module.min.js",
                 "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.187.0/examples/jsm/"
+            },
+            "integrity": {
+                "https://cdn.jsdelivr.net/npm/three@0.187.0/build/three.module.min.js": "sha384-9bdc/m98xZLhaPIxVG2gNC2aYWzhRmURsrQYkzArHqsLSVeeqWmrumq2FsPRnJEB",
+                "https://cdn.jsdelivr.net/npm/three@0.187.0/build/three.core.min.js": "sha384-3j9YQEXY3lwfCB0T8j+4Y3dnA7/9TTX6SzmSRyT9wMgAxNYsftvmGtTZt1QQVmyH",
+                "https://cdn.jsdelivr.net/npm/three@0.187.0/examples/jsm/utils/BufferGeometryUtils.js": "sha384-NArny884Zj3HwjLRjeY1kbfLZnAHIElzho3N71FW0eMGxxBT+QuLEiSnSgpSaBXh"
             }
         }
     </script>
