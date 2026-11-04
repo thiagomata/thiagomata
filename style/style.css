@@ -125,7 +125,7 @@ body {
            water with its rippling reflections, and the sky. Only the water moves. */
         background-image:
             url("../img/bridge/bridge.svg?v=f8a5bd32"),
-            url("../img/bridge/water-animated.svg?v=8555ed5b"),
+            url("../img/bridge/water-animated.svg?v=ab8b3c37"),
             url("../img/bridge/background-only.svg?v=d4d8492a");
         /* Off screen, still water (see js/pause-offscreen.js). */
         &.is-paused {

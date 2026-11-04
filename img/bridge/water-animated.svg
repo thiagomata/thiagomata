@@ -3,7 +3,8 @@ created by thiago.henrique.mata@gmail.com
 -->
 <!--
 The ripple (the "ripple" filter, over the whole water): a band of noise, 300 tall, tiles the water
-and slides down by exactly one band every 6 seconds, so the loop never jumps. It only pushes the
+and slides down by exactly one band every 6 seconds, so the loop never jumps. It moves in 90
+steps (15 a second), which looks the same on water and costs the device far less than smooth. It only pushes the
 reflections sideways, by up to 10. The filter starts one band above the water's top (y 1061), so
 the strip the slide leaves empty never reaches it, and 10 past each side, as does the clip, so the
 edges ripple with the water beyond them. water.svg is the same picture, still.
@@ -12,7 +13,7 @@ edges ripple with the water beyond them. water.svg is the same picture, still.
     <feTurbulence type="fractalNoise" baseFrequency="0.004 0.03" numOctaves="2" seed="4" stitchTiles="stitch" x="-10" y="761" width="2194" height="300" result="band" />
     <feTile in="band" result="noise" />
     <feOffset in="noise" dx="0" result="sliding">
-        <animate attributeName="dy" from="0" to="300" dur="6s" repeatCount="indefinite" />
+        <animate attributeName="dy" values="0;3.33333;6.66667;10;13.3333;16.6667;20;23.3333;26.6667;30;33.3333;36.6667;40;43.3333;46.6667;50;53.3333;56.6667;60;63.3333;66.6667;70;73.3333;76.6667;80;83.3333;86.6667;90;93.3333;96.6667;100;103.333;106.667;110;113.333;116.667;120;123.333;126.667;130;133.333;136.667;140;143.333;146.667;150;153.333;156.667;160;163.333;166.667;170;173.333;176.667;180;183.333;186.667;190;193.333;196.667;200;203.333;206.667;210;213.333;216.667;220;223.333;226.667;230;233.333;236.667;240;243.333;246.667;250;253.333;256.667;260;263.333;266.667;270;273.333;276.667;280;283.333;286.667;290;293.333;296.667" calcMode="discrete" dur="6s" repeatCount="indefinite" />
     </feOffset>
     <feColorMatrix in="sliding" type="matrix" result="sideways" values="1 0 0 0 0  0 0 0 0 0.5  0 0 1 0 0  0 0 0 0 1" />
     <feDisplacementMap in="SourceGraphic" in2="sideways" scale="10" xChannelSelector="R" yChannelSelector="G" />
