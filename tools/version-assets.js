@@ -2,8 +2,10 @@
 // never mixes a cached old file with a new one after the site changes:
 //   - the styles' pictures, in each style (url("../img/bridge/water.svg?v=…"));
 //   - the page's scripts, styles and pictures, in index.html;
-//   - the modules other modules import, through the page's import map.
-// The styles are stamped first, so the page gets their stamped versions.
+//   - the modules other modules import, through the page's import map;
+//   - the pictures scripts name themselves, through js/shared/picture-versions.js, which this
+//     writes (scripts build some of those names, so they cannot be found in the text).
+// The pictures' versions and the styles come first, so the page gets their stamped versions.
 //
 // Usage: npm run stamp   (test/version-assets.test.js fails until it is run)
 import { createHash } from "node:crypto";
@@ -13,6 +15,8 @@ import { fileURLToPath } from "node:url";
 
 const SITE_ROOT = fileURLToPath(new URL("..", import.meta.url));
 const PAGE = "index.html";
+const PICTURE_VERSIONS = "js/shared/picture-versions.js";
+const PICTURES = "./img/";
 const STYLES = "style";
 /** The folders of the site's own files, and the kinds of file stamped in each. */
 const ASSET_FOLDERS = [["js", [".js"]], [STYLES, [".css"]], ["img", [".svg", ".webp", ".jpg", ".png"]]];
@@ -68,11 +72,27 @@ export function stampPage(html, versions) {
     });
 }
 
+/** The module that gives scripts each picture's version (see PICTURE_VERSIONS). */
+export function pictureVersionsModule(versions) {
+    const pictures = [...versions].filter(([path]) => path.startsWith(PICTURES)).sort(([first], [second]) => first.localeCompare(second));
+    return `// Written by \`npm run stamp\` (tools/version-assets.js): each picture's version, for the pictures
+// scripts name themselves, so a changed picture is never mixed with a cached old one.
+
+const VERSIONS = {
+${pictures.map(([path, version]) => `    "${path}": "${version}",`).join("\n")}
+};
+
+/** \`path\` (relative to the page, like "./img/car.svg") with its version, if it has one. */
+export const versioned = path => (path in VERSIONS ? \`\${path}?v=\${VERSIONS[path]}\` : path);
+`;
+}
+
 /** The styles' files, as paths from the site's root. */
 export const styleFiles = (root = SITE_ROOT) =>
     readdirSync(join(root, STYLES)).filter(file => file.endsWith(".css")).map(file => join(STYLES, file));
 
 if (process.argv[1] === fileURLToPath(import.meta.url)) {
+    writeFileSync(join(SITE_ROOT, PICTURE_VERSIONS), pictureVersionsModule(assetVersions()));
     for (const style of styleFiles()) {
         const path = join(SITE_ROOT, style);
         writeFileSync(path, stampStyle(readFileSync(path, "utf8"), assetVersions()));

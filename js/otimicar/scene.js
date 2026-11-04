@@ -1,6 +1,7 @@
 // The OtimiCar scene: the car in pieces in front of a speedometer (styles in style/otimicar.css).
 // One speed (js/otimicar/speed.js) drives the needle and the wheels, so they always agree.
 import { MILLISECONDS_PER_SECOND } from "../shared/frame-rate.js";
+import { versioned } from "../shared/picture-versions.js";
 import { CRUISING_KMH, SPEED_KMH, needleAngle, speedAt, turnWheels } from "./speed.js";
 
 const MAX_STEP_SECONDS = 0.1;                                     // after a pause, carry on, don't jump
@@ -43,7 +44,7 @@ function buildStage(imageFolder) {
         }
         const image = document.createElement("img");
         image.className = piece.classes;
-        image.src = `${imageFolder}/${piece.file}.svg`;
+        image.src = versioned(`${imageFolder}/${piece.file}.svg`);
         image.alt = "";
         stage.append(image);
     }

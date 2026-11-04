@@ -2,8 +2,9 @@
 // the page loads, or as the card gets near the screen: sails, swaying grass and the northern
 // lights. Until then, and if it fails (no WebGL), the card keeps its static picture.
 import { loadSoon } from "./shared/load-soon.js";
+import { versioned } from "./shared/picture-versions.js";
 
-const WINDMILLS_IMAGE = "./img/simple2-windmills.svg";
+const WINDMILLS_IMAGE = versioned("./img/simple2-windmills.svg");
 
 function showWindmills(card, { start }) {
     const scene = document.createElement("div");

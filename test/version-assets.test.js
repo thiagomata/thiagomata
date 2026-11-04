@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { describe, it } from "node:test";
-import { assetVersions, contentVersion, stampPage, stampStyle, styleFiles } from "../tools/version-assets.js";
+import { assetVersions, contentVersion, pictureVersionsModule, stampPage, stampStyle, styleFiles } from "../tools/version-assets.js";
 
 const PAGE = `<link rel="stylesheet" href="./style/site.css" />
 <script type="importmap">
@@ -45,8 +45,19 @@ describe("asset versions", () => {
         assert.equal(stampPage('<img src="./img/logo.svg" />', versions), '<img src="./img/logo.svg?v=eeee5555" />');
     });
 
+    it("gives scripts each picture's version, and leaves other paths alone", async () => {
+        const versions = new Map([["./img/car.svg", "ffff6666"], ["./js/card.js", "bbbb2222"]]);
+        const source = pictureVersionsModule(versions);
+        assert.doesNotMatch(source, /card\.js/);
+        const { versioned } = await import(`data:text/javascript,${encodeURIComponent(source)}`);
+        assert.equal(versioned("./img/car.svg"), "./img/car.svg?v=ffff6666");
+        assert.equal(versioned("../img/car.svg"), "../img/car.svg");
+    });
+
     it("is stamped with the current version of every file (run `npm run stamp` after changing one)", () => {
         const versions = assetVersions();
+        const pictureVersions = readFileSync(new URL("../js/shared/picture-versions.js", import.meta.url), "utf8");
+        assert.equal(pictureVersionsModule(versions), pictureVersions, "js/shared/picture-versions.js is not current");
         for (const style of styleFiles()) {
             const css = readFileSync(new URL(`../${style}`, import.meta.url), "utf8");
             assert.equal(stampStyle(css, versions), css, `${style} is not stamped`);
