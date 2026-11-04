@@ -121,7 +121,11 @@ body {
 
     section {
         background-color: black;
-        background-image: url("../img/bridge-6.svg");
+        background-image: url("../img/bridge-6-animated.svg");
+        /* Off screen, the still picture (see js/pause-offscreen.js). */
+        &.is-paused {
+            background-image: url("../img/bridge-6.svg");
+        }
         background-position: bottom center;;
         --border-gradient-color: var(--gradient-color, rgb(1, 37, 37));
         background-size: cover;
