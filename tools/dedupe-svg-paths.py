@@ -113,7 +113,11 @@ def group_repeats(root, defs):
 def main(source, target):
     ET.register_namespace("", NS)
     ET.register_namespace("xlink", XLINK)
-    tree = ET.parse(source)
+    # Keep comments: illustrations carry their author's credit in one, before the <svg> element,
+    # where the XML library would drop it.
+    text = open(source, encoding="utf-8").read()
+    leading_comments = re.match(r"(\s*<!--.*?-->)*", text, re.S).group(0).strip()
+    tree = ET.ElementTree(ET.fromstring(text, parser=ET.XMLParser(target=ET.TreeBuilder(insert_comments=True))))
     root = tree.getroot()
     defs = root.find(f"{{{NS}}}defs")
     if defs is None:
@@ -141,7 +145,10 @@ def main(source, target):
         root.remove(child)
         root.insert(index, copy)
     groups = group_repeats(root, defs)
-    tree.write(target, xml_declaration=False)
+    with open(target, "w", encoding="utf-8") as output:
+        if leading_comments:
+            output.write(leading_comments + "\n")
+        tree.write(output, encoding="unicode", xml_declaration=False)
     print(f"{len(shape_ids)} distinct shapes, {groups} repeated groups")
 
 
