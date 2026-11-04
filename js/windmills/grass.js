@@ -5,9 +5,10 @@
 // Grass class only draws them on a canvas. The grass comes in two layers so it can grow both
 // behind and in front of the windmills: blades rooted behind a windmill go in the back layer,
 // drawn under the windmill and its sails; all the others go in front.
+import { pixelRatio } from "../shared/frame-rate.js";
 import { lerp } from "../shared/motion.js";
 import { seededRandom } from "../shared/random.js";
-import { HORIZON_Y, MAX_PIXEL_RATIO, PICTURE, isBehindAWindmill, isOnRoad, scaleToPicture } from "./picture.js";
+import { HORIZON_Y, PICTURE, isBehindAWindmill, isOnRoad, scaleToPicture } from "./picture.js";
 import { windAt } from "./wind.js";
 
 export const BLADES = 1400;
@@ -120,9 +121,8 @@ export class Grass {
     }
 
     resize(widthPixels, heightPixels) {
-        const pixelRatio = Math.min(window.devicePixelRatio, MAX_PIXEL_RATIO);
-        this.canvas.width = Math.round(widthPixels * pixelRatio);
-        this.canvas.height = Math.round(heightPixels * pixelRatio);
+        this.canvas.width = Math.round(widthPixels * pixelRatio());
+        this.canvas.height = Math.round(heightPixels * pixelRatio());
     }
 
     draw(seconds) {

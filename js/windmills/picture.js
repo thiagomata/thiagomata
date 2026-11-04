@@ -6,9 +6,6 @@ import { lerp } from "../shared/motion.js";
 
 export const PICTURE = { width: 4294, height: 2474 };
 
-/** Canvases are drawn at most this many pixels per CSS pixel: sharper is not worth the cost. */
-export const MAX_PIXEL_RATIO = 2;
-
 /** Makes a 2D context draw in picture units, filling its canvas. */
 export const scaleToPicture = (context, canvas) =>
     context.setTransform(canvas.width / PICTURE.width, 0, 0, canvas.height / PICTURE.height, 0, 0);

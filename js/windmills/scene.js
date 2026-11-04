@@ -6,10 +6,11 @@
 // picture unit, so positions are read straight off the drawing.
 import * as THREE from "three";
 import { mergeGeometries } from "three/addons/utils/BufferGeometryUtils.js";
+import { MILLISECONDS_PER_SECOND, isTimeToDraw, pixelRatio } from "../shared/frame-rate.js";
 import { FULL_TURN } from "../shared/motion.js";
 import { Aurora } from "./aurora.js";
 import { Grass } from "./grass.js";
-import { MAX_PIXEL_RATIO, PICTURE, WINDMILLS } from "./picture.js";
+import { PICTURE, WINDMILLS } from "./picture.js";
 import { sailSpeedAt } from "./wind.js";
 
 const SAILS_PER_WINDMILL = 4;
@@ -21,7 +22,6 @@ const SECONDS_PER_TURN = 9;
 const STEADY_SPEED = 1;
 /** After a pause, carry on from where the sails were instead of jumping ahead. */
 const MAX_STEP_SECONDS = 0.1;
-const MILLISECONDS_PER_SECOND = 1000;
 /** The camera sees this far in front of and behind the picture's plane (the sails turn in depth). */
 const CAMERA_DEPTH = 2000;
 
@@ -129,7 +129,7 @@ export function start(container, { grass = "none", windmillsImage = "", aurora: 
     canvas.className = "windmill-sails";
     canvas.setAttribute("aria-hidden", "true");
     const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, MAX_PIXEL_RATIO));
+    renderer.setPixelRatio(pixelRatio());
 
     const scene = new THREE.Scene();
     // The camera's view is the picture: (0, 0) at its top-left corner, y pointing down.
@@ -156,7 +156,7 @@ export function start(container, { grass = "none", windmillsImage = "", aurora: 
         }
     };
     const draw = seconds => {
-        aurora?.draw(seconds);
+        aurora?.drawIfDue(seconds);
         renderer.render(scene, camera);
         for (const layer of grassLayers) layer.draw(seconds);
     };
@@ -173,19 +173,24 @@ export function start(container, { grass = "none", windmillsImage = "", aurora: 
     resize();
 }
 
-/** Runs the animation while `container` is on screen; with reduced motion, shows a still frame. */
+/**
+ * Runs the animation while `container` is on screen, drawing at most 30 frames a second; with
+ * reduced motion, shows a still frame.
+ */
 function animateWhileVisible(container, { turnSails, draw }) {
     const still = window.matchMedia("(prefers-reduced-motion: reduce)");
-    let onScreen = false, frameRequest = null, lastSeconds = null;
+    let onScreen = false, frameRequest = null, lastSeconds = null, lastDrawn = null;
 
     const frame = now => {
         frameRequest = null;
+        if (onScreen && !still.matches) frameRequest = requestAnimationFrame(frame);
+        if (!isTimeToDraw(now, lastDrawn)) return;
+        lastDrawn = now;
         const seconds = now / MILLISECONDS_PER_SECOND;
         const stepSeconds = lastSeconds === null ? 0 : Math.min(seconds - lastSeconds, MAX_STEP_SECONDS);
         lastSeconds = seconds;
         turnSails(seconds, stepSeconds);
         draw(seconds);
-        if (onScreen && !still.matches) frameRequest = requestAnimationFrame(frame);
     };
     const update = () => {
         if (still.matches) {
@@ -194,6 +199,7 @@ function animateWhileVisible(container, { turnSails, draw }) {
         } else if (onScreen) {
             if (frameRequest === null) {
                 lastSeconds = null;
+                lastDrawn = null;
                 frameRequest = requestAnimationFrame(frame);
             }
             window.logAnimation?.("elegant", "running");

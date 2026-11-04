@@ -6,9 +6,10 @@
 // Aurora class only draws them on a canvas laid over the picture, blended like light ("screen")
 // so the drawing's own sky shows through. The windmills' silhouettes are cut out of it, so they
 // stay dark.
+import { MILLISECONDS_PER_SECOND, isTimeToDraw, pixelRatio } from "../shared/frame-rate.js";
 import { FULL_TURN, pulse, toUnitRange, travellingWave } from "../shared/motion.js";
 import { seededRandom } from "../shared/random.js";
-import { MAX_PIXEL_RATIO, PICTURE, scaleToPicture } from "./picture.js";
+import { PICTURE, scaleToPicture } from "./picture.js";
 
 const RAYS_SEED = 33;
 const STARS_SEED = 34;
@@ -26,6 +27,12 @@ const SLANT = 0.06;
  * softens them into blurred curtains (cheaper than a blur filter). Higher is softer.
  */
 const RAY_SOFTNESS = 24;
+/**
+ * The aurora is soft and moves slowly, so it is redrawn less often and at a lower resolution than
+ * the rest of the scene: nobody can tell the difference, and it costs a fraction.
+ */
+const AURORA_FRAMES_PER_SECOND = 10;
+const AURORA_RESOLUTION = 0.5;
 
 /** Slow waves across the sky: where the curtains are brighter, and how fast they drift. */
 export const CURTAINS = [
@@ -157,13 +164,23 @@ export class Aurora {
         this.windmills.src = windmillsImage;
         this.rays = placeRays();
         this.stars = placeStars();
+        this.lastDrawn = null;
         container.append(this.canvas);
     }
 
     resize(widthPixels, heightPixels) {
-        const pixelRatio = Math.min(window.devicePixelRatio, MAX_PIXEL_RATIO);
-        this.canvas.width = Math.round(widthPixels * pixelRatio);
-        this.canvas.height = Math.round(heightPixels * pixelRatio);
+        const resolution = pixelRatio() * AURORA_RESOLUTION;
+        this.canvas.width = Math.round(widthPixels * resolution);
+        this.canvas.height = Math.round(heightPixels * resolution);
+        this.lastDrawn = null;            // a resized canvas is blank: draw on the next frame
+    }
+
+    /** Draws the aurora for `seconds`, unless it was drawn less than a tenth of a second ago. */
+    drawIfDue(seconds) {
+        const now = seconds * MILLISECONDS_PER_SECOND;
+        if (!isTimeToDraw(now, this.lastDrawn, AURORA_FRAMES_PER_SECOND)) return;
+        this.lastDrawn = now;
+        this.draw(seconds);
     }
 
     draw(seconds) {

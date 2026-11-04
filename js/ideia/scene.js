@@ -10,14 +10,11 @@ import { buildCity } from "./city.js";
 import { crowdSizeFor } from "./crowd.js";
 import { CrowdView } from "./crowd-view.js";
 import { COLOURS } from "./plan.js";
+import { MILLISECONDS_PER_SECOND, isTimeToDraw, pixelRatio } from "../shared/frame-rate.js";
 import { seededRandom } from "../shared/random.js";
 import { Simulation, TICK_SECONDS } from "./simulation.js";
 
 const MAX_TICKS_PER_FRAME = 6;          // after a long pause, resume instead of fast-forwarding
-const MIN_MS_BETWEEN_FRAMES = 32;       // draw at most about 30 frames a second
-
-/** Sharper is not worth the cost on dense screens for a background. */
-const MAX_PIXEL_RATIO = 1.5;
 
 // Fixed seeds: the same buildings and the same faces on every visit.
 const CITY_SEED = 3;
@@ -65,7 +62,7 @@ export function start(container) {
     canvas.className = "live-bg";
     canvas.setAttribute("aria-hidden", "true");
     const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, MAX_PIXEL_RATIO));
+    renderer.setPixelRatio(pixelRatio());
 
     const scene = createScene();
     const camera = createCamera();
@@ -96,8 +93,8 @@ export function start(container) {
     let onScreen = false, frameRequest = null, lastFrameAt = null;
     const frame = now => {
         frameRequest = null;
-        if (lastFrameAt === null || now - lastFrameAt >= MIN_MS_BETWEEN_FRAMES) {
-            if (lastFrameAt !== null && !stillPreference.matches) advance((now - lastFrameAt) / 1000);
+        if (isTimeToDraw(now, lastFrameAt)) {
+            if (lastFrameAt !== null && !stillPreference.matches) advance((now - lastFrameAt) / MILLISECONDS_PER_SECOND);
             lastFrameAt = now;
             draw();
         }
