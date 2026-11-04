@@ -1,0 +1,54 @@
+/*
+ * The Elegant card's live windmills (js/windmills-card.js and js/windmills/scene.js): the picture
+ * without its sails keeps its hand-drawn grass, the sails turn over it in three.js, and procedural
+ * grass sways in front of the windmills with the same wind.
+ *
+ * The stage keeps the picture's shape (its viewBox is 4294 x 2474) and covers the card like the
+ * static image did: filling it, anchored at the bottom right. The card keeps its static picture
+ * until the stage is ready, and for good if WebGL is unavailable.
+ */
+
+#values section.windmills-live {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    background-image: none;
+}
+
+/* The card's readability gradient is painted by the card itself, under the stage; repeat it on
+   a layer above the stage and below the text. */
+#values section.windmills-live::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    border-image: inherit;
+    pointer-events: none;
+}
+
+.windmills-scene {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    overflow: hidden;
+    container-type: size;
+    pointer-events: none;
+}
+
+.windmills-stage {
+    --stage-width: max(100cqw, 100cqh * 4294 / 2474);
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    width: var(--stage-width);
+    aspect-ratio: 4294 / 2474;
+    background: url("../img/simple2-no-sails.svg") center / 100% 100% no-repeat;
+}
+
+.windmills-stage .windmill-sails,
+.windmills-stage .windmill-grass {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+}
