@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Ideia scramble crossing</title>
+    <style>
+        /* The Ideia card's live background (js/ideia/scene.js) on its own, full screen. */
+        html, body {
+            margin: 0;
+            background: #0d0f1a;
+        }
+        .stage {
+            position: relative;
+            height: 100vh;
+            overflow: hidden;
+        }
+        .live-bg {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+        }
+    </style>
+    <script type="importmap">
+        {
+            "imports": {
+                "three": "https://cdn.jsdelivr.net/npm/three@0.187.0/build/three.module.min.js",
+                "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.187.0/examples/jsm/"
+            }
+        }
+    </script>
+</head>
+<body>
+    <div class="stage"></div>
+    <script type="module">
+        import { start } from "../js/ideia/scene.js";
+        start(document.querySelector(".stage"));
+    </script>
+</body>
+</html>

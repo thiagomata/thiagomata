@@ -1,0 +1,12 @@
+{
+    "name": "thiagomata-site",
+    "private": true,
+    "description": "Personal site and CVs of Thiago Mata",
+    "type": "module",
+    "scripts": {
+        "test": "node --test \"test/**/*.test.js\""
+    },
+    "engines": {
+        "node": ">=20"
+    }
+}
