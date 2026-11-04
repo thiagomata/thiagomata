@@ -288,7 +288,7 @@ body {
 
     section[data-company=mec] {
         --icon: url("../img/mec.svg");
-        --background-image: url("../img/bsb7.svg");
+        --background-image: url("../img/bsb7-animated.svg");
         background-size: cover;
         background-position: bottom center;
         --effect-color-red: 23;
