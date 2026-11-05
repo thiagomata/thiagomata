@@ -48,7 +48,25 @@ const LAYER_FADE = [[0.88, 0], [0.7, 35], [0, 60]];
 /** The northern lights layer at lighter strengths, to find how much the black text really needs. */
 const STRENGTHS = [0.8, 0.65, 0.5, 0.35];
 
-const lightLayer = (card, colours, strength = 1) => layer(card, "linear-gradient(transparent, transparent)") + `
+/** A mask fading across the card, from [opacity, at %] stops. */
+const fadeMask = stops => `linear-gradient(90deg, ${stops.map(([opacity, at]) => `rgba(0, 0, 0, ${opacity.toFixed(3)}) ${at}%`).join(", ")})`;
+
+/**
+ * Strong where the text is, then quickly clear: 80% across the text on the left, gone soon after.
+ * On a phone the text runs almost the whole width, so the layer holds further across.
+ */
+const LEFT_AND_FAST = {
+    wide: [[0.8, 0], [0.8, 28], [0, 45]],
+    phone: [[0.8, 0], [0.8, 85], [0.4, 100]],
+};
+const FASTER = {
+    wide: [[0.8, 0], [0.8, 24], [0, 36]],
+    phone: [[0.8, 0], [0.8, 85], [0.4, 100]],
+};
+/** The site's phone layout starts below this width. */
+const PHONE_WIDTH = "43em";
+
+const lightLayer = (card, colours, strength = 1, shape = null) => layer(card, "linear-gradient(transparent, transparent)") + `
     ${card}::after {
         content: "";
         position: absolute;
@@ -57,8 +75,9 @@ const lightLayer = (card, colours, strength = 1) => layer(card, "linear-gradient
         pointer-events: none;
         background: linear-gradient(${colours.join(", ")});
         opacity: 1;
-        mask-image: linear-gradient(90deg, ${LAYER_FADE.map(([opacity, at]) => `rgba(0, 0, 0, ${(opacity * strength).toFixed(3)}) ${at}%`).join(", ")});
+        mask-image: ${fadeMask(shape ? shape.wide : LAYER_FADE.map(([opacity, at]) => [opacity * strength, at]))};
     }
+    ${shape ? `@media (max-width: ${PHONE_WIDTH}) { ${card}::after { mask-image: ${fadeMask(shape.phone)}; } }` : ""}
     ${card} { position: relative; isolation: isolate; }
     ${card} ${TEXT} { color: #000 !important; }`;
 
@@ -97,6 +116,16 @@ export const VARIANTS = [
         label: `Black text on a light layer across the left: ${label}`,
         css: card => lightLayer(card, colours),
     })),
+    {
+        id: "black-light-aurora-left",
+        label: "Black text on the northern lights layer: 80% across the text, clear by 45% (phone: across the text)",
+        css: card => lightLayer(card, LIGHT_COLOURS.aurora.colours, 1, LEFT_AND_FAST),
+    },
+    {
+        id: "black-light-aurora-left-faster",
+        label: "Black text on the northern lights layer: 80% across the text, clear by 36% (phone: across the text)",
+        css: card => lightLayer(card, LIGHT_COLOURS.aurora.colours, 1, FASTER),
+    },
     ...STRENGTHS.map(strength => ({
         id: `black-light-aurora-${Math.round(strength * 100)}`,
         label: `Black text on the northern lights layer, at ${Math.round(strength * 100)}% of its strength`,

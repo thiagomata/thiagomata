@@ -1,5 +1,5 @@
 {
-    "measuredAt": "2026-11-05T21:29:57.126Z",
+    "measuredAt": "2026-11-05T21:35:40.548Z",
     "variants": {
         "today": {
             "desktop": {
@@ -239,6 +239,46 @@
                 "failingLines": 5,
                 "lines": 9,
                 "sceneKept": 0.95
+            }
+        },
+        "black-light-aurora-left": {
+            "desktop": {
+                "worstContrast": 7.62,
+                "worstText": "Traceability",
+                "required": 4.5,
+                "passes": true,
+                "failingLines": 0,
+                "lines": 9,
+                "sceneKept": 0.77
+            },
+            "phone": {
+                "worstContrast": 7.63,
+                "worstText": "Traceability",
+                "required": 4.5,
+                "passes": true,
+                "failingLines": 0,
+                "lines": 9,
+                "sceneKept": 0.46
+            }
+        },
+        "black-light-aurora-left-faster": {
+            "desktop": {
+                "worstContrast": 7.62,
+                "worstText": "Traceability",
+                "required": 4.5,
+                "passes": true,
+                "failingLines": 0,
+                "lines": 9,
+                "sceneKept": 0.83
+            },
+            "phone": {
+                "worstContrast": 7.63,
+                "worstText": "Traceability",
+                "required": 4.5,
+                "passes": true,
+                "failingLines": 0,
+                "lines": 9,
+                "sceneKept": 0.46
             }
         }
     }
