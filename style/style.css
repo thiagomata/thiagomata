@@ -1283,3 +1283,13 @@ p {
         background-image: none;
     }
 }
+
+/* On a phone, the OtimiCar picture fits the card's width, so the whole car shows (as the live
+   scene does, style/otimicar.css), with the picture's sky above it. */
+@media (max-width: 43em) {
+    #top-companies section[data-company="otimicar"] {
+        background-size: 100% auto;
+        background-position: center bottom;
+        background-color: #01928A;
+    }
+}

@@ -5,15 +5,18 @@
  * on the ground, and smoke drifts back from the exhaust.
  *
  * The stage keeps the illustration's shape (its viewBox is 1151 x 532) and covers its container
- * like the static image did: filling it, anchored at the bottom, 22% from the left. Pieces are
- * placed in the illustration's units.
+ * like the static image did: filling it, anchored at the bottom, 22% from the left. On a narrow
+ * card (a phone), covering it would show only the back of the car, so the whole car fits the
+ * card's width instead, with the sky above it. Pieces are placed in the illustration's units.
  */
 
 .otimicar-scene {
+    --sky: #01928A;
     position: absolute;
     inset: 0;
     overflow: hidden;
     container-type: size;
+    background: var(--sky);         /* seen above the stage only when the car fits the width */
 }
 
 .otimicar-stage {
@@ -29,7 +32,15 @@
     aspect-ratio: 1151 / 532;
     container-type: inline-size;         /* lets the smoke move in units of the stage's width */
     /* The sky and ground from the illustration, behind the pieces. */
-    background: linear-gradient(#01928A, #015E5C 80%, #FACE63);
+    background: linear-gradient(var(--sky), #015E5C 80%, #FACE63);
+}
+
+/* Cards narrower than 3:2 show the whole car, across their width; the scene's sky fills the rest. */
+@container (max-aspect-ratio: 3 / 2) {
+    .otimicar-stage {
+        --stage-width: 100cqw;
+        left: 0;
+    }
 }
 
 .otimicar-stage img {
