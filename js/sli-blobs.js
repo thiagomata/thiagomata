@@ -26,6 +26,7 @@
     const svg = document.createElementNS(SVG_NAMESPACE, "svg");
     svg.setAttribute("class", "live-bg");
     svg.setAttribute("aria-hidden", "true");
+    svg.setAttribute("preserveAspectRatio", "xMidYMid slice");   // drawn for the card, shown 1px smaller (style.css)
     svg.innerHTML = `
         <defs>
             <filter id="sli-goo" filterUnits="userSpaceOnUse" x="0" y="0" width="100%" height="100%">

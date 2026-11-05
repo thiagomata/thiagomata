@@ -1129,6 +1129,14 @@ p {
     z-index: -1;
     pointer-events: none;
 }
+/* The SLI background is bright under its shade: when the card's edge falls between two pixels
+   (a zoomed page or device preview), the half-covered edge pixel let it show as a white line.
+   Kept 1px inside the card, the edge pixels are only the dark card and its shade. */
+#top-companies section[data-company="sli"] .live-bg {
+    inset: 1px;
+    width: calc(100% - 2px);
+    height: calc(100% - 2px);
+}
 #top-companies section[data-company="sli"] .live-bg circle {
     fill: #BEBCBF;
     transform-box: fill-box;
