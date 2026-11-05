@@ -161,10 +161,16 @@ export class Aurora {
         this.colours = colourMap();
         this.soft = newCanvas(Math.round(PICTURE.width / RAY_SOFTNESS), Math.round(PICTURE.height / RAY_SOFTNESS));
         this.windmills = new Image();
+        // Frames drawn before the windmills load can't cut them out: redraw the last one once they do
+        // (with reduced motion, it is the only frame).
+        this.windmills.addEventListener("load", () => {
+            if (this.lastSeconds !== null) this.draw(this.lastSeconds);
+        }, { once: true });
         this.windmills.src = windmillsImage;
         this.rays = placeRays();
         this.stars = placeStars();
         this.lastDrawn = null;
+        this.lastSeconds = null;
         container.append(this.canvas);
     }
 
@@ -184,6 +190,7 @@ export class Aurora {
     }
 
     draw(seconds) {
+        this.lastSeconds = seconds;
         this.drawSoftRays(seconds);
         const { context, canvas } = this;
         scaleToPicture(context, canvas);
