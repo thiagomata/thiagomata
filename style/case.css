@@ -93,7 +93,7 @@ menu li:nth-child(1) {
   border: 0;
   width: var(--padding-width);
   color: white;
-  background-image: url("../img/rokt-new.svg");
+  background-image: url("../img/rokt-new.svg?v=5d55f3ef");
   background-size: cover;
   background-repeat: no-repeat;
   height: 700px;
@@ -118,7 +118,7 @@ menu li:nth-child(1) {
     grid-area: brand;
     font-family: Oswald, Arial, Helvetica, sans-serif;
     h3, h1 {
-      /* background-image: url("../img/rokt-white.svg"); */
+      /* background-image: url("../img/rokt-white.svg?v=808a7850"); */
       background-size: contain;
       background-repeat: no-repeat;
       text-transform: uppercase;
@@ -187,7 +187,7 @@ menu li:nth-child(1) {
     max-width: 1000px;
     grid-area: introduction-title;
     color: rgba(0, 0, 0, 0);
-    background-image: url("../img/rokt.svg");
+    background-image: url("../img/rokt.svg?v=be8b9cbc");
     background-repeat: no-repeat;
     background-position: center center;
     background-size: min(100vw,50%);
@@ -245,7 +245,7 @@ menu li:nth-child(1) {
   background-color: rgb(8, 1, 16);
 
   h3 {
-    background-image: url("../img/sli.svg");
+    background-image: url("../img/sli.svg?v=55746700");
     background-size: contain;
   }
   .content {
@@ -254,7 +254,7 @@ menu li:nth-child(1) {
   }
 }
 .rokt #summary .brand h3 {
-  background-image: url("../img/rokt-white.svg");
+  background-image: url("../img/rokt-white.svg?v=808a7850");
 }
 .slisystems #summary .brand h3 {
   background-image: none;
@@ -262,7 +262,7 @@ menu li:nth-child(1) {
   text-transform: uppercase;
 }
 .slisystems #summary {
-  background-image: url("../img/sli-bg.svg");
+  background-image: url("../img/sli-bg.svg?v=194c86b0");
   background-size: cover;
   background-position: center bottom;
   background-repeat: no-repeat;
@@ -273,7 +273,7 @@ menu li:nth-child(1) {
 }
 
 .idea #introduction h3 {
-  background-image: url("../img/ideia.svg");
+  background-image: url("../img/ideia.svg?v=396c1335");
   background-size: 50%;
 }
 
@@ -284,7 +284,7 @@ menu li:nth-child(1) {
 }
 
 .idea #summary {
-  background-image: url("../img/people4.svg");
+  background-image: url("../img/people4.svg?v=c7fea7d5");
   background-size: cover;
   background-position: center bottom;
   background-repeat: no-repeat;
@@ -304,17 +304,17 @@ menu li:nth-child(1) {
 }
 
 .idea .call-to-action .thumb .card .icon {
-  background-image: url("../img/library.jpg");
+  background-image: url("../img/library.jpg?v=7243d61e");
   border-color: #67604b;
 }
 
 .otimicar #introduction h3 {
-  background-image: url("../img/otimicar-with-text.svg");
+  background-image: url("../img/otimicar-with-text.svg?v=100c07b5");
   background-size: 50%;
 }
 
 .otimicar #summary {
-  background-image: url("../img/car4.svg");
+  background-image: url("../img/car4.svg?v=557fd216");
   border-image: linear-gradient(180deg, rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.7))
     fill 1;
   background-size: cover;
@@ -341,7 +341,7 @@ menu li:nth-child(1) {
 }
 
 .otimicar .call-to-action .thumb .card .icon {
-  background-image: url("../img/engine.jpg"),
+  background-image: url("../img/engine.jpg?v=ef2c293b"),
     linear-gradient(180deg, rgba(240, 240, 240, 1), rgba(220, 220, 220, 1));
   background-color: gradient(180deg, rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.7));
   background-size: 70%, cover;
@@ -353,7 +353,7 @@ menu li:nth-child(1) {
   text-transform: uppercase;
 }
 .mec #introduction h3 {
-  background: url("../img/mec.svg"), url("../img/inep.svg");
+  background: url("../img/mec.svg?v=bf64ca76"), url("../img/inep.svg?v=4348d544");
   background-size: 15%, 30%;
   background-repeat: no-repeat no-repeat;
   background-position-y: center, center;
@@ -369,7 +369,7 @@ menu li:nth-child(1) {
 }
 
 .mec #summary {
-  background-image: url("../img/bsb7.svg");
+  background-image: url("../img/bsb7.svg?v=301f6a37");
   border-image: linear-gradient(180deg, rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.7))
     fill 1;
   /* background-size: 100%; */
@@ -437,7 +437,7 @@ menu li:nth-child(1) {
     .card {
        /* max-width: fit-content; */
       /* margin: auto; */
-      background-image: url("../img/rokt-new.svg");
+      background-image: url("../img/rokt-new.svg?v=5d55f3ef");
       border: 5px solid rgb(99, 31, 87);
       background-size: cover;
       -webkit-transform-style: preserve-3d;
@@ -479,7 +479,7 @@ menu li:nth-child(1) {
 }
 .slisystems .call-to-action .thumb .card {
   background-color: white;
-  background-image: url("../img/sli-new.svg");
+  background-image: url("../img/sli-new.svg?v=824004d4");
   background-size: 72%;
   background-repeat: repeat;
   background-position: center center;
@@ -490,23 +490,23 @@ menu li:nth-child(1) {
 }
 
 #identity.call-to-action .thumb .card .icon {
-  background-image: url("../img/identity.svg");
+  background-image: url("../img/identity.svg?v=971acc77");
 }
 
 #attribution.call-to-action .thumb .card .icon {
-  background-image: url("../img/conversion.svg");
+  background-image: url("../img/conversion.svg?v=2b4fa80d");
 }
 
 #to-the-cloud.call-to-action .thumb .card .icon {
-  background-image: url("../img/cloud1.jpg");
+  background-image: url("../img/cloud1.jpg?v=d381ce6b");
 }
 
 #education-as-platform .thumb .card .icon {
-  background-image: url("../img/boy-reading.jpg");
+  background-image: url("../img/boy-reading.jpg?v=a09e596a");
 }
 
 #bot-detection.call-to-action .thumb .card .icon {
-  background-image: url("../img/bot1.jpg");
+  background-image: url("../img/bot1.jpg?v=0c6df888");
 }
 
 #impact {
@@ -718,7 +718,7 @@ menu li {
 }
 /* Macquarie case study shares the homepage's vector treatment. */
 .macquarie #summary {
-  background-image: url("../img/macquarie-background.webp");
+  background-image: url("../img/macquarie-background.webp?v=b566aa43");
   background-position: center;
     background-size: cover;
     background-color: #111315;

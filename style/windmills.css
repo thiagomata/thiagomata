@@ -1,0 +1,64 @@
+/*
+ * The Elegant card's live windmills (js/windmills-card.js and js/windmills/scene.js): the picture
+ * without its sails keeps its hand-drawn grass, the northern lights ripple over its sky, the sails
+ * turn in three.js, and procedural grass sways in front of the windmills with the same wind.
+ *
+ * The stage keeps the picture's shape (its viewBox is 4294 x 2474) and covers the card like the
+ * static image did: filling it, anchored at the bottom right. On a narrow card (a phone) that
+ * would show only the sky right of the windmills, so the stage slides to keep the big windmill in
+ * the middle of the card, as far as the picture still covers the card. The card keeps its static
+ * picture until the stage is ready, and for good if WebGL is unavailable.
+ */
+
+#values section.windmills-live {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    background-image: none;
+}
+
+/* The card's readability gradient is painted by the card itself, under the stage; repeat it on
+   a layer above the stage and below the text. */
+#values section.windmills-live::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    border-image: inherit;
+    pointer-events: none;
+}
+
+.windmills-scene {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    overflow: hidden;
+    container-type: size;
+    pointer-events: none;
+}
+
+.windmills-stage {
+    --stage-width: max(100cqw, 100cqh * 4294 / 2474);
+    /* The big windmill's hub, as a share of the picture's width (js/windmills/picture.js). */
+    --big-windmill: calc(2936 / 4294);
+    position: absolute;
+    left: clamp(100cqw - var(--stage-width), 50cqw - var(--stage-width) * var(--big-windmill), 0px);
+    bottom: 0;
+    width: var(--stage-width);
+    aspect-ratio: 4294 / 2474;
+    background: url("../img/simple2-no-sails.svg?v=ad56f248") center / 100% 100% no-repeat;
+}
+
+.windmills-stage .windmill-aurora,
+.windmills-stage .windmill-sails,
+.windmills-stage .windmill-grass {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+}
+
+/* The northern lights add light to the drawing's own sky. */
+.windmills-stage .windmill-aurora {
+    mix-blend-mode: screen;
+}

@@ -5,7 +5,7 @@
 | &nbsp;    | &nbsp;                                              |
 |-----------|-----------------------------------------------------|
 | Company:  | Rokt                                                |
-| Position: | Senior Data Engineer                                |
+| Position: | Senior Software Engineer                            |
 | Summary:  | To improve the offers' relevance and provide better insights to the clients, we needed to improve the attribution matching. |
 
 ##  Rokt
@@ -18,7 +18,7 @@
 
 Rokt is a technology company specializing in e-commerce marketing. It provides personalized transaction moments to enhance customer engagement and revenue. As of 2023, Rokt has over 500 million users and is valued at approximately $2.4 billion. Rokt has partnerships with notable companies such as Uber, Ticketmaster, Fanatics, and Live Nation.
 
-I worked at Rokt as a Senior Data Engineer for five years. My work involved developing services in a high-performance, high-availability, scalable platform that processes billions of monthly transactions to deliver personalized and relevant offers to millions of users worldwide.
+I worked at Rokt as a Senior Software Engineer for five years. My work involved developing services in a high-performance, high-availability, scalable platform that processes billions of monthly transactions to deliver personalized and relevant offers to millions of users worldwide.
 
 ## Attributing Reportable Conversions
 

@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-52 -52 104 104">
+    <!-- The rim, its five spokes and the hub, drawn straight on; turns with the wheel. -->
+    <defs>
+        <linearGradient id="rim" x1="0" y1="0" x2="1" y2="1">
+            <stop stop-color="white" />
+            <stop offset="1" stop-color="#A5A0A0" />
+        </linearGradient>
+        <radialGradient id="hub" cx="0.35" cy="0.35">
+            <stop stop-color="white" />
+            <stop offset="1" stop-color="#8E8A8A" />
+        </radialGradient>
+        <!-- One spoke, pointing up from the hub to the rim; copied five times. -->
+        <path id="spoke" d="M -3.2 -9 L -2 -44 L 2 -44 L 3.2 -9 Z" fill="url(#rim)" stroke="#5c5757" stroke-width="0.6" />
+    </defs>
+    <circle r="47" fill="none" stroke="url(#rim)" stroke-width="6" />
+    <circle r="50.5" fill="none" stroke="#2D2B2C" stroke-width="2" />
+    <use href="#spoke" />
+    <use href="#spoke" transform="rotate(72)" />
+    <use href="#spoke" transform="rotate(144)" />
+    <use href="#spoke" transform="rotate(216)" />
+    <use href="#spoke" transform="rotate(288)" />
+    <circle r="10" fill="url(#hub)" stroke="#5c5757" stroke-width="0.6" />
+    <circle r="2.5" fill="#5c5757" />
+</svg>

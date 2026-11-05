@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thiago Mata - One Page CV</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500&family=Inter:wght@400;500;600&display=swap">
+
+    <meta name="description" content="Thiago Mata’s one page CV: technology leadership, engineering, and research in formal verification." />
+    <link rel="canonical" href="https://thiagomata.com/one-page-cv.html" />
+
+    <style>
+        :root {
+            --ink: #111315;
+            --muted: #5b6168;
+            --rule: #e9ecef;
+            --accent: #4444dd;
+            --paper: #ffffff;
+            --desk: #f1f3f5;
+            --shade: #f3f4fa;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html {
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
+
+        body {
+            margin: 0;
+            background: var(--desk);
+            color: var(--ink);
+            font-family: Inter, "Helvetica Neue", Arial, sans-serif;
+            font-size: 9.2pt;
+            line-height: 1.38;
+        }
+
+        a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        a:hover {
+            color: var(--accent);
+        }
+
+        .more {
+            color: var(--accent);
+            white-space: nowrap;
+        }
+
+        .more::after {
+            content: " →";
+        }
+
+        .item a {
+            text-decoration: underline;
+            text-decoration-color: rgba(68, 68, 221, .35);
+            text-decoration-thickness: 1.5px;
+            text-underline-offset: 2px;
+        }
+
+        .item a:hover,
+        .more:hover {
+            text-decoration-color: var(--accent);
+        }
+
+        .page {
+            width: 210mm;
+            min-height: 297mm;
+            margin: 24px auto;
+            padding: 10mm 14mm 8mm;
+            background: var(--paper);
+            box-shadow: 0 2px 18px rgba(0, 0, 0, .08);
+            border-top: 5px solid var(--accent);
+        }
+
+        /* Header */
+
+        header {
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 6mm;
+            align-items: end;
+            margin: -10mm -14mm 0;
+            padding: 9mm 14mm 6mm;
+            background: var(--shade);
+        }
+
+        h1 {
+            margin: 0;
+            font-family: "Playfair Display", Georgia, serif;
+            font-weight: 500;
+            font-size: 30pt;
+            line-height: 1;
+        }
+
+        .role {
+            margin: 2mm 0 0;
+            font-size: 11pt;
+            font-weight: 500;
+            color: var(--muted);
+            letter-spacing: .3px;
+        }
+
+        .contact {
+            margin: 0;
+            padding: 0;
+            list-style: none;
+            display: grid;
+            grid-template-rows: repeat(4, auto);
+            grid-auto-flow: column;
+            column-gap: 6mm;
+            font-size: 8.6pt;
+            line-height: 1.5;
+            color: var(--muted);
+        }
+
+        .summary {
+            margin: 4mm 0 0;
+            font-size: 10.4pt;
+            line-height: 1.5;
+        }
+
+        /* Body */
+
+        .columns {
+            display: grid;
+            grid-template-columns: 1.45fr 1fr;
+            gap: 7mm;
+            margin-top: 5mm;
+        }
+
+        .columns > div:last-child {
+            margin: -4mm 0 0;
+            padding: 4mm 5mm;
+            background: var(--shade);
+        }
+
+        h2 {
+            margin: 0 0 2.5mm;
+            padding-bottom: 1mm;
+            font-size: 8.4pt;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1.4px;
+            color: var(--accent);
+            border-bottom: 1px solid var(--rule);
+        }
+
+        section + section {
+            margin-top: 4mm;
+        }
+
+        .item + .item {
+            margin-top: 2.5mm;
+        }
+
+        .item-head {
+            display: flex;
+            justify-content: space-between;
+            gap: 3mm;
+        }
+
+        .item-title {
+            font-weight: 500;
+        }
+
+        .papers .item-title {
+            font-weight: 400;
+        }
+
+        .item-date {
+            flex-shrink: 0;
+            color: var(--muted);
+            font-size: 8.6pt;
+        }
+
+        .item-sub {
+            color: var(--muted);
+            font-size: 8.8pt;
+        }
+
+        .item p {
+            margin: .8mm 0 0;
+        }
+
+        dl {
+            margin: 0;
+        }
+
+        dt {
+            font-weight: 500;
+        }
+
+        dd {
+            margin: 0 0 2mm;
+        }
+
+        .quiet {
+            color: var(--muted);
+            font-size: 8.8pt;
+        }
+
+        .toolbar {
+            width: 210mm;
+            margin: 16px auto -8px;
+            text-align: right;
+            font-size: 9pt;
+        }
+
+        .toolbar a {
+            color: var(--accent);
+        }
+
+        .toolbar a + a {
+            margin-left: 4mm;
+        }
+
+        .toolbar a:hover {
+            text-decoration: underline;
+        }
+
+        /* Phone width */
+
+        @media screen and (max-width: 820px) {
+            body {
+                font-size: 10.5pt;
+            }
+
+            .page {
+                width: auto;
+                min-height: 0;
+                margin: 0;
+                padding: 24px 16px;
+                box-shadow: none;
+            }
+
+            .toolbar {
+                width: auto;
+                margin: 0;
+                padding: 12px 16px 0;
+                background: var(--paper);
+            }
+
+            header {
+                margin: -24px -16px 0;
+                padding: 24px 16px;
+            }
+
+            header,
+            .columns {
+                grid-template-columns: 1fr;
+            }
+
+            .contact {
+                grid-template-rows: none;
+                grid-auto-flow: row;
+            }
+        }
+
+        @page {
+            size: A4;
+            margin: 0;
+        }
+
+        @media print {
+            body {
+                background: var(--paper);
+            }
+
+            .page {
+                margin: 0;
+                box-shadow: none;
+            }
+
+            .toolbar {
+                display: none;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <nav class="toolbar">
+        <a href="./detailed-cv.html">Detailed version</a>
+        <a href="./pdf/thiago-mata-one-page-cv.pdf" download>Download PDF</a>
+    </nav>
+    <main class="page">
+        <header>
+            <div>
+                <h1>Thiago Mata</h1>
+                <p class="role">Technology Leader</p>
+            </div>
+            <ul class="contact">
+                <li>Sydney, Australia · Australian Citizen</li>
+                <li><a href="tel:+61413065180">+61 413 065 180</a></li>
+                <li><a href="mailto:thiago.henrique.mata@gmail.com">thiago.henrique.mata@gmail.com</a></li>
+                <li><a href="https://thiagomata.com">thiagomata.com</a></li>
+                <li><a href="https://www.linkedin.com/in/thiagomata/">linkedin.com/in/thiagomata</a></li>
+                <li><a href="https://github.com/thiagomata">github.com/thiagomata</a></li>
+                <li><a href="https://orcid.org/0009-0002-7366-939X">orcid.org/0009-0002-7366-939X</a></li>
+            </ul>
+        </header>
+
+        <p class="summary">
+            Technology leader who connects engineering to business outcomes. Over twenty years across startups,
+            ad-tech at billions of transactions, and regulated banking have shaped how I choose what to build,
+            what not to build, and where to invest, and how I lead teams that decide well today and better
+            tomorrow, always favouring clarity over cleverness and reliability over novelty.
+        </p>
+
+        <div class="columns">
+            <div>
+                <section>
+                    <h2>Experience</h2>
+
+                    <div class="item">
+                        <div class="item-head">
+                            <span class="item-title">Senior Manager, <a href="https://www.macquarie.com.au/">Macquarie Bank</a></span>
+                            <span class="item-date">Sydney · 2024–Present</span>
+                        </div>
+                        <p>Lead the team delivering new banking products, reshaping how it builds them and cutting
+                            production incidents through testing, observability, graceful degradation, and clearer code.</p>
+                    </div>
+
+                    <div class="item">
+                        <div class="item-head">
+                            <span class="item-title">Senior Software Engineer, <a href="https://www.rokt.com">Rokt</a></span>
+                            <span class="item-date">Sydney · 2019–2024</span>
+                        </div>
+                        <p>Built the identity and attribution systems and led bot detection, a real-time service on the
+                            critical path of a platform processing billions of transactions.</p>
+                    </div>
+
+                    <div class="item">
+                        <div class="item-head">
+                            <span class="item-title">Senior Data Engineer, <a href="https://www.sli-systems.com/">SLI Systems</a></span>
+                            <span class="item-date">Christchurch · 2017–2019</span>
+                        </div>
+                        <p>Migrated core data services to Google Cloud, making them faster and cheaper and
+                            strengthening the company's position in its acquisition.</p>
+                    </div>
+
+                    <div class="item">
+                        <div class="item-head">
+                            <span class="item-title">Chief Technology Officer, <a href="http://ideiabigdata.com">Ideia Big Data</a></span>
+                            <span class="item-date">Brasília · 2014–2017</span>
+                        </div>
+                        <p>Hired and led engineering across three offices in three states, from concept to the first
+                            production-ready products. Reported strategy to investors and shaped the team structure
+                            and career paths that prepared the company for its merger with Pinion.</p>
+                    </div>
+
+                    <div class="item">
+                        <div class="item-head">
+                            <span class="item-title">Co-Founder, OtimiCar</span>
+                            <span class="item-date">Brasília · 2013–2014</span>
+                        </div>
+                        <p>Specified and built the first server for a device that turns any car into a smart car,
+                            syncing car data with partners and sending maintenance recommendations to owners.</p>
+                    </div>
+
+                    <div class="item">
+                        <div class="item-head">
+                            <span class="item-title">Earlier</span>
+                            <span class="item-date">2003–2013</span>
+                        </div>
+                        <div class="item-sub"><a href="http://www.inep.gov.br">INEP</a> · <a href="http://www.mec.gov.br/">Ministry of Education</a> · <a href="https://www.sicoob.com.br/">Bancoob</a> · <a href="https://www.dentsucreative.com/">AgênciaClick/Isobar</a></div>
+                        <p>High-availability public systems (E-MEC, Revalida), credit portfolio transfers, and six
+                            years teaching web development.</p>
+                    </div>
+                </section>
+
+                <section>
+                    <h2>Research</h2>
+                    <div class="papers">
+                    <div class="item">
+                        <div class="item-title"><a href="https://doi.org/10.5281/zenodo.22929219">Formal Verification of Euclid's Theorem on the Infinitude of Primes</a></div>
+                    </div>
+                    <div class="item">
+                        <div class="item-title"><a href="https://doi.org/10.5281/zenodo.22955781">Formal Verification of Sieve Sequence Stages and Their Transitions</a></div>
+                    </div>
+                    <div class="item">
+                        <div class="item-title"><a href="https://doi.org/10.5281/zenodo.22955785">Structural Properties and Signed Boundaries of 2-Gaps in Sieve Sequences</a></div>
+                    </div>
+                    </div>
+                    <p class="quiet">
+                        Preprints on Zenodo, 2026, with machine-checked proofs.
+                        <a class="more" href="https://github.com/thiagomata/prime-numbers/tree/master/articles">All articles</a>
+                    </p>
+                </section>
+
+                <section>
+                    <h2>Awards</h2>
+                    <div class="item">
+                        <div class="item-title">Cannes Lions: Gold, Silver, and Bronze</div>
+                        <div class="item-sub">SAT-JF14 mobile app, built at Adjetiva · 2014</div>
+                    </div>
+                    <div class="item">
+                        <div class="item-title">Honourable Mention, Best Published Articles</div>
+                        <div class="item-sub">LACLO · 2015</div>
+                    </div>
+                </section>
+
+            </div>
+
+            <div>
+                <section>
+                    <h2>Skills</h2>
+                    <dl>
+                        <dt>Leadership</dt>
+                        <dd>Technical strategy, hiring, people management, investor reporting, distributed teams, career paths</dd>
+                        <dt>Cloud &amp; delivery</dt>
+                        <dd>AWS, GCP, Kubernetes, Docker, Terraform, CloudFormation, CI/CD</dd>
+                        <dt>Data</dt>
+                        <dd>Spark, Apache Beam, Kafka, BigQuery, Redshift, Postgres, MongoDB, Elasticsearch, Redis</dd>
+                        <dt>Languages</dt>
+                        <dd>Scala, Java, Python, Go, JavaScript</dd>
+                        <dt>Verification</dt>
+                        <dd>Stainless (Scala), Dafny</dd>
+                    </dl>
+                </section>
+
+                <section>
+                    <h2>Education</h2>
+                    <div class="item">
+                        <div class="item-title">Master's, Biomedical Engineering</div>
+                        <div class="item-sub"><a href="https://www.unb.br/">Universidade de Brasília</a> · 2013 · four publications</div>
+                    </div>
+                    <div class="item">
+                        <div class="item-title">Graduate Degree, Computer Science</div>
+                        <div class="item-sub"><a href="https://www.unb.br/">Universidade de Brasília</a> · 2008</div>
+                    </div>
+                </section>
+
+                <section>
+                    <h2>Certifications</h2>
+                    <div class="item">
+                        <div class="item-title"><a href="https://github.com/thiagomata/courses-and-certifications/blob/main/cloud-computing/aws-certified-solutions-archietct/AWS%20Certified%20Solutions%20Architect%20-%20Associate%20certificate.pdf">AWS Certified Solutions Architect – Associate</a></div>
+                        <div class="item-sub">2022–2025</div>
+                    </div>
+                    <div class="item">
+                        <div class="item-title"><a href="https://github.com/thiagomata/courses-and-certifications/blob/main/go/00-uci-programming-with-google-go/certificate.pdf">Programming with Google Go</a></div>
+                        <div class="item-sub">Specialisation · UC Irvine · 2023</div>
+                    </div>
+                    <div class="item">
+                        <div class="item-title"><a href="https://coursera.org/verify/8TQFHRMJPWJS">Managing Project Risks and Changes</a></div>
+                        <div class="item-sub">UC Irvine · Coursera · 2020</div>
+                    </div>
+                    <p class="quiet">Also parallel and functional programming in Scala (EPFL), data science
+                        and machine learning (Johns Hopkins, Duke, Stanford).
+                        <a class="more" href="https://github.com/thiagomata/courses-and-certifications">All certificates</a></p>
+                </section>
+
+                <section>
+                    <h2>Languages</h2>
+                    <p>Portuguese (native), English (fluent)</p>
+                </section>
+            </div>
+        </div>
+    </main>
+</body>
+
+</html>

@@ -1,142 +1,107 @@
 # Thiago Mata
 
-Crafting impactful software
+**Technology Leader** · Sydney, Australia
 
-I offer a unique vision, combining long-term technical experience,
-academic framework, analysis aptitude, and communication skills to interact with developers, investors and clients to aid decision-making 
-and build
-<a class="internal-link" href="#useful">useful</a>,
-<a class="internal-link" href="#reliable">reliable</a>,
-<a class="internal-link" href="#elegant">elegant</a> and
-<a class="internal-link" href="#thrifty">thrifty</a> products.
+Technology leader who connects engineering to business outcomes. Over twenty years across startups,
+ad-tech at billions of transactions, and regulated banking have shaped how I choose what to build,
+what not to build, and where to invest, and how I lead teams that decide well today and better
+tomorrow, always favouring clarity over cleverness and reliability over novelty.
 
-<a href="mailto:thiago.henrique.mata@gmail.com">
-    <button class="button button-primary">Let's Talk</button>
-</a>
+[thiagomata.com](https://thiagomata.com) ·
+[One-page CV](https://thiagomata.com/one-page-cv.html) ·
+[Detailed CV](https://thiagomata.com/detailed-cv.html) ·
+[LinkedIn](https://www.linkedin.com/in/thiagomata/) ·
+[ORCID](https://orcid.org/0009-0002-7366-939X) ·
+[Email](mailto:thiago.henrique.mata@gmail.com)
 
 ## Experience
 
-- **20 Years** in Software Development
-- **3 Years** as Tech Lead
-- **2 Years** as Data Engineer
-- **3** Internation Awards
-- **20** Courses and Specializations
-- **5 Years** as Cloud Arquitect
-- **1 Year** as Co-Founder
+### Macquarie Bank · Senior Manager · 2024–Present
 
-## Top Companies
+<div style="background-color: white; display: flex; justify-content: center; align-items: center; height: 100px;">
+<img src="./img/macquarie-horizontal.svg" alt="Macquarie Bank" style="width:80%; height:90px; object-fit:contain;"/>
+</div>
 
+Lead a new, high-performing team delivering banking products, cutting production incidents through
+testing, observability, graceful degradation, and clearer code.
 
-### Rokt
+- [Term Deposits](./cases/macquarie-term-deposits.md)
+
+### Rokt · Senior Software Engineer · 2019–2024
 
 <div style="background-color: white; display: flex; justify-content: center; align-items: center; height: 100px;">
 <img src="./img/rokt.svg" style="height:90px;"/>
 </div>
 
-| &nbsp;    | &nbsp;                   |
-|-----------|--------------------------|
-| Position: | Senior Software Engineer |
-| Duration: | 5 Years                  |
-| Goal:     | Leverage Customer Data   |
-
----
-
-I developed high-performance, high-availability services in a platform that processes billions of transactions and delivers personalized offers to millions of users. These services consume events and enrich the product experience and impact.
-
-#### Cases
+Led bot detection, a real-time service on the critical path of all company traffic, designed for
+graceful degradation, and built the identity and attribution systems of a platform processing
+billions of transactions.
 
 - [Customer Identification](./cases/rokt-identity.md)
 - [Conversion Attribution](./cases/rokt-attribution.md)
 - [Bot Detection](./cases/rokt-bot-detection.md)
 
-### SLI-Systems
+### SLI Systems · Senior Data Engineer · 2017–2019
 
 <div style="background-color: black; display: flex; justify-content: center; align-items: center; height: 100px;">
 <img src="./img/sli.svg"  style="height:90px;"/>
 </div>
 
-| &nbsp;    | &nbsp;                           |
-|-----------|----------------------------------|
-| Position: | Senior Data Enginner             |
-| Duration: | 1.5 Years                        |
-| Goal:     | Moving data streams to the cloud |
-
----
-
-Enabled data-driven decision-making by developing an AI product
-over a data platform with optimized data pipelines and enhanced 
-data management.
-
-#### Cases
+Migrated core data services to Google Cloud, making them faster and cheaper and strengthening the
+company's position in its acquisition.
 
 - [To the Cloud](./cases/sli-to-the-cloud.md)
 
-
-### Ideia
+### Ideia Big Data · Chief Technology Officer · 2014–2017
 
 <div style="background-color: white; display: flex; justify-content: center; align-items: center; height: 100px;">
-<img src="./img/ideia.svg" style="heigh:90px;"/>
+<img src="./img/ideia.svg" style="height:90px;"/>
 </div>
 
-
-| &nbsp;    | &nbsp;                                   |
-|-----------|------------------------------------------|
-| Position: | Chief Technology Officer                 |
-| Duration: | 3 Years                                  |
-| Goal:     | Demographic analysis and micro targeting |
-
----
-
-Development of Alexandria, a cloud-based tool that combined surveys,
-machine learning and big data analytics to provide insights, reports
-and recommendations to clients about their audience.
-
-#### Cases
+Hired and led engineering across three offices in three states, from concept to the first
+production-ready products. Reported strategy to investors and created the career ladder that
+prepared the company for its merger with Pinion.
 
 - [Alexandria](./cases/ideia-alexandria.md)
 
-
-### Otimicar
+### OtimiCar · Co-Founder · 2013–2014
 
 <div style="background-color: black; display: flex; justify-content: center; align-items: center; height: 100px;">
 <img src="./img/otimicar-with-text.svg"  style="height:90px;"/>
 </div>
 
-| &nbsp;    | &nbsp;                                   |
-|-----------|------------------------------------------|
-| Position: | Co-Founder                               |
-| Duration: | 1.5 Years                                |
-| Goal:     | Make any car a smart car                 |
-
-Developed the server that receives data from the car app and 
-generates insights and recommendations for the car owner. 
-It also allows the driver to share the data with car stores and mechanics.
-
-#### Cases
+Specified and built the first server for a device that turns any car into a smart car.
 
 - [Data Sharing](./cases/otimicar-data-sync.md)
 
-
-### MEC / INEP
+### Earlier · 2003–2013
 
 <div style="background-color: black; display: flex; justify-content: center; align-items: center; height: 100px;">
 <img src="./img/mec.svg"  style="height:90px;"/>&nbsp;&nbsp;<img src="./img/inep.svg"  style="height:90px;"/>
 </div>
 
-
-| &nbsp;    | &nbsp;                                              |
-|-----------|-----------------------------------------------------|
-| Position: | Web Developer and Process Analyst                   |
-| Duration: | 3 Years and 10 months                               |
-| Goal:     | Development of the Brazilian Ministry of Education  |
-
-While Working for the government, I analysed, specified, modelled and developed 
-systems for the federal government to interact with students, schools and universities.
-
-#### Cases
+Led teams on high-availability public systems such as E-MEC and Revalida at INEP and the Ministry of
+Education, built credit portfolio transfers at Bancoob, and taught web development for six years.
 
 - [Education as Platform](./cases/mec-education-platform.md)
 
+## Research
+
+Preprints on formal verification, using machine-checked proofs to show software is correct rather
+than only testing it. See [prime-numbers](https://github.com/thiagomata/prime-numbers) for all
+articles and proofs.
+
+- [Formal Verification of Euclid's Theorem on the Infinitude of Primes](https://doi.org/10.5281/zenodo.22929219)
+- [Formal Verification of Sieve Sequence Stages and Their Transitions](https://doi.org/10.5281/zenodo.22955781)
+- [Structural Properties and Signed Boundaries of 2-Gaps in Sieve Sequences](https://doi.org/10.5281/zenodo.22955785)
+
+## Projects
+
+- [Perceptions of Probability](https://github.com/thiagomata/perceptions-of-probability): estimating
+  under uncertainty with ranges instead of single numbers.
+- [Parallax Engine](https://github.com/thiagomata/parallax): a deterministic, testable 3D scene engine
+  with real-time head tracking.
+- [Courses and Certifications](https://github.com/thiagomata/courses-and-certifications)
 
 ## Values
 
@@ -196,18 +161,3 @@ systems for the federal government to interact with students, schools and univer
 - ⚡ Efficiency
 - 💰 Business Impact
 - 🔄 Adaptability
-
-
-## More About Me
-
-Explore my professional journey, skills, and achievements in detail.
-
-You can also reach me on
-<a href="https://www.linkedin.com/in/thiagomata/">Linkedin</a>,
-<a href="https://twitter.com/thiagomata">Twitter</a>,
-<a href="https://github.com/thiagomata">GitHub</a>,
-<a href="https://stackoverflow.com/users/456164/thiago-mata">StackOverflow</a>,
-or by email at <a class="email" href="mailto:thiago.henrique.mata@gmail.com">thiago.henrique.mata@gmail.com</a>
-
-- [One Page CV](pdf/thiago-mata-one-page-cv.pdf)
-- [Detailed CV](pdf/thiago-mata-detailed-cv.pdf)

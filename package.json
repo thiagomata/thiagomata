@@ -1,0 +1,14 @@
+{
+    "name": "thiagomata-site",
+    "private": true,
+    "description": "Personal site and CVs of Thiago Mata",
+    "type": "module",
+    "scripts": {
+        "test": "node --test \"test/**/*.test.js\"",
+        "serve": "python3 tools/serve.py",
+        "stamp": "node tools/version-assets.js"
+    },
+    "engines": {
+        "node": ">=20"
+    }
+}

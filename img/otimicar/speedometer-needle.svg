@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-200 -200 400 400">
+    <!-- The speedometer's needle, pointing at 0 deg (120 km/h); the page turns it to the speed. -->
+    <path d="M -5 20 L -2 -166 L 2 -166 L 5 20 Z" fill="#D83200" stroke="#3B0600" stroke-width="1.5" />
+    <circle r="14" fill="#1C1C1C" stroke="white" stroke-opacity="0.4" stroke-width="2" />
+</svg>
