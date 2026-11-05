@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Elegant layer candidates</title>
+    <script src="https://kit.fontawesome.com/0c3ce68536.js" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="../../style/style.css" />
+    <link rel="stylesheet" href="../../style/windmills.css" />
+    <style>
+        /* The Elegant card's layer candidates still in the running: black text on the northern
+           lights layer, in different shapes and strengths (variants.js), live, with the numbers
+           from `npm run contrast` under each. Every other idea is in index.html. */
+        body { background: #0b0d10; color: #e9ecef; }
+        .lab-intro { max-width: 900px; margin: 24px 16px; font: 16px/1.5 Roboto, sans-serif; }
+        .lab-intro h1 { font: bold 32px/1.2 Roboto, sans-serif; margin: 0 0 12px; text-transform: none; }
+        .variant { margin: 48px 0 0; }
+        .variant > h3 { font: 22px Roboto, sans-serif; margin: 0 16px 8px; }
+        .scores { margin: 0 16px 12px; font: 14px/1.6 Roboto, sans-serif; color: #c9ced4; }
+        .scores b { color: #fff; }
+        .scores .fails { color: #ff8a80; }
+        .scores .passes { color: #9be29b; }
+        .narrow { width: 393px; max-width: 100%; }
+    </style>
+    <script type="importmap">
+        {
+            "imports": {
+                "three": "https://cdn.jsdelivr.net/npm/three@0.187.0/build/three.module.min.js",
+                "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.187.0/examples/jsm/"
+            }
+        }
+    </script>
+</head>
+<body>
+    <div class="lab-intro">
+        <h1>Elegant card: the layer candidates</h1>
+        <p>Black text on the northern lights layer (green, teal, blue), in the shapes and strengths still
+            in the running. Under each, from <code>npm run contrast</code> on the real page:</p>
+        <ul>
+            <li><b>Text contrast</b>: the worst line of text against what is behind it (WCAG: 4.5:1 for
+                small text).</li>
+            <li><b>Scene kept</b>: how much of the scene's detail still shows through the layer.</li>
+        </ul>
+        <p>Each card shows twice: wide, and at phone width. Every earlier idea is in
+            <a href="./">the full lab</a>.</p>
+    </div>
+    <article id="values"></article>
+
+    <script type="module">
+        import { showVariants } from "./lab.js";
+        showVariants([
+            "black-light-aurora-tuned",
+            "black-light-aurora-cover",
+            "black-light-aurora-left",
+            "black-light-aurora-left-faster",
+            "black-light-aurora-80",
+            "black-light-aurora-65",
+            "black-light-aurora-50",
+        ]);
+    </script>
+</body>
+</html>

@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Ideia layer tuner</title>
+    <link rel="stylesheet" href="../../style/style.css" />
+    <style>
+        /* Tune the Ideia card's dark layer by hand, over its live street. Across: solid until it
+           starts to fade, gone by its end (at least 680px and 860px from the left: the description
+           reaches about 650px, and a phone card stays covered). Down: its strength at the top, at
+           the middle (which can move) and at the bottom, so it can be strongest where the busiest
+           text is. The two shapes multiply. Both cards follow the sliders live; the CSS to use is
+           shown below them. The card is copied from index.html. */
+        body { background: #0b0d10; color: #e9ecef; }
+        .controls {
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px 32px;
+            align-items: center;
+            padding: 12px 16px;
+            background: rgba(11, 13, 16, 0.95);
+            font: 15px Roboto, sans-serif;
+        }
+        .controls label { display: flex; gap: 10px; align-items: center; }
+        .controls input { width: 180px; }
+        .controls output { min-width: 3.5em; font-weight: bold; color: #fff; }
+        .controls code { flex-basis: 100%; font-size: 13px; color: #c9ced4; }
+        .narrow { width: 393px; max-width: 100%; }
+        #top-companies section[data-company="ideia"].is-live::after {
+            border-image: none;
+            background: rgb(26, 26, 61);
+            mask-image:
+                linear-gradient(90deg, #000 0, #000 max(var(--hold), 680px), transparent max(var(--clear), 860px)),
+                linear-gradient(rgba(0, 0, 0, var(--top)), rgba(0, 0, 0, var(--middle)) var(--middle-at), rgba(0, 0, 0, var(--bottom)));
+            mask-composite: intersect;
+        }
+        .today #top-companies section[data-company="ideia"].is-live::after {
+            border-image: var(--border-image);
+            background: none;
+            mask-image: none;
+        }
+    </style>
+    <script type="importmap">
+        {
+            "imports": {
+                "three": "https://cdn.jsdelivr.net/npm/three@0.187.0/build/three.module.min.js",
+                "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.187.0/examples/jsm/"
+            }
+        }
+    </script>
+</head>
+<body>
+    <div class="controls">
+        <label>Top <input type="range" id="top" min="0" max="100" value="60" /> <output for="top"></output></label>
+        <label>Middle <input type="range" id="middle" min="0" max="100" value="85" /> <output for="middle"></output></label>
+        <label>Bottom <input type="range" id="bottom" min="0" max="100" value="60" /> <output for="bottom"></output></label>
+        <label>Middle at <input type="range" id="middle-at" min="0" max="100" value="55" /> <output for="middle-at"></output></label>
+        <label>Starts to fade at <input type="range" id="hold" min="0" max="100" value="30" /> <output for="hold"></output></label>
+        <label>Gone by <input type="range" id="clear" min="0" max="100" value="60" /> <output for="clear"></output></label>
+        <label><input type="checkbox" id="today" style="width: auto" /> Show today's layer</label>
+        <code id="css"></code>
+    </div>
+    <article id="top-companies"></article>
+
+    <script type="module">
+        import { start } from "../../js/ideia/scene.js";
+
+        const sliders = ["top", "middle", "bottom", "middle-at", "hold", "clear"].map(id => document.getElementById(id));
+        const [top, middle, bottom, middleAt, hold, clear] = sliders;
+        const share = slider => slider.value / 100;
+        const article = document.querySelector("#top-companies");
+
+        /** Moves the layer to the sliders, keeping the fade after its start, and shows its CSS. */
+        const apply = changed => {
+            if (Number(hold.value) > Number(clear.value)) (changed === clear ? hold : clear).value = changed.value;
+            for (const [name, slider] of [["--top", top], ["--middle", middle], ["--bottom", bottom]]) article.style.setProperty(name, share(slider));
+            for (const [name, slider] of [["--middle-at", middleAt], ["--hold", hold], ["--clear", clear]]) article.style.setProperty(name, `${slider.value}%`);
+            for (const slider of sliders) slider.nextElementSibling.value = `${slider.value}%`;
+            document.getElementById("css").textContent = `background: rgb(26, 26, 61); mask-image: `
+                + `linear-gradient(90deg, #000 0, #000 max(${hold.value}%, 680px), transparent max(${clear.value}%, 860px)), `
+                + `linear-gradient(rgba(0, 0, 0, ${share(top)}), rgba(0, 0, 0, ${share(middle)}) ${middleAt.value}%, rgba(0, 0, 0, ${share(bottom)})); `
+                + `mask-composite: intersect;`;
+        };
+        for (const slider of sliders) slider.addEventListener("input", () => apply(slider));
+        apply(middle);
+        document.getElementById("today").addEventListener("change", event => document.body.classList.toggle("today", event.target.checked));
+
+        // The real card, from the page, live: wide, and at phone width.
+        const page = new DOMParser().parseFromString(await (await fetch("../../index.html")).text(), "text/html");
+        const template = page.querySelector('#top-companies section[data-company="ideia"]');
+        const wide = template.cloneNode(true);
+        const narrow = template.cloneNode(true);
+        const narrowFrame = document.createElement("div");
+        narrowFrame.className = "narrow";
+        narrowFrame.append(narrow);
+        article.append(wide, narrowFrame);
+        for (const card of [wide, narrow]) {
+            for (const link of card.querySelectorAll("a")) link.href = new URL(link.getAttribute("href"), new URL("../../", location.href)).href;
+            start(card);
+        }
+    </script>
+</body>
+</html>

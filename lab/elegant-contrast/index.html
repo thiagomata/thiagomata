@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Elegant contrast</title>
+    <script src="https://kit.fontawesome.com/0c3ce68536.js" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="../../style/style.css" />
+    <link rel="stylesheet" href="../../style/windmills.css" />
+    <style>
+        /* The Elegant card in each way of keeping its text readable (variants.js), live, with the
+           numbers from `npm run contrast` (tools/check-contrast.js) under each. The card's markup
+           is copied from index.html when the page loads, so it is always the real card. */
+        body { background: #0b0d10; color: #e9ecef; }
+        .lab-intro { max-width: 900px; margin: 24px 16px; font: 16px/1.5 Roboto, sans-serif; }
+        .lab-intro h1 { font: bold 32px/1.2 Roboto, sans-serif; margin: 0 0 12px; text-transform: none; }
+        .variant { margin: 48px 0 0; }
+        .variant > h3 { font: 22px Roboto, sans-serif; margin: 0 16px 8px; }
+        .scores { margin: 0 16px 12px; font: 14px/1.6 Roboto, sans-serif; color: #c9ced4; }
+        .scores b { color: #fff; }
+        .scores .fails { color: #ff8a80; }
+        .scores .passes { color: #9be29b; }
+        .narrow { width: 393px; max-width: 100%; }
+    </style>
+    <script type="importmap">
+        {
+            "imports": {
+                "three": "https://cdn.jsdelivr.net/npm/three@0.187.0/build/three.module.min.js",
+                "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.187.0/examples/jsm/"
+            }
+        }
+    </script>
+</head>
+<body>
+    <div class="lab-intro">
+        <h1>Elegant card: text contrast</h1>
+        <p>Each variant is the real card with its live scene. Under each, two numbers from
+            <code>npm run contrast</code>, measured on the real page at desktop and phone sizes, at a few
+            moments (the northern lights move):</p>
+        <ul>
+            <li><b>Text contrast</b>: the worst line of text against what is behind it, as a WCAG ratio.
+                Small text needs 4.5:1, large text 3:1.</li>
+            <li><b>Scene kept</b>: how much of the scene's detail still shows through the layer, compared
+                with no layer at all. Higher means the windmills and lights are easier to see.</li>
+        </ul>
+    </div>
+    <article id="values"></article>
+
+    <script type="module">
+        import { showVariants } from "./lab.js";
+        showVariants();
+    </script>
+</body>
+</html>
