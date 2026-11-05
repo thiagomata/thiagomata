@@ -70,6 +70,9 @@ const FASTER = {
  */
 const COVER_THE_TEXT = "linear-gradient(90deg, rgba(0, 0, 0, 0.8) 0, rgba(0, 0, 0, 0.8) max(28%, 460px), transparent max(45%, 640px))";
 
+/** The layer tuned by hand in tuner.html: 77% strength, fading from 19% to 57% (or 460px to 640px). */
+const TUNED = "linear-gradient(90deg, rgba(0, 0, 0, 0.77) 0, rgba(0, 0, 0, 0.77) max(19%, 460px), transparent max(57%, 640px))";
+
 /** The site's phone layout starts below this width. */
 const PHONE_WIDTH = "43em";
 
@@ -127,6 +130,11 @@ export const VARIANTS = [
         id: "black-light-aurora-cover",
         label: "Black text on the northern lights layer: 80% until past the text (28% or 460px), clear by 45% or 640px",
         css: card => lightLayer(card, LIGHT_COLOURS.aurora.colours, 1, null, COVER_THE_TEXT),
+    },
+    {
+        id: "black-light-aurora-tuned",
+        label: "Black text on the northern lights layer: 77%, fading from 19% to 57% (or 460px to 640px)",
+        css: card => lightLayer(card, LIGHT_COLOURS.aurora.colours, 1, null, TUNED),
     },
     {
         id: "black-light-aurora-left",
