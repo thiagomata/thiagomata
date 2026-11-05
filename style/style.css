@@ -1302,14 +1302,18 @@ p {
 /* The Elegant card's text is black on a light layer across its left, instead of white on a dark
    one: its scene is light (the northern lights and the glowing horizon), and a dark layer hid most
    of it. The layer takes the northern lights' colours (green, teal, blue), mixed about 45% with
-   white: clearly coloured, yet light enough for black text (8:1 or more). It is solid on the left
-   and fades out before the windmills. The same layer serves the static picture and the live
-   scene (style/windmills.css). Chosen in lab/elegant-contrast. */
+   white: clearly coloured, yet light enough for black text. It holds at 77% until past the text
+   (the further of 19% and 460px: the text reaches at most 440px), then fades out by the further of
+   57% and 640px, before the windmills; a phone card is narrower than 460px, so it stays covered.
+   Measured with `npm run contrast`: 7.2:1 at worst on desktop and phone (4.5:1 needed). The same
+   layer serves the static picture and the live scene (style/windmills.css). Tuned in
+   lab/elegant-contrast/tuner.html. */
 #values section.value-elegant {
     --aurora-green: rgb(187, 240, 174);
     --aurora-teal: rgb(157, 199, 204);
     --aurora-blue: rgb(149, 185, 238);
-    --layer-fade: linear-gradient(90deg, rgba(0, 0, 0, 0.88), rgba(0, 0, 0, 0.7) 35%, transparent 60%);
+    --layer-strength: rgba(0, 0, 0, 0.77);
+    --layer-fade: linear-gradient(90deg, var(--layer-strength) 0, var(--layer-strength) max(19%, 460px), transparent max(57%, 640px));
     position: relative;
     isolation: isolate;
     border-image: none;
@@ -1326,10 +1330,4 @@ p {
     pointer-events: none;
     background: linear-gradient(var(--aurora-green), var(--aurora-teal) 50%, var(--aurora-blue));
     mask-image: var(--layer-fade);
-}
-/* On a phone the text runs across most of the card, so the layer does too. */
-@media (max-width: 43em) {
-    #values section.value-elegant {
-        --layer-fade: linear-gradient(90deg, #000 70%, rgba(0, 0, 0, 0.6));
-    }
 }

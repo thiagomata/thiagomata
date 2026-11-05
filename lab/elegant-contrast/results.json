@@ -1,24 +1,24 @@
 {
-    "measuredAt": "2026-11-05T21:49:15.597Z",
+    "measuredAt": "2026-11-05T21:52:18.931Z",
     "variants": {
         "today": {
             "desktop": {
-                "worstContrast": 8.63,
-                "worstText": "Everything should be made as simple as possible, but not simpler.",
+                "worstContrast": 7.24,
+                "worstText": "Traceability",
                 "required": 4.5,
                 "passes": true,
                 "failingLines": 0,
                 "lines": 9,
-                "sceneKept": 0.63
+                "sceneKept": 0.71
             },
             "phone": {
-                "worstContrast": 11.46,
-                "worstText": "Everything should be made as simple as possible, but not simpler.",
+                "worstContrast": 7.25,
+                "worstText": "Traceability",
                 "required": 4.5,
                 "passes": true,
                 "failingLines": 0,
                 "lines": 9,
-                "sceneKept": 0.12
+                "sceneKept": 0.47
             }
         },
         "black": {
