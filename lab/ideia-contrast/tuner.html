@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Ideia layer tuner</title>
+    <link rel="stylesheet" href="../../style/style.css" />
+    <style>
+        /* Tune the Ideia card's dark layer by hand, over its live street: how strong it is, where it
+           starts to fade and where it is gone (at least 680px and 860px from the left: the
+           description reaches about 650px, and a phone card stays covered). Both cards follow the
+           sliders live; the CSS to use is shown below them. The card is copied from index.html. */
+        body { background: #0b0d10; color: #e9ecef; }
+        .controls {
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px 32px;
+            align-items: center;
+            padding: 12px 16px;
+            background: rgba(11, 13, 16, 0.95);
+            font: 15px Roboto, sans-serif;
+        }
+        .controls label { display: flex; gap: 10px; align-items: center; }
+        .controls input { width: 180px; }
+        .controls output { min-width: 3.5em; font-weight: bold; color: #fff; }
+        .controls code { flex-basis: 100%; font-size: 13px; color: #c9ced4; }
+        .narrow { width: 393px; max-width: 100%; }
+        #top-companies section[data-company="ideia"].is-live::after {
+            border-image: none;
+            background: rgb(26, 26, 61);
+            mask-image: linear-gradient(90deg,
+                rgba(0, 0, 0, var(--strength)) 0,
+                rgba(0, 0, 0, var(--strength)) max(var(--hold), 680px),
+                transparent max(var(--clear), 860px));
+        }
+        .today #top-companies section[data-company="ideia"].is-live::after {
+            border-image: var(--border-image);
+            background: none;
+            mask-image: none;
+        }
+    </style>
+    <script type="importmap">
+        {
+            "imports": {
+                "three": "https://cdn.jsdelivr.net/npm/three@0.187.0/build/three.module.min.js",
+                "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.187.0/examples/jsm/"
+            }
+        }
+    </script>
+</head>
+<body>
+    <div class="controls">
+        <label>Strength <input type="range" id="strength" min="0" max="100" value="80" /> <output for="strength"></output></label>
+        <label>Starts to fade at <input type="range" id="hold" min="0" max="100" value="30" /> <output for="hold"></output></label>
+        <label>Gone by <input type="range" id="clear" min="0" max="100" value="60" /> <output for="clear"></output></label>
+        <label><input type="checkbox" id="today" style="width: auto" /> Show today's layer</label>
+        <code id="css"></code>
+    </div>
+    <article id="top-companies"></article>
+
+    <script type="module">
+        import { start } from "../../js/ideia/scene.js";
+
+        const sliders = ["strength", "hold", "clear"].map(id => document.getElementById(id));
+        const [strength, hold, clear] = sliders;
+        const article = document.querySelector("#top-companies");
+
+        /** Moves the layer to the sliders, keeping the fade after its start, and shows its CSS. */
+        const apply = changed => {
+            if (Number(hold.value) > Number(clear.value)) (changed === clear ? hold : clear).value = changed.value;
+            article.style.setProperty("--strength", strength.value / 100);
+            article.style.setProperty("--hold", `${hold.value}%`);
+            article.style.setProperty("--clear", `${clear.value}%`);
+            for (const slider of sliders) slider.nextElementSibling.value = `${slider.value}%`;
+            document.getElementById("css").textContent = `background: rgb(26, 26, 61); mask-image: linear-gradient(90deg, `
+                + `rgba(0, 0, 0, ${strength.value / 100}) 0, rgba(0, 0, 0, ${strength.value / 100}) max(${hold.value}%, 680px), `
+                + `transparent max(${clear.value}%, 860px));`;
+        };
+        for (const slider of sliders) slider.addEventListener("input", () => apply(slider));
+        apply(strength);
+        document.getElementById("today").addEventListener("change", event => document.body.classList.toggle("today", event.target.checked));
+
+        // The real card, from the page, live: wide, and at phone width.
+        const page = new DOMParser().parseFromString(await (await fetch("../../index.html")).text(), "text/html");
+        const template = page.querySelector('#top-companies section[data-company="ideia"]');
+        const wide = template.cloneNode(true);
+        const narrow = template.cloneNode(true);
+        const narrowFrame = document.createElement("div");
+        narrowFrame.className = "narrow";
+        narrowFrame.append(narrow);
+        article.append(wide, narrowFrame);
+        for (const card of [wide, narrow]) {
+            for (const link of card.querySelectorAll("a")) link.href = new URL(link.getAttribute("href"), new URL("../../", location.href)).href;
+            start(card);
+        }
+    </script>
+</body>
+</html>

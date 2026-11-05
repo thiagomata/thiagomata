@@ -91,6 +91,10 @@ const lightLayer = (card, colours, strength = 1, shape = null, mask = null) => l
     ${card} { position: relative; isolation: isolate; }
     ${card} ${TEXT} { color: #000 !important; }`;
 
+/** The card, and what shows its live scene has started (for tools/check-contrast.js). */
+export const CARD = "#values section.value-elegant";
+export const LIVE = `${CARD}.windmills-live`;
+
 export const VARIANTS = [
     {
         id: "today",

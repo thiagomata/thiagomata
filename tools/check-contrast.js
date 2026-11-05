@@ -1,26 +1,32 @@
-// Measures how readable the Elegant card's text is over its live scene, and how much of the scene
-// still shows, for each variant in lab/elegant-contrast/variants.js. It opens the real page in
-// headless Chrome at desktop and phone sizes, and at a few moments (the northern lights move):
+// Measures how readable a card's text is over its live scene, and how much of the scene still
+// shows, for each variant in a contrast lab (lab/<name>/variants.js, which names the card, how to
+// tell its live scene has started, and the variants). It opens the real page in headless Chrome at
+// desktop and phone sizes, and at a few moments (the scenes move):
 //
 //   - text contrast: the page is photographed with its text hidden (shadows and layers stay), and
 //     each line of text is compared with the pixels behind it (tools/contrast.js);
 //   - scene kept: the scene's detail around the text, with the variant's layer, compared with no
 //     layer at all.
 //
-// The results go to lab/elegant-contrast/results.json, which the lab shows under each variant.
+// The results go to the lab's results.json, which the lab shows under each variant.
 //
-// Usage: npm run contrast                    (every variant)
-//        npm run contrast -- black halo      (just these, keeping the others' last results)
+// Usage: npm run contrast                                   (every variant of the Elegant lab)
+//        npm run contrast -- black halo                     (just these, keeping the others' last results)
+//        npm run contrast -- --lab ideia-contrast today     (another lab)
 import { readFile, writeFile } from "node:fs/promises";
 import { createServer } from "node:http";
 import { extname, join, normalize } from "node:path";
 import { fileURLToPath } from "node:url";
 import { chromium } from "playwright";
-import { VARIANTS } from "../lab/elegant-contrast/variants.js";
-
 const SITE_ROOT = fileURLToPath(new URL("..", import.meta.url));
-const RESULTS = join(SITE_ROOT, "lab/elegant-contrast/results.json");
-const CARD = "#values section.value-elegant";
+const DEFAULT_LAB = "elegant-contrast";
+const LAB_OPTION = "--lab";
+
+const labOption = process.argv.indexOf(LAB_OPTION);
+const labName = labOption === -1 ? DEFAULT_LAB : process.argv[labOption + 1];
+const chosen = process.argv.slice(2).filter((_, index) => labOption === -1 || (index !== labOption - 2 && index !== labOption - 1));
+const { CARD, LIVE, VARIANTS } = await import(`../lab/${labName}/variants.js`);
+const RESULTS = join(SITE_ROOT, `lab/${labName}/results.json`);
 const SIZES = {
     desktop: { width: 1440, height: 900 },
     phone: { width: 393, height: 852 },
@@ -33,6 +39,8 @@ const LIVE_TIMEOUT_MILLISECONDS = 30000;
 const SETTLE_MILLISECONDS = 1500;
 /** Leave this much around the text out of the scene's detail (its shadow and halo). */
 const TEXT_MARGIN = 12;
+/** Text no bigger than this (in CSS pixels) is clipped out of sight, not shown. */
+const SEEN_PIXELS = 2;
 /** Read every second pixel: plenty for averages, and twice as fast. */
 const PIXEL_STEP = 2;
 const DECIMALS = 2;
@@ -60,7 +68,7 @@ function serveSite() {
 }
 
 /** Each line of the card's text: its boxes on screen, its colour, and the ratio it needs. */
-const readText = page => page.evaluate(selector => {
+const readText = page => page.evaluate(([selector, seenPixels]) => {
     const lines = [];
     const walker = document.createTreeWalker(document.querySelector(selector), NodeFilter.SHOW_TEXT);
     while (walker.nextNode()) {
@@ -69,13 +77,16 @@ const readText = page => page.evaluate(selector => {
         if (!text) continue;
         const range = document.createRange();
         range.selectNodeContents(node);
-        const rects = [...range.getClientRects()].map(({ left, top, width, height }) => ({ left, top, width, height }));
+        // Text hidden for screen readers only (clipped to a pixel, as a logo's name is) is never seen.
+        const rects = [...range.getClientRects()].filter(rect => rect.width > seenPixels && rect.height > seenPixels)
+            .map(({ left, top, width, height }) => ({ left, top, width, height }));
+        if (!rects.length) continue;
         const style = getComputedStyle(node.parentElement);
         lines.push({ text, rects, colour: style.color, fontSize: parseFloat(style.fontSize), fontWeight: Number(style.fontWeight) });
     }
     const { left, top, width, height } = document.querySelector(selector).getBoundingClientRect();
     return { lines, card: { left, top, width, height } };
-}, CARD);
+}, [CARD, SEEN_PIXELS]);
 
 /** Photographs the page with the card's text hidden; `withLayer` false also takes the variant and the layer away. */
 async function photograph(page, variantStyle, withLayer) {
@@ -129,7 +140,7 @@ async function measure(browser, origin, variant, size) {
         document.documentElement.style.scrollBehavior = "auto";
         document.querySelector(selector).scrollIntoView({ block: "center" });
     }, CARD);
-    await page.waitForSelector(`${CARD}.windmills-live`, { timeout: LIVE_TIMEOUT_MILLISECONDS });
+    await page.waitForSelector(LIVE, { timeout: LIVE_TIMEOUT_MILLISECONDS });
     await page.waitForTimeout(SETTLE_MILLISECONDS);
 
     const worst = new Map(), kept = [];
@@ -170,7 +181,6 @@ async function lastResults() {
     }
 }
 
-const chosen = process.argv.slice(2);
 const unknown = chosen.filter(id => !VARIANTS.some(variant => variant.id === id));
 if (unknown.length) throw new Error(`No such variant: ${unknown.join(", ")}. Variants: ${VARIANTS.map(variant => variant.id).join(", ")}`);
 const toMeasure = chosen.length ? VARIANTS.filter(variant => chosen.includes(variant.id)) : VARIANTS;
