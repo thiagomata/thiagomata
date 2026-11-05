@@ -262,9 +262,9 @@ function addMarkings(scene) {
     const centreLine = [], laneLines = [];
     for (let planY = DASH.firstY; planY < STREET_LENGTH; planY += DASH.spacing) {
         if (isNearJunction(planY, CROSSING_OUTER_EDGE + DASHES_STOP_BEFORE_CROSSING)) continue;
-        const z = worldZ(planY);
-        centreLine.push([worldX(MAIN_STREET_CENTRE_X), LAYER_HEIGHT.laneLines, z]);
-        for (const planX of MAIN_LANE_DIVIDERS) laneLines.push([worldX(planX), LAYER_HEIGHT.laneLines, z]);
+        const dashZ = worldZ(planY);
+        centreLine.push([worldX(MAIN_STREET_CENTRE_X), LAYER_HEIGHT.laneLines, dashZ]);
+        for (const planX of MAIN_LANE_DIVIDERS) laneLines.push([worldX(planX), LAYER_HEIGHT.laneLines, dashZ]);
     }
     addMarks(scene, centreLine, DASH.width, DASH.length, COLOURS.centreLine);
     addMarks(scene, laneLines, DASH.width, DASH.length, COLOURS.laneLine);
@@ -339,9 +339,9 @@ function addTrees(scene, random) {
 
     const placement = new THREE.Object3D();
     const darkestShade = LEAF_COLOURS.length - 1;
-    spots.forEach(([x, z], tree) => {
+    spots.forEach(([spotX, spotZ], tree) => {
         placement.scale.setScalar(1);
-        placement.position.set(x, TRUNK.height / 2, z);
+        placement.position.set(spotX, TRUNK.height / 2, spotZ);
         placement.updateMatrix();
         trunks.setMatrixAt(tree, placement.matrix);
 

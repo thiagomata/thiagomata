@@ -38,10 +38,10 @@ export function addOutline(scene, instancedMesh, grow) {
 
 /** Gives every vertex of the geometry one colour (for meshes that use vertexColors). */
 export function paintGeometry(geometry, colour) {
-    const { r, g, b } = new THREE.Color(colour);
+    const { r: red, g: green, b: blue } = new THREE.Color(colour);
     const count = geometry.attributes.position.count;
     const values = new Float32Array(count * 3);
-    for (let vertex = 0; vertex < count; vertex++) values.set([r, g, b], vertex * 3);
+    for (let vertex = 0; vertex < count; vertex++) values.set([red, green, blue], vertex * 3);
     geometry.setAttribute("color", new THREE.BufferAttribute(values, 3));
     return geometry;
 }

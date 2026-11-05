@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
 import { describe, it } from "node:test";
 import {
     CURTAINS, RAYS, STARS, STAR_SKY_BOTTOM, curtainBrightness, placeRays, placeStars, rayOpacity, starOpacity,
@@ -18,6 +19,14 @@ describe("windmills: the picture", () => {
             assert.ok(left < hubX && hubX < right, "the sails' reach is around the hub");
             assert.ok(baseY > HORIZON_Y && baseY > hubY, "the base is below the hub, in the field");
         }
+    });
+
+    it("matches the stage's sizes in style/windmills.css", () => {
+        const style = readFileSync(new URL("../style/windmills.css", import.meta.url), "utf8");
+        const shape = `${PICTURE.width} / ${PICTURE.height}`;
+        assert.ok(style.includes(`100cqh * ${shape}`) && style.includes(`aspect-ratio: ${shape}`), "the picture's shape");
+        const bigWindmill = WINDMILLS.reduce((biggest, windmill) => (windmill.sailLength > biggest.sailLength ? windmill : biggest));
+        assert.ok(style.includes(`--big-windmill: calc(${bigWindmill.hub[0]} / ${PICTURE.width})`), "the big windmill's hub");
     });
 
     it("finds the slice of the picture a card shows", () => {

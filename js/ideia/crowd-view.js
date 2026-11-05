@@ -82,9 +82,9 @@ function drawFigure(context, { shirt, trousers, skin, hair, longHair }, view, fr
         context.strokeStyle = INK_CSS;
     };
     const box = ({ left, top, width, height, corner }) => () => context.roundRect(left, top, width, height, corner);
-    const circle = (x, y, radius) => () => context.arc(x, y, radius, 0, Math.PI * 2);
-    const arc = (x, y, radius, { from, to }) => () => {
-        context.arc(x, y, radius, Math.PI * from, Math.PI * to);
+    const circle = (middleX, middleY, radius) => () => context.arc(middleX, middleY, radius, 0, Math.PI * 2);
+    const arc = (middleX, middleY, radius, { from, to }) => () => {
+        context.arc(middleX, middleY, radius, Math.PI * from, Math.PI * to);
         context.closePath();
     };
 
@@ -203,10 +203,10 @@ export class CrowdView {
     /** Places everyone for simulation time `seconds`, turned towards the camera. */
     update(seconds, camera) {
         this.crowd.people.forEach((person, index) => {
-            const { x, z, facing, mirror, walking } = this.crowd.pose(person, seconds);
+            const { x: personX, z: personZ, facing, mirror, walking } = this.crowd.pose(person, seconds);
             const { height, build, look, stepOffset } = this.appearances[index];
             this.placement.quaternion.copy(camera.quaternion);
-            this.placement.position.set(x, 0, z);
+            this.placement.position.set(personX, 0, personZ);
             this.placement.scale.set(build * height * mirror, height, 1);
             this.placement.updateMatrix();
             this.mesh.setMatrixAt(index, this.placement.matrix);

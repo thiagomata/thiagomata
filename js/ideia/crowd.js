@@ -75,12 +75,12 @@ export function zebraRoute(fromCorner, toCorner, random) {
     const offset = random.range(-CROSSING.spread, CROSSING.spread);
     const kerb = ROAD_HALF_WIDTH + CROSSING.kerbStep;
     if (from.near === to.near) {                    // over the main street
-        const z = from.near * (CROSSING_MIDDLE + offset);
-        return [[from.east * kerb, z], [to.east * kerb, z]];
+        const crossingZ = from.near * (CROSSING_MIDDLE + offset);
+        return [[from.east * kerb, crossingZ], [to.east * kerb, crossingZ]];
     }
     if (from.east === to.east) {                    // over the cross street
-        const x = from.east * (CROSSING_MIDDLE + offset);
-        return [[x, from.near * kerb], [x, to.near * kerb]];
+        const crossingX = from.east * (CROSSING_MIDDLE + offset);
+        return [[crossingX, from.near * kerb], [crossingX, to.near * kerb]];
     }
     // Diagonally, through the middle of the junction.
     const corner = ROAD_HALF_WIDTH + CROSSING.diagonalCornerInset;
@@ -151,9 +151,9 @@ export class Crowd {
         if (walked === 0 || walked === person.routeLength) {
             // Waiting (or arrived): face the junction, so the near corners show their backs.
             const waiting = walked === 0;
-            const [x, z] = waiting ? person.route[0] : person.route[person.route.length - 1];
+            const [spotX, spotZ] = waiting ? person.route[0] : person.route[person.route.length - 1];
             const corner = waiting ? person.corner : person.target;
-            return { x, z, facing: isNearCorner(corner) ? FACING.back : FACING.front };
+            return { x: spotX, z: spotZ, facing: isNearCorner(corner) ? FACING.back : FACING.front };
         }
         return pointAlong(person.route, person.legLengths, walked);
     }
@@ -172,8 +172,8 @@ export class Crowd {
             ...zebraRoute(person.corner, person.target, random),
             waitingSpot(person.target, random),
         ];
-        person.legLengths = person.route.slice(1).map(([x, z], leg) =>
-            Math.hypot(x - person.route[leg][0], z - person.route[leg][1]));
+        person.legLengths = person.route.slice(1).map(([legEndX, legEndZ], leg) =>
+            Math.hypot(legEndX - person.route[leg][0], legEndZ - person.route[leg][1]));
         person.routeLength = person.legLengths.reduce((total, length) => total + length, 0) || 1;
         // Start a little after the green, and walk fast enough to arrive before it ends.
         person.delay = random.range(...CROSSING.startDelay);

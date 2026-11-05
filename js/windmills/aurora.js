@@ -77,11 +77,11 @@ const STAR_TWINKLE_SECONDS = [2, 6];
 const STAR_OPACITY = { dimmest: 0.35, twinkle: 0.45 };
 const WHITE = "#fff";
 
-/** How bright the curtains are at `x`: slow waves drifting across the sky (0 to the weights' sum). */
-export function curtainBrightness(x, seconds) {
+/** How bright the curtains are at `pictureX`: slow waves drifting across the sky (0 to the weights' sum). */
+export function curtainBrightness(pictureX, seconds) {
     return CURTAINS.reduce(
         (total, curtain) =>
-            total + curtain.weight * toUnitRange(travellingWave(x, curtain.widthUnits, seconds, curtain.secondsPerWidth)),
+            total + curtain.weight * toUnitRange(travellingWave(pictureX, curtain.widthUnits, seconds, curtain.secondsPerWidth)),
         0,
     );
 }

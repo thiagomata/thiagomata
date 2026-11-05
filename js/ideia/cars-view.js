@@ -18,8 +18,8 @@ const HEADLIGHT_COLOUR = "#fff3c4";
 const TAIL_LIGHT_COLOUR = "#ff2e2e";
 
 function carModel(colour) {
-    const block = (width, height, depth, paint, y, z = 0) =>
-        paintGeometry(new THREE.BoxGeometry(width, height, depth), paint).translate(0, y, z);
+    const block = (width, height, depth, paint, centreY, centreZ = 0) =>
+        paintGeometry(new THREE.BoxGeometry(width, height, depth), paint).translate(0, centreY, centreZ);
     const wheel = (side, end) => {
         const { radius, thickness, segments, inset, axleFromCentre } = CAR.wheel;
         const tyre = new THREE.CylinderGeometry(radius, radius, thickness, segments).rotateZ(Math.PI / 2);
@@ -75,6 +75,6 @@ export class CarsView {
 
     /** Moves each model to where its car is in the simulation. */
     update() {
-        for (const { vehicle, x, z } of this.traffic.cars()) this.models.get(vehicle).position.set(x, 0, z);
+        for (const { vehicle, x: carX, z: carZ } of this.traffic.cars()) this.models.get(vehicle).position.set(carX, 0, carZ);
     }
 }

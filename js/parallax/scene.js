@@ -29,7 +29,7 @@ const flatMaterial = colour => new THREE.MeshBasicMaterial({ color: colour });
 
 /** One frame of the tunnel: four bars around the window's edge, `depth` away. */
 function frameGeometry(width, height, depth) {
-    const bar = (barWidth, barHeight, x, y) => new THREE.PlaneGeometry(barWidth, barHeight).translate(x, y, -depth);
+    const bar = (barWidth, barHeight, centreX, centreY) => new THREE.PlaneGeometry(barWidth, barHeight).translate(centreX, centreY, -depth);
     const { barWidth } = TUNNEL;
     return mergeGeometries([
         bar(width, barWidth, 0, (height - barWidth) / 2),
@@ -52,13 +52,13 @@ function tunnel(width, height) {
 /** Every target's rings and sticks, merged into one mesh per colour. */
 function targets() {
     const parts = { white: [], red: [], stick: [] };
-    for (const [x, y, depth] of TARGET_POSITIONS) {
+    for (const [targetX, targetY, depth] of TARGET_POSITIONS) {
         TARGET_RINGS.forEach(([share, colour], index) => {
-            parts[colour].push(new THREE.CircleGeometry(TARGET.radius * share, CIRCLE_SEGMENTS).translate(x, y, depth + index * RING_GAP));
+            parts[colour].push(new THREE.CircleGeometry(TARGET.radius * share, CIRCLE_SEGMENTS).translate(targetX, targetY, depth + index * RING_GAP));
         });
         parts.stick.push(new THREE.CylinderGeometry(TARGET.stickRadius, TARGET.stickRadius, TARGET.stickLength, STICK_SEGMENTS)
             .rotateX(Math.PI / 2)
-            .translate(x, y, depth - TARGET.stickLength / 2));
+            .translate(targetX, targetY, depth - TARGET.stickLength / 2));
     }
     const group = new THREE.Group();
     for (const [colour, geometries] of Object.entries(parts)) {

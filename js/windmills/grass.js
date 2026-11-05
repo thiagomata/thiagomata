@@ -48,12 +48,12 @@ export function plantBlades() {
     while (blades.length < BLADES) {
         // More blades near the viewer: depth is skewed towards the bottom of the picture.
         const nearness = Math.sqrt(random.next());
-        const x = random.range(-OVERHANG.sides, PICTURE.width + OVERHANG.sides);
-        const y = lerp(HORIZON_Y, PICTURE.height + OVERHANG.bottom, nearness);
-        if (isOnRoad(x, y)) continue;
+        const rootX = random.range(-OVERHANG.sides, PICTURE.width + OVERHANG.sides);
+        const rootY = lerp(HORIZON_Y, PICTURE.height + OVERHANG.bottom, nearness);
+        if (isOnRoad(rootX, rootY)) continue;
         blades.push({
-            x,
-            y,
+            x: rootX,
+            y: rootY,
             height: lerp(random.range(...HEIGHT.atHorizon), random.range(...HEIGHT.atBottom), nearness),
             width: lerp(BASE_WIDTH.atHorizon, BASE_WIDTH.atBottom, nearness),
             lean: random.range(...LEAN),
