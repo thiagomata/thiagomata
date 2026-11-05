@@ -1293,3 +1293,11 @@ p {
         background-color: #01928A;
     }
 }
+
+/* On a phone, the Elegant picture keeps its big windmill in view (as the live scene does,
+   style/windmills.css) instead of the sky right of it. */
+@media (max-width: 43em) {
+    #values .value-elegant {
+        background-position: 77% bottom;
+    }
+}

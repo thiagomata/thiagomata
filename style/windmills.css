@@ -4,8 +4,10 @@
  * turn in three.js, and procedural grass sways in front of the windmills with the same wind.
  *
  * The stage keeps the picture's shape (its viewBox is 4294 x 2474) and covers the card like the
- * static image did: filling it, anchored at the bottom right. The card keeps its static picture
- * until the stage is ready, and for good if WebGL is unavailable.
+ * static image did: filling it, anchored at the bottom right. On a narrow card (a phone) that
+ * would show only the sky right of the windmills, so the stage slides to keep the big windmill in
+ * the middle of the card, as far as the picture still covers the card. The card keeps its static
+ * picture until the stage is ready, and for good if WebGL is unavailable.
  */
 
 #values section.windmills-live {
@@ -37,8 +39,10 @@
 
 .windmills-stage {
     --stage-width: max(100cqw, 100cqh * 4294 / 2474);
+    /* The big windmill's hub, as a share of the picture's width (js/windmills/picture.js). */
+    --big-windmill: calc(2936 / 4294);
     position: absolute;
-    right: 0;
+    left: clamp(100cqw - var(--stage-width), 50cqw - var(--stage-width) * var(--big-windmill), 0px);
     bottom: 0;
     width: var(--stage-width);
     aspect-ratio: 4294 / 2474;
