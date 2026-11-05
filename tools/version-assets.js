@@ -2,6 +2,7 @@
 // never mixes a cached old file with a new one after the site changes:
 //   - the styles' pictures, in each style (url("../img/bridge/water.svg?v=…"));
 //   - the page's scripts, styles and pictures, in index.html;
+//   - the case pages' styles and pictures, in cases/*.html (their paths start with "../");
 //   - the modules other modules import, through the page's import map;
 //   - the pictures scripts name themselves, through js/shared/picture-versions.js, which this
 //     writes (scripts build some of those names, so they cannot be found in the text).
@@ -18,6 +19,7 @@ const PAGE = "index.html";
 const PICTURE_VERSIONS = "js/shared/picture-versions.js";
 const PICTURES = "./img/";
 const STYLES = "style";
+const CASES = "cases";
 /** The folders of the site's own files, and the kinds of file stamped in each. */
 const ASSET_FOLDERS = [["js", [".js"]], [STYLES, [".css"]], ["img", [".svg", ".webp", ".jpg", ".png"]]];
 /** Enough of the hash to tell versions apart. */
@@ -28,6 +30,8 @@ const JSON_INDENT = 4;
 
 const IMPORT_MAP = /(<script type="importmap">\s*)([\s\S]*?)(\s*<\/script>)/;
 const PAGE_REFERENCE = /(src|href)="(\.\/(?:js|style|img)\/[^"?]+)(?:\?v=[0-9a-f]+)?"/g;
+/** A style or picture in a case page, relative to the cases' folder. */
+const CASE_REFERENCE = /(src|href)="\.\.\/((?:js|style|img)\/[^"?]+)(?:\?v=[0-9a-f]+)?"/g;
 /** A picture in a style, relative to the styles' folder. */
 const STYLE_REFERENCE = /url\("\.\.\/(img\/[^"?]+)(?:\?v=[0-9a-f]+)?"\)/g;
 
@@ -72,6 +76,12 @@ export function stampPage(html, versions) {
     });
 }
 
+/** A case page with each of its styles and pictures stamped with its version. */
+export function stampCasePage(html, versions) {
+    const stamp = stamper(versions);
+    return html.replace(CASE_REFERENCE, (_, attribute, path) => `${attribute}="../${stamp(`./${path}`).slice("./".length)}"`);
+}
+
 /** The module that gives scripts each picture's version (see PICTURE_VERSIONS). */
 export function pictureVersionsModule(versions) {
     const pictures = [...versions].filter(([path]) => path.startsWith(PICTURES)).sort(([first], [second]) => first.localeCompare(second));
@@ -87,6 +97,10 @@ export const versioned = path => (path in VERSIONS ? \`\${path}?v=\${VERSIONS[pa
 `;
 }
 
+/** The case pages, as paths from the site's root. */
+export const casePages = (root = SITE_ROOT) =>
+    readdirSync(join(root, CASES)).filter(file => file.endsWith(".html")).map(file => join(CASES, file));
+
 /** The styles' files, as paths from the site's root. */
 export const styleFiles = (root = SITE_ROOT) =>
     readdirSync(join(root, STYLES)).filter(file => file.endsWith(".css")).map(file => join(STYLES, file));
@@ -99,5 +113,9 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
     }
     const pagePath = join(SITE_ROOT, PAGE);
     writeFileSync(pagePath, stampPage(readFileSync(pagePath, "utf8"), assetVersions()));
-    console.log(`Stamped ${PAGE} and ${styleFiles().length} styles`);
+    for (const casePage of casePages()) {
+        const path = join(SITE_ROOT, casePage);
+        writeFileSync(path, stampCasePage(readFileSync(path, "utf8"), assetVersions()));
+    }
+    console.log(`Stamped ${PAGE}, ${casePages().length} case pages and ${styleFiles().length} styles`);
 }

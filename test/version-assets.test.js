@@ -1,7 +1,9 @@
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { describe, it } from "node:test";
-import { assetVersions, contentVersion, pictureVersionsModule, stampPage, stampStyle, styleFiles } from "../tools/version-assets.js";
+import {
+    assetVersions, casePages, contentVersion, pictureVersionsModule, stampCasePage, stampPage, stampStyle, styleFiles,
+} from "../tools/version-assets.js";
 
 const PAGE = `<link rel="stylesheet" href="./style/site.css" />
 <script type="importmap">
@@ -45,6 +47,13 @@ describe("asset versions", () => {
         assert.equal(stampPage('<img src="./img/logo.svg" />', versions), '<img src="./img/logo.svg?v=eeee5555" />');
     });
 
+    it("stamps the case pages' styles and pictures, which sit one folder down", () => {
+        const versions = new Map([["./style/case.css", "1111aaaa"], ["./img/logo.svg", "2222bbbb"]]);
+        const page = '<link href="../style/case.css?v=00000000" /><img src="../img/logo.svg" /><a href="../index.html">';
+        assert.equal(stampCasePage(page, versions),
+            '<link href="../style/case.css?v=1111aaaa" /><img src="../img/logo.svg?v=2222bbbb" /><a href="../index.html">');
+    });
+
     it("gives scripts each picture's version, and leaves other paths alone", async () => {
         const versions = new Map([["./img/car.svg", "ffff6666"], ["./js/card.js", "bbbb2222"]]);
         const source = pictureVersionsModule(versions);
@@ -64,5 +73,9 @@ describe("asset versions", () => {
         }
         const page = readFileSync(new URL("../index.html", import.meta.url), "utf8");
         assert.equal(stampPage(page, versions), page, "index.html is not stamped");
+        for (const casePage of casePages()) {
+            const html = readFileSync(new URL(`../${casePage}`, import.meta.url), "utf8");
+            assert.equal(stampCasePage(html, versions), html, `${casePage} is not stamped`);
+        }
     });
 });
