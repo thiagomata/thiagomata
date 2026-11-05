@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Elegant layer tuner</title>
+    <script src="https://kit.fontawesome.com/0c3ce68536.js" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="../../style/style.css" />
+    <link rel="stylesheet" href="../../style/windmills.css" />
+    <style>
+        /* Tune the Elegant card's northern lights layer by hand: how strong it is, where it starts
+           to fade and where it is gone (each at least 460px and 640px from the left, so a phone
+           card stays covered). Both cards follow the sliders live; the CSS to use is shown below them. */
+        body { background: #0b0d10; color: #e9ecef; }
+        .controls {
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px 32px;
+            align-items: center;
+            padding: 12px 16px;
+            background: rgba(11, 13, 16, 0.95);
+            font: 15px Roboto, sans-serif;
+        }
+        .controls label { display: flex; gap: 10px; align-items: center; }
+        .controls input { width: 180px; }
+        .controls output { min-width: 3.5em; font-weight: bold; color: #fff; }
+        .controls code { flex-basis: 100%; font-size: 13px; color: #c9ced4; }
+        .narrow { width: 393px; max-width: 100%; }
+        #values section.value-elegant::after {
+            mask-image: linear-gradient(90deg,
+                rgba(0, 0, 0, var(--strength)) 0,
+                rgba(0, 0, 0, var(--strength)) max(var(--hold), 460px),
+                transparent max(var(--clear), 640px));
+        }
+    </style>
+    <script type="importmap">
+        {
+            "imports": {
+                "three": "https://cdn.jsdelivr.net/npm/three@0.187.0/build/three.module.min.js",
+                "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.187.0/examples/jsm/"
+            }
+        }
+    </script>
+</head>
+<body>
+    <div class="controls">
+        <label>Strength <input type="range" id="strength" min="0" max="100" value="80" /> <output for="strength"></output></label>
+        <label>Starts to fade at <input type="range" id="hold" min="0" max="100" value="28" /> <output for="hold"></output></label>
+        <label>Gone by <input type="range" id="clear" min="0" max="100" value="45" /> <output for="clear"></output></label>
+        <code id="css"></code>
+    </div>
+    <article id="values"></article>
+
+    <script type="module">
+        import { realCard, showWindmills } from "./lab.js";
+
+        const sliders = ["strength", "hold", "clear"].map(id => document.getElementById(id));
+        const [strength, hold, clear] = sliders;
+        const article = document.querySelector("#values");
+
+        /** Moves the layer to the sliders, keeping the fade after its start, and shows its CSS. */
+        const apply = changed => {
+            if (Number(hold.value) > Number(clear.value)) (changed === clear ? hold : clear).value = changed.value;
+            article.style.setProperty("--strength", strength.value / 100);
+            article.style.setProperty("--hold", `${hold.value}%`);
+            article.style.setProperty("--clear", `${clear.value}%`);
+            for (const slider of sliders) slider.nextElementSibling.value = `${slider.value}%`;
+            document.getElementById("css").textContent = `mask-image: linear-gradient(90deg, rgba(0, 0, 0, ${strength.value / 100}) 0, `
+                + `rgba(0, 0, 0, ${strength.value / 100}) max(${hold.value}%, 460px), transparent max(${clear.value}%, 640px));`;
+        };
+        for (const slider of sliders) slider.addEventListener("input", () => apply(slider));
+        apply(strength);
+
+        const template = await realCard();
+        const wide = template.cloneNode(true);
+        const narrow = template.cloneNode(true);
+        const narrowFrame = document.createElement("div");
+        narrowFrame.className = "narrow";
+        narrowFrame.append(narrow);
+        article.append(wide, narrowFrame);
+        for (const card of [wide, narrow]) {
+            card.querySelectorAll("[id]").forEach(element => element.removeAttribute("id"));
+            showWindmills(card);
+        }
+    </script>
+</body>
+</html>

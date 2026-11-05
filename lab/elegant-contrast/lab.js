@@ -7,13 +7,13 @@ import { VARIANTS } from "./variants.js";
 const WINDMILLS_IMAGE = new URL("../../img/simple2-windmills.svg", import.meta.url).href;
 
 /** The real card, from the page. */
-async function realCard() {
+export async function realCard() {
     const page = new DOMParser().parseFromString(await (await fetch(new URL("../../index.html", import.meta.url))).text(), "text/html");
     return page.querySelector("#values section.value-elegant");
 }
 
 /** The card's live windmills, as js/windmills-card.js adds them. */
-function showWindmills(card) {
+export function showWindmills(card) {
     const scene = document.createElement("div");
     scene.className = "windmills-scene";
     scene.setAttribute("aria-hidden", "true");
