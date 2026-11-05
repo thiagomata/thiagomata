@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 import {
-    EYE_DISTANCE, EYE_REACH, TUNNEL, WINDOW_SIDE, easeTowards, eyeTarget, frameGrey, windowFrustum, windowSize,
+    EYE_DISTANCE, EYE_REACH, TUNNEL, WINDOW_SIDE, easeTowards, eyeAt, frameGrey, windowFrustum, windowSize,
 } from "../js/parallax/tunnel.js";
 
 const closeTo = (actual, expected, message) => assert.ok(Math.abs(actual - expected) < 1e-9, message ?? `${actual} ≠ ${expected}`);
@@ -40,18 +40,11 @@ describe("Parallax tunnel", () => {
         assert.equal(frameGrey(1000), 0);
     });
 
-    it("follows the pointer within its reach, up on the card being up in the scene", () => {
+    it("passes the window from above to below as the card scrolls up the screen", () => {
         const reach = EYE_REACH * WINDOW_SIDE;
-        assert.deepEqual(eyeTarget([1, -1], 0), [reach, reach]);
-        assert.deepEqual(eyeTarget([0, 0], 0), [0, -0]);
-    });
-
-    it("wanders within its reach without a pointer", () => {
-        const reach = EYE_REACH * WINDOW_SIDE;
-        for (let seconds = 0; seconds < 120; seconds += 0.5) {
-            const [x, y] = eyeTarget(null, seconds);
-            assert.ok(Math.abs(x) <= reach && Math.abs(y) <= reach);
-        }
+        assert.deepEqual(eyeAt(0), [0, reach]);         // entering at the bottom: looking down into it
+        assert.deepEqual(eyeAt(0.5), [0, 0]);
+        assert.deepEqual(eyeAt(1), [0, -reach]);        // leaving at the top: looking up into it
     });
 
     it("eases towards the target at the same pace at any frame rate", () => {

@@ -1,13 +1,14 @@
-// Draws the Parallax card's tunnel (tunnel.js) in three.js, seen through the card as a window: the
-// eye follows the mouse over the card, or wanders slowly on its own (touch screens, or no mouse),
-// and the near targets slide past the far frames. It draws at most 30 frames a second, only while
-// the card is on screen; with reduced motion, it shows one still frame from the middle.
+// Draws the Parallax card's tunnel (tunnel.js) in three.js, seen through the card as a window: as
+// the page scrolls, the eye passes the window from above to below and the near targets slide past
+// the far frames. It draws at most 30 frames a second, only while the card is on screen and the eye
+// is moving; with reduced motion, it shows one still frame from the middle.
 import * as THREE from "three";
 import { mergeGeometries } from "three/addons/utils/BufferGeometryUtils.js";
 import { MILLISECONDS_PER_SECOND, isTimeToDraw, pixelRatio } from "../shared/frame-rate.js";
+import { scrollShare } from "../shared/motion.js";
 import {
     COLOURS, CUBES, EYE_DISTANCE, TARGET, TARGET_POSITIONS, TARGET_RINGS, TUNNEL,
-    easeTowards, eyeTarget, frameGrey, windowFrustum, windowSize,
+    easeTowards, eyeAt, frameGrey, windowFrustum, windowSize,
 } from "./tunnel.js";
 
 /** The camera sees from just in front of the eye to past the end of the tunnel. */
@@ -19,6 +20,10 @@ const STICK_SEGMENTS = 8;
 const RING_GAP = 0.2;
 /** After a pause, carry on from where the eye was instead of jumping. */
 const MAX_STEP_SECONDS = 0.1;
+/** The eye is still once it is this close to where it is heading, in scene units: stop drawing. */
+const STILL_DISTANCE = 0.05;
+/** With reduced motion, the eye stays level with the middle of the window. */
+const LEVEL = 0.5;
 
 const flatMaterial = colour => new THREE.MeshBasicMaterial({ color: colour });
 
@@ -86,9 +91,9 @@ function dispose(group) {
 
 /**
  * Draws the tunnel on a canvas inside `container` (positioned, any shape), with the eye following
- * the mouse over `pointerArea`. Throws if WebGL is unavailable.
+ * the page's scroll. Throws if WebGL is unavailable.
  */
-export function start(container, pointerArea = container) {
+export function start(container) {
     const canvas = document.createElement("canvas");
     canvas.className = "parallax-tunnel";
     canvas.setAttribute("aria-hidden", "true");
@@ -101,8 +106,11 @@ export function start(container, pointerArea = container) {
     scene.add(targets(), cubes());
     let frames = null, windowWidth = 1, windowHeight = 1;
     const camera = new THREE.PerspectiveCamera();
-    const eye = [0, 0];
-    let pointer = null;
+    const scrolled = () => {
+        const box = container.getBoundingClientRect();
+        return scrollShare(box.top, box.height, window.innerHeight);
+    };
+    const eye = eyeAt(scrolled());
 
     const draw = () => {
         camera.position.set(eye[0], eye[1], EYE_DISTANCE);
@@ -124,27 +132,25 @@ export function start(container, pointerArea = container) {
         scene.add(frames);
         draw();
     };
-    const moveEye = (seconds, stepSeconds) => {
-        const [targetX, targetY] = eyeTarget(pointer, seconds);
-        eye[0] = easeTowards(eye[0], targetX, stepSeconds);
-        eye[1] = easeTowards(eye[1], targetY, stepSeconds);
+    /** Eases the eye towards where the scroll puts it; false once it is there (nothing to draw). */
+    const moveEye = stepSeconds => {
+        const target = eyeAt(scrolled());
+        if (target.every((value, axis) => Math.abs(value - eye[axis]) < STILL_DISTANCE)) return false;
+        target.forEach((value, axis) => { eye[axis] = easeTowards(eye[axis], value, stepSeconds); });
+        return true;
+    };
+    const drawStill = () => {
+        eye.splice(0, eye.length, ...eyeAt(LEVEL));
+        draw();
     };
 
-    // Only a mouse steers the eye; on touch screens, a finger on the card is scrolling the page.
-    pointerArea.addEventListener("pointermove", event => {
-        if (event.pointerType !== "mouse") return;
-        const box = pointerArea.getBoundingClientRect();
-        pointer = [2 * (event.clientX - box.left) / box.width - 1, 2 * (event.clientY - box.top) / box.height - 1];
-    });
-    pointerArea.addEventListener("pointerleave", () => { pointer = null; });
-
-    animateWhileVisible(container, { moveEye, draw });
+    animateWhileVisible(container, { moveEye, draw, drawStill });
     new ResizeObserver(resize).observe(container);
     resize();
 }
 
 /** Runs the animation while `container` is on screen; with reduced motion, shows a still frame. */
-function animateWhileVisible(container, { moveEye, draw }) {
+function animateWhileVisible(container, { moveEye, draw, drawStill }) {
     const still = window.matchMedia("(prefers-reduced-motion: reduce)");
     let onScreen = false, frameRequest = null, lastSeconds = null, lastDrawn = null;
 
@@ -156,12 +162,11 @@ function animateWhileVisible(container, { moveEye, draw }) {
         const seconds = now / MILLISECONDS_PER_SECOND;
         const stepSeconds = lastSeconds === null ? 0 : Math.min(seconds - lastSeconds, MAX_STEP_SECONDS);
         lastSeconds = seconds;
-        moveEye(seconds, stepSeconds);
-        draw();
+        if (moveEye(stepSeconds)) draw();
     };
     const update = () => {
         if (still.matches) {
-            draw();
+            drawStill();
             window.logAnimation?.("parallax", "still", "reduced motion");
         } else if (onScreen) {
             if (frameRequest === null) {

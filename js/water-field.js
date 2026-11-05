@@ -4,6 +4,7 @@
 // screen. The card keeps its static image as the no-JS fallback; reduced motion keeps one still
 // frame.
 import { MILLISECONDS_PER_FRAME, isTimeToDraw, pixelRatio } from "./shared/frame-rate.js";
+import { scrollShare } from "./shared/motion.js";
 import {
     LINES, POINT_SPACING, advance, linePoint, lineStyle, pointsAcross, restingY, settle, stir,
 } from "./macquarie/waves.js";
@@ -25,8 +26,7 @@ const MAX_STEP_MILLISECONDS = 4 * MILLISECONDS_PER_FRAME;
 /** How far the card has scrolled through the screen: 0 entering at the bottom, 1 leaving at the top. */
 function scrollProgress(card) {
     const box = card.getBoundingClientRect();
-    const progress = (window.innerHeight - box.top) / (window.innerHeight + box.height);
-    return Math.min(Math.max(progress, 0), 1);
+    return scrollShare(box.top, box.height, window.innerHeight);
 }
 
 /** The stroke colour with each fade stop's opacity, as a CSS rgba(). */

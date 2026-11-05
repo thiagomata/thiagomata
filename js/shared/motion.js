@@ -21,3 +21,9 @@ export const travellingWave = (position, width, seconds, period) =>
 
 /** A slow pulse that repeats every `period` seconds, from 0 to 1, starting at `phase` radians. */
 export const pulse = (seconds, period, phase) => toUnitRange(Math.sin(FULL_TURN * seconds / period + phase));
+
+/**
+ * How far a card has scrolled through the screen, from its box's `top` and `height` and the
+ * screen's height: 0 as it enters at the bottom, 1 as it leaves at the top.
+ */
+export const scrollShare = (top, height, screenHeight) => clamp((screenHeight - top) / (screenHeight + height), 0, 1);

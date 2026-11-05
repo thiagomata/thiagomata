@@ -5,6 +5,7 @@
 //
 // Units follow the tutorial: the window (the card) sits at depth 0, and depth grows towards the
 // viewer. Unlike the tutorial (p5), y points up.
+import { lerp } from "../shared/motion.js";
 
 /** The window's shorter side in scene units; the longer one follows the card's shape. */
 export const WINDOW_SIDE = 400;
@@ -78,27 +79,13 @@ export function windowFrustum([eyeX, eyeY, eyeDistance], windowWidth, windowHeig
 
 /** How far the eye moves from the middle, at most, as a share of the window's shorter side. */
 export const EYE_REACH = 0.35;
-/** Without a pointer, the eye wanders on its own: one loop across in this many seconds. */
-const WANDER_SECONDS = 24;
-/** ...and up and down at a different pace, so the path never quite repeats. */
-const WANDER_UP_SECONDS = 17;
-/** The wandering eye covers this share of its reach. */
-const WANDER_SHARE = 0.6;
 
 /**
- * Where the eye wants to be: following the pointer over the card (`pointer` is [x, y] from -1 to 1,
- * from the card's middle, y down), or wandering slowly when there is none. Returns [x, y] in scene
- * units, y up.
+ * Where the eye is, as [x, y] in scene units, for a card `scrolled` (0 to 1) through the screen:
+ * like walking past a window, the eye is above it as the card enters at the bottom of the screen,
+ * level with it in the middle, and below it as it leaves at the top.
  */
-export function eyeTarget(pointer, seconds) {
-    const reach = EYE_REACH * WINDOW_SIDE;
-    if (pointer) return [pointer[0] * reach, -pointer[1] * reach];
-    const turn = 2 * Math.PI;
-    return [
-        Math.sin(turn * seconds / WANDER_SECONDS) * reach * WANDER_SHARE,
-        Math.sin(turn * seconds / WANDER_UP_SECONDS) * reach * WANDER_SHARE / 2,
-    ];
-}
+export const eyeAt = scrolled => [0, lerp(1, -1, scrolled) * EYE_REACH * WINDOW_SIDE];
 
 /** The eye eases towards its target: this share of the way each second. */
 const EASING_PER_SECOND = 0.95;

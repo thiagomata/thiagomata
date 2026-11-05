@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
-import { FULL_TURN, clamp, lerp, pulse, toUnitRange, travellingWave } from "../js/shared/motion.js";
+import { FULL_TURN, clamp, lerp, pulse, scrollShare, toUnitRange, travellingWave } from "../js/shared/motion.js";
 
 const closeTo = (actual, expected, message) => assert.ok(Math.abs(actual - expected) < 1e-9, message ?? `${actual} ≠ ${expected}`);
 
@@ -9,6 +9,14 @@ describe("motion helpers", () => {
         assert.equal(lerp(10, 20, 0), 10);
         assert.equal(lerp(10, 20, 1), 20);
         assert.equal(lerp(10, 20, 0.25), 12.5);
+    });
+
+    it("measures how far a card has scrolled through the screen", () => {
+        const [height, screenHeight] = [400, 800];
+        assert.equal(scrollShare(screenHeight, height, screenHeight), 0);       // just entering at the bottom
+        assert.equal(scrollShare(-height, height, screenHeight), 1);            // just leaving at the top
+        assert.equal(scrollShare((screenHeight - height) / 2, height, screenHeight), 0.5);
+        assert.equal(scrollShare(2 * screenHeight, height, screenHeight), 0);   // still below the screen
     });
 
     it("keeps a value within its limits", () => {
