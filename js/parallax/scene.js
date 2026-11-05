@@ -149,31 +149,40 @@ export function start(container) {
     resize();
 }
 
-/** Runs the animation while `container` is on screen; with reduced motion, shows a still frame. */
+/**
+ * Runs the animation while `container` is on screen and the eye is moving: it stops once the eye
+ * settles, and scrolling wakes it. With reduced motion, it shows a still frame.
+ */
 function animateWhileVisible(container, { moveEye, draw, drawStill }) {
     const still = window.matchMedia("(prefers-reduced-motion: reduce)");
     let onScreen = false, frameRequest = null, lastSeconds = null, lastDrawn = null;
 
     const frame = now => {
-        frameRequest = null;
-        if (onScreen && !still.matches) frameRequest = requestAnimationFrame(frame);
+        frameRequest = requestAnimationFrame(frame);
         if (!isTimeToDraw(now, lastDrawn)) return;
         lastDrawn = now;
         const seconds = now / MILLISECONDS_PER_SECOND;
         const stepSeconds = lastSeconds === null ? 0 : Math.min(seconds - lastSeconds, MAX_STEP_SECONDS);
         lastSeconds = seconds;
-        if (moveEye(stepSeconds)) draw();
+        if (onScreen && moveEye(stepSeconds)) {
+            draw();
+        } else {
+            cancelAnimationFrame(frameRequest);       // settled or off screen: wait for the next scroll
+            frameRequest = null;
+        }
+    };
+    const wake = () => {
+        if (!onScreen || still.matches || frameRequest !== null) return;
+        lastSeconds = null;
+        lastDrawn = null;
+        frameRequest = requestAnimationFrame(frame);
     };
     const update = () => {
         if (still.matches) {
             drawStill();
             window.logAnimation?.("parallax", "still", "reduced motion");
         } else if (onScreen) {
-            if (frameRequest === null) {
-                lastSeconds = null;
-                lastDrawn = null;
-                frameRequest = requestAnimationFrame(frame);
-            }
+            wake();
             window.logAnimation?.("parallax", "running");
         } else {
             window.logAnimation?.("parallax", "paused", "off screen");
@@ -184,4 +193,5 @@ function animateWhileVisible(container, { moveEye, draw, drawStill }) {
         update();
     }).observe(container);
     still.addEventListener("change", update);
+    window.addEventListener("scroll", wake, { passive: true });
 }
