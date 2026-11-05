@@ -1,5 +1,5 @@
 {
-    "measuredAt": "2026-11-05T21:13:52.350Z",
+    "measuredAt": "2026-11-05T21:29:57.126Z",
     "variants": {
         "today": {
             "desktop": {
@@ -139,6 +139,106 @@
                 "failingLines": 9,
                 "lines": 9,
                 "sceneKept": 1.05
+            }
+        },
+        "black-light-aurora": {
+            "desktop": {
+                "worstContrast": 8.1,
+                "worstText": "Traceability",
+                "required": 4.5,
+                "passes": true,
+                "failingLines": 0,
+                "lines": 9,
+                "sceneKept": 0.7
+            },
+            "phone": {
+                "worstContrast": 5.35,
+                "worstText": "Traceability",
+                "required": 4.5,
+                "passes": true,
+                "failingLines": 0,
+                "lines": 9,
+                "sceneKept": 0.86
+            }
+        },
+        "black-light-aurora-80": {
+            "desktop": {
+                "worstContrast": 6.04,
+                "worstText": "Traceability",
+                "required": 4.5,
+                "passes": true,
+                "failingLines": 0,
+                "lines": 9,
+                "sceneKept": 0.76
+            },
+            "phone": {
+                "worstContrast": 4.25,
+                "worstText": "Traceability",
+                "required": 4.5,
+                "passes": false,
+                "failingLines": 1,
+                "lines": 9,
+                "sceneKept": 0.9
+            }
+        },
+        "black-light-aurora-65": {
+            "desktop": {
+                "worstContrast": 4.73,
+                "worstText": "Traceability",
+                "required": 4.5,
+                "passes": true,
+                "failingLines": 0,
+                "lines": 9,
+                "sceneKept": 0.81
+            },
+            "phone": {
+                "worstContrast": 3.53,
+                "worstText": "Traceability",
+                "required": 4.5,
+                "passes": false,
+                "failingLines": 3,
+                "lines": 9,
+                "sceneKept": 0.91
+            }
+        },
+        "black-light-aurora-50": {
+            "desktop": {
+                "worstContrast": 3.63,
+                "worstText": "Traceability",
+                "required": 4.5,
+                "passes": false,
+                "failingLines": 4,
+                "lines": 9,
+                "sceneKept": 0.85
+            },
+            "phone": {
+                "worstContrast": 2.95,
+                "worstText": "Traceability",
+                "required": 4.5,
+                "passes": false,
+                "failingLines": 5,
+                "lines": 9,
+                "sceneKept": 0.93
+            }
+        },
+        "black-light-aurora-35": {
+            "desktop": {
+                "worstContrast": 2.78,
+                "worstText": "Traceability",
+                "required": 4.5,
+                "passes": false,
+                "failingLines": 5,
+                "lines": 9,
+                "sceneKept": 0.9
+            },
+            "phone": {
+                "worstContrast": 2.44,
+                "worstText": "Traceability",
+                "required": 4.5,
+                "passes": false,
+                "failingLines": 5,
+                "lines": 9,
+                "sceneKept": 0.95
             }
         }
     }

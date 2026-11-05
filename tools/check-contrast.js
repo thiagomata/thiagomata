@@ -82,7 +82,8 @@ async function photograph(page, variantStyle, withLayer) {
     // Through the text's fill, which no variant sets, so a variant's own colour can't show it again.
     const hidden = await page.addStyleTag({ content: `${CARD} * { -webkit-text-fill-color: transparent !important; }` });
     const noLayer = withLayer ? null : await page.addStyleTag({
-        content: `${CARD}, ${CARD}::after { border-image: none !important; }`,
+        // Every kind of layer: a border-image, or a background on the ::after.
+        content: `${CARD}, ${CARD}::after { border-image: none !important; } ${CARD}::after { background: none !important; }`,
     });
     if (!withLayer) await variantStyle.evaluate(style => { style.disabled = true; });
     const shot = (await page.screenshot()).toString("base64");

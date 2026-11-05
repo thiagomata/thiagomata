@@ -43,7 +43,12 @@ const LIGHT_COLOURS = {
 };
 
 /** The light layer: the colours top to bottom, solid on the left and fading out before the windmills. */
-const lightLayer = (card, colours) => layer(card, "linear-gradient(transparent, transparent)") + `
+/** The light layer's opacity across the card, at full strength: solid on the left, gone by 60%. */
+const LAYER_FADE = [[0.88, 0], [0.7, 35], [0, 60]];
+/** The northern lights layer at lighter strengths, to find how much the black text really needs. */
+const STRENGTHS = [0.8, 0.65, 0.5, 0.35];
+
+const lightLayer = (card, colours, strength = 1) => layer(card, "linear-gradient(transparent, transparent)") + `
     ${card}::after {
         content: "";
         position: absolute;
@@ -52,7 +57,7 @@ const lightLayer = (card, colours) => layer(card, "linear-gradient(transparent, 
         pointer-events: none;
         background: linear-gradient(${colours.join(", ")});
         opacity: 1;
-        mask-image: linear-gradient(90deg, rgba(0, 0, 0, 0.88), rgba(0, 0, 0, 0.7) 35%, transparent 60%);
+        mask-image: linear-gradient(90deg, ${LAYER_FADE.map(([opacity, at]) => `rgba(0, 0, 0, ${(opacity * strength).toFixed(3)}) ${at}%`).join(", ")});
     }
     ${card} { position: relative; isolation: isolate; }
     ${card} ${TEXT} { color: #000 !important; }`;
@@ -91,6 +96,11 @@ export const VARIANTS = [
         id: `black-light-${id}`,
         label: `Black text on a light layer across the left: ${label}`,
         css: card => lightLayer(card, colours),
+    })),
+    ...STRENGTHS.map(strength => ({
+        id: `black-light-aurora-${Math.round(strength * 100)}`,
+        label: `Black text on the northern lights layer, at ${Math.round(strength * 100)}% of its strength`,
+        css: card => lightLayer(card, LIGHT_COLOURS.aurora.colours, strength),
     })),
     {
         id: "black-light-halo",
