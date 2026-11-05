@@ -6,7 +6,7 @@
 import { MILLISECONDS_PER_FRAME, isTimeToDraw, pixelRatio } from "./shared/frame-rate.js";
 import { scrollShare } from "./shared/motion.js";
 import {
-    LINES, POINT_SPACING, advance, linePoint, lineStyle, pointsAcross, restingY, settle, stir,
+    LINES, advance, linePoint, lineStyle, pointsAlong, restingY, settle, stir,
 } from "./macquarie/waves.js";
 
 const DEFAULTS = {
@@ -43,11 +43,12 @@ export function start(card, options = {}) {
     const canvas = document.createElement("canvas");
     canvas.setAttribute("class", "live-bg");
     canvas.setAttribute("aria-hidden", "true");
+    const context = canvas.getContext("2d");
+    if (!context) return;                         // keep the static image
     card.prepend(canvas);
     card.classList.add("is-live");
-    const context = canvas.getContext("2d");
 
-    let cardWidth = 1, cardHeight = 1, ratio = 1, strokeStyle = null, backgroundStyle = null;
+    let cardWidth = 1, cardHeight = 1, ratio = 1, strokeStyle = null, backgroundStyle = null, points = [];
     let lightPhase = 0, wavesClock = 0, energy = 0, lastScrollY = window.scrollY;
 
     const draw = () => {
@@ -55,7 +56,6 @@ export function start(card, options = {}) {
         context.fillStyle = backgroundStyle;
         context.fillRect(0, 0, cardWidth, cardHeight);
         const middleY = cardHeight * settings.middleLine + (scrollProgress(card) - MIDDLE) * SCROLL_DRIFT;
-        const lastPoint = pointsAcross(cardWidth);
         context.strokeStyle = strokeStyle;
         for (let line = 0; line < LINES; line++) {
             const offset = line - LINES / 2;          // from the middle line
@@ -64,7 +64,7 @@ export function start(card, options = {}) {
             context.globalAlpha = opacity;
             context.beginPath();
             context.moveTo(0, restingY(offset, middleY));
-            for (let along = 0; along <= lastPoint; along += POINT_SPACING) {
+            for (const along of points) {
                 const point = linePoint(offset, along, wavesClock, energy, middleY);
                 context.lineTo(point.x, point.y);
             }
@@ -80,6 +80,7 @@ export function start(card, options = {}) {
         cardHeight = Math.max(1, Math.round(box.height));
         canvas.width = cardWidth * ratio;
         canvas.height = cardHeight * ratio;
+        points = pointsAlong(cardWidth);
         strokeStyle = context.createLinearGradient(0, 0, cardWidth, 0);
         for (const [position, opacity] of settings.fade) strokeStyle.addColorStop(position, rgba(settings.stroke, opacity));
         backgroundStyle = context.createLinearGradient(0, 0, cardWidth, cardHeight);
@@ -88,7 +89,7 @@ export function start(card, options = {}) {
         draw();       // a resize never leaves a blank canvas, even when paused
     };
 
-    let frameRequest = null, lastFrame = null, lastDrawn = null;
+    let frameRequest = null, lastFrame = null, lastDrawn = null, onScreen = false;
     const loop = now => {
         frameRequest = requestAnimationFrame(loop);
         const step = lastFrame === null ? MILLISECONDS_PER_FRAME : Math.min(now - lastFrame, MAX_STEP_MILLISECONDS);
@@ -105,6 +106,7 @@ export function start(card, options = {}) {
     const still = window.matchMedia("(prefers-reduced-motion: reduce)");
     const startLoop = () => {
         if (still.matches) return window.logAnimation?.(name, "still", "reduced motion");
+        if (!onScreen) return;
         if (frameRequest === null) {
             lastFrame = null;
             frameRequest = requestAnimationFrame(loop);
@@ -124,6 +126,10 @@ export function start(card, options = {}) {
 
     fit();
     new ResizeObserver(fit).observe(card);
-    new IntersectionObserver(([entry]) => (entry.isIntersecting ? startLoop() : stopLoop())).observe(card);
+    new IntersectionObserver(([entry]) => {
+        onScreen = entry.isIntersecting;
+        if (onScreen) startLoop();
+        else stopLoop();
+    }).observe(card);
     still.addEventListener("change", () => (still.matches ? (stopLoop(), draw()) : startLoop()));
 }

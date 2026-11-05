@@ -51,12 +51,22 @@ export function noise(seed) {
     return value - Math.floor(value);
 }
 
-/** How many points a line needs to cross a card `width` pixels wide, given the stretch. */
+/** How far along a line must go to cross a card `width` pixels wide, given the stretch. */
 export function pointsAcross(width) {
-    // Solve STRETCH × along² + along = width + PAST_THE_EDGE for `along`.
-    const reach = width + PAST_THE_EDGE;
+    // Solve STRETCH × along² + along = width + PAST_THE_EDGE + START_STAGGER for `along`: even a
+    // line staggered to start left of the edge ends past the right edge.
+    const reach = width + PAST_THE_EDGE + START_STAGGER;
     const along = (Math.sqrt(1 + 4 * STRETCH * reach) - 1) / (2 * STRETCH);
     return Math.min(width, Math.ceil(along));
+}
+
+/** The points along each line, POINT_SPACING apart, always ending at the last one needed. */
+export function pointsAlong(width) {
+    const lastPoint = pointsAcross(width);
+    const points = [];
+    for (let along = 0; along < lastPoint; along += POINT_SPACING) points.push(along);
+    points.push(lastPoint);
+    return points;
 }
 
 /** Line `line` (0 to LINES − 1): its thickness, and its opacity as the light band passes. */

@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 import {
-    LINES, SPEED, advance, linePoint, lineStyle, noise, pointsAcross, restingY, settle, stir,
+    LINES, POINT_SPACING, SPEED, advance, linePoint, lineStyle, noise, pointsAcross, pointsAlong, restingY, settle, stir,
 } from "../js/macquarie/waves.js";
 
 const closeTo = (actual, expected, message) => assert.ok(Math.abs(actual - expected) < 1e-9, message ?? `${actual} ≠ ${expected}`);
@@ -28,13 +28,22 @@ describe("Macquarie waves", () => {
         }
     });
 
-    it("draws enough points to reach past the right edge, and never more than the width", () => {
-        for (const width of [200, 640, 1200]) {
-            const lastPoint = pointsAcross(width);
-            assert.ok(lastPoint <= width);
-            const reach = linePoint(0, lastPoint, 0, 0, 0).x;
-            assert.ok(reach >= width, `width ${width}: lines stop at ${reach}`);
+    it("draws every line past the right edge, whatever the card's width", () => {
+        for (const width of [200, 393, 640, 1200, 1400]) {
+            const points = pointsAlong(width);
+            assert.ok(points.at(-1) <= width);
+            for (let line = 0; line < LINES; line++) {
+                const reach = linePoint(line - LINES / 2, points.at(-1), 0, 0, 0).x;
+                assert.ok(reach >= width, `width ${width}, line ${line}: stops at ${reach}`);
+            }
         }
+    });
+
+    it("spaces the points evenly, then ends at the last one needed", () => {
+        const points = pointsAlong(1200);
+        assert.equal(points[0], 0);
+        assert.equal(points.at(-1), pointsAcross(1200));
+        for (let index = 1; index < points.length - 1; index++) assert.equal(points[index] - points[index - 1], POINT_SPACING);
     });
 
     it("makes taller waves when stirred", () => {
