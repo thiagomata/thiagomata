@@ -11,36 +11,6 @@
     /* min-width: 0; */
 }
 
-@property --scroll-view {
-    syntax: '<integer>';
-    initial-value: 0;
-    inherits: false;
-}
-
-@property --scroll-view-percent {
-    syntax: '<float>';
-    initial-value: 0;
-    inherits: false;
-}
-
-@keyframes change-scroll-view {
-    from {
-        --scroll-view: 0;
-    }
-
-    to {
-        --scroll-view: 100;
-    }
-}
-
-* {
-    --view: 200px;
-    --scroll-view: 0;
-    --scroll-view-percent: calc(var(--scroll-view) / 100);
-    animation: change-scroll-view linear forwards;
-    animation-timeline: view(var(--view));
-}
-
 .internal-link {
     color: var(--light-100);
     text-decoration: none;
@@ -151,8 +121,20 @@ body {
 
     section {
         background-color: black;
-        background-image: url("../img/bridge-6.svg");
-        background-position: bottom center;;
+        /* The bridge in three layers (img/bridge/), front to back: the bridge, the
+           water with its rippling reflections, and the sky. Only the water moves. */
+        background-image:
+            url("../img/bridge/bridge.svg?v=f8a5bd32"),
+            url("../img/bridge/water-animated.svg?v=ab8b3c37"),
+            url("../img/bridge/background-only.svg?v=d6078e84");
+        /* Off screen, still water (see js/pause-offscreen.js). */
+        &.is-paused {
+            background-image:
+                url("../img/bridge/bridge.svg?v=f8a5bd32"),
+                url("../img/bridge/water.svg?v=3fb0371b"),
+                url("../img/bridge/background-only.svg?v=d6078e84");
+        }
+        background-position: bottom center;
         --border-gradient-color: var(--gradient-color, rgb(1, 37, 37));
         background-size: cover;
         background-repeat: no-repeat;
@@ -195,7 +177,7 @@ body {
     }
 
     .value-reliable {
-        background-image: url("../img/car-boy.svg");
+        background-image: url("../img/car-boy.svg?v=cc5d838f");
         background-color: rgb(97, 93, 158);
         background-size: contain;
         background-position-x: 90%;
@@ -204,14 +186,14 @@ body {
     }
 
     .value-elegant {
-        background-image: url("../img/simple2.svg");
+        background-image: url("../img/simple2.svg?v=a342b2fa");
         background-color: rgb(1, 37, 37);
         --gradient-color: rgb(2, 28, 46);
         background-size: cover;
         background-position: bottom right;
     }
     .value-thrifty {
-        background-image: url("../img/coin-girl.svg");
+        background-image: url("../img/coin-girl.svg?v=f597b31c");
         background-color: rgb(76, 76, 76);
         background-size: contain;
         background-position-x: 90%;
@@ -274,20 +256,26 @@ body {
     }
 
     section[data-company=rokt] {
-        --icon: url("../img/rokt-white.svg");
-        --background-image: url("../img/rokt-new.svg");
+        --icon: url("../img/rokt-white.svg?v=808a7850");
+        --background-image: url("../img/rokt-animated.svg?v=0be97863");
+        &.is-paused {
+            --background-image: url("../img/rokt-new.svg?v=5d55f3ef");
+        }
     }
     section[data-company=sli] {
-        --icon: url("../img/sli.svg");
-        --background-image: url("../img/sli-bg.svg");
+        --icon: url("../img/sli.svg?v=55746700");
+        --background-image: url("../img/sli-bg.svg?v=194c86b0");
         background-size: cover;
         background-position: bottom right;
         --logo-height: 60px;
+        --effect-color-red: 33;
+        --effect-color-green: 30;
+        --effect-color-blue: 30;
         border-image:  var(--border-image);
     }
     section[data-company=ideia] {
-        --icon: url("../img/ideia-white.svg");
-        --background-image: url("../img/people-night.svg");
+        --icon: url("../img/ideia-white.svg?v=3093e7ba");
+        --background-image: url("../img/people-night.svg?v=2a961aa4");
         background-size: cover;
         background-position: bottom center;
 
@@ -303,8 +291,8 @@ body {
         --effect-color-blue: 62;
         border-image:  var(--border-image);
         background-color: rgb(1,62,62);
-        --icon: url("../img/otimicar.svg");
-        --background-image: url("../img/car4.svg");
+        --icon: url("../img/otimicar.svg?v=652bc618");
+        --background-image: url("../img/car4.svg?v=557fd216");
         background-size: cover;
         /* background-position: bottom center; */
         background-position: 22% bottom;
@@ -314,8 +302,11 @@ body {
     }
 
     section[data-company=mec] {
-        --icon: url("../img/mec.svg");
-        --background-image: url("../img/bsb7.svg");
+        --icon: url("../img/mec.svg?v=bf64ca76");
+        --background-image: url("../img/bsb7-animated.svg?v=65af7ba6");
+        &.is-paused {
+            --background-image: url("../img/bsb7.svg?v=301f6a37");
+        }
         background-size: cover;
         background-position: bottom center;
         --effect-color-red: 23;
@@ -325,7 +316,7 @@ body {
     }
 
     section[data-company=isobar] {
-        --icon: url("../img/otimicar.svg");
+        --icon: url("../img/otimicar.svg?v=652bc618");
         background-size: cover;
         background-position: bottom left;
         p {
@@ -1102,7 +1093,7 @@ p {
 
 /* Macquarie: quiet copy area with restrained vector arcs. */
 #top-companies section[data-company="macquarie"] {
-    --background-image: url("../img/macquarie-background.webp");
+    --background-image: url("../img/macquarie-background.webp?v=b566aa43");
     height: auto;
     min-height: 670px;
     padding: clamp(24px, 4vw, 48px);
@@ -1111,6 +1102,53 @@ p {
     background-size: cover;
     background-color: #111315;
     background-repeat: no-repeat;
+}
+/* Live backgrounds drawn by js/macquarie-waves.js and js/sli-blobs.js;
+   the static image stays as the fallback. */
+#top-companies section.is-live {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    background-image: none;
+}
+/* The readability gradient (--border-image) is painted by the section itself, under
+   the live background; repeat it on a layer above the animation and below the text. */
+#top-companies section.is-live::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    border-image: var(--border-image);
+    pointer-events: none;
+}
+#top-companies section .live-bg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+    pointer-events: none;
+}
+/* The SLI background is bright under its shade: when the card's edge falls between two pixels
+   (a zoomed page or device preview), the half-covered edge pixel let it show as a white line.
+   Kept 1px inside the card, the edge pixels are only the dark card and its shade. */
+#top-companies section[data-company="sli"] .live-bg {
+    inset: 1px;
+    width: calc(100% - 2px);
+    height: calc(100% - 2px);
+}
+/* Colours and bridge sizes are faded by js/sli-blobs.js; a bridge grows from its middle. */
+#top-companies section[data-company="sli"] .live-bg circle {
+    transform-box: fill-box;
+    transform-origin: center;
+}
+#top-companies section[data-company="sli"] .live-bg .shade { mix-blend-mode: multiply; }
+#top-companies section[data-company="macquarie"] .live-bg {
+    opacity: 0.9;
+    transition: opacity 600ms ease;
+}
+#top-companies section[data-company="macquarie"]:hover .live-bg {
+    opacity: 1;
 }
 #top-companies section[data-company="macquarie"] .company-name {
     height: auto;
@@ -1167,11 +1205,35 @@ p {
 #projects [data-project="parallax"] {
     background-image:
         linear-gradient(90deg, rgba(13, 15, 18, .94), rgba(13, 15, 18, .68) 42%, rgba(13, 15, 18, .08)),
-        url("../img/parallax-depth.webp");
+        url("../img/parallax-depth.webp?v=fd9b9225");
     background-position: center;
 }
-#projects [data-project="probability"] { background-image: url("../img/project-probability.svg"); }
-#projects [data-project="primes"] { background-image: url("../img/project-primes.svg"); }
+/* The live tunnel (js/parallax/scene.js) replaces the picture; the readability gradient moves to a
+   layer above the tunnel and below the text. */
+#projects [data-project="parallax"].parallax-live {
+    --readability: linear-gradient(90deg, rgba(13, 15, 18, .94), rgba(13, 15, 18, .68) 42%, rgba(13, 15, 18, .08));
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    background-image: none;
+}
+#projects [data-project="parallax"].parallax-live::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: var(--readability);
+    pointer-events: none;
+}
+#projects [data-project="parallax"] .parallax-tunnel {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+}
+#projects [data-project="probability"] { background-image: url("../img/project-probability.svg?v=540ab036"); }
+#projects [data-project="primes"] { background-image: url("../img/project-primes.svg?v=86458081"); }
 #projects h3 { font-size: 30px; margin: 0 0 36px; }
 #projects h4 {
     font-family: Teko, sans-serif;
@@ -1210,7 +1272,29 @@ p {
     #projects [data-project="parallax"] {
         background-image:
             linear-gradient(90deg, rgba(13, 15, 18, .90), rgba(13, 15, 18, .45)),
-            url("../img/parallax-depth.webp");
+            url("../img/parallax-depth.webp?v=fd9b9225");
         background-position: center;
+    }
+    #projects [data-project="parallax"].parallax-live {
+        --readability: linear-gradient(90deg, rgba(13, 15, 18, .90), rgba(13, 15, 18, .45));
+        background-image: none;
+    }
+}
+
+/* On a phone, the OtimiCar picture fits the card's width, so the whole car shows (as the live
+   scene does, style/otimicar.css), with the picture's sky above it. */
+@media (max-width: 43em) {
+    #top-companies section[data-company="otimicar"] {
+        background-size: 100% auto;
+        background-position: center bottom;
+        background-color: #01928A;
+    }
+}
+
+/* On a phone, the Elegant picture keeps its big windmill in view (as the live scene does,
+   style/windmills.css) instead of the sky right of it. */
+@media (max-width: 43em) {
+    #values .value-elegant {
+        background-position: 77% bottom;
     }
 }

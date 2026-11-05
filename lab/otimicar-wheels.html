@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>OtimiCar wheels</title>
+    <link rel="stylesheet" href="../style/otimicar.css" />
+    <style>
+        /* The OtimiCar card's live scene (js/otimicar/scene.js) on its own, at the
+           illustration's shape. */
+        html, body {
+            margin: 0;
+            background: #0d0f1a;
+        }
+        .stage {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 1151 / 532;
+        }
+    </style>
+</head>
+<body>
+    <div class="stage"></div>
+    <script type="module">
+        import { start } from "../js/otimicar/scene.js";
+        start(document.querySelector(".stage"), "../img/otimicar");
+    </script>
+</body>
+</html>

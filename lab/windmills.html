@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Windmills</title>
+    <style>
+        /* The Elegant card's windmills: the picture without its sails, and the sails turning
+           over it in three.js (js/windmills/scene.js). */
+        html, body {
+            margin: 0;
+            background: #0d0f1a;
+        }
+        .picture {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 4294 / 2474;     /* the picture's viewBox */
+            background: url("../img/simple2-no-sails.svg") center / 100% 100% no-repeat;
+        }
+        .windmill-sails {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+        }
+    </style>
+    <script type="importmap">
+        {
+            "imports": {
+                "three": "https://cdn.jsdelivr.net/npm/three@0.187.0/build/three.module.min.js",
+                "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.187.0/examples/jsm/"
+            }
+        }
+    </script>
+</head>
+<body>
+    <div class="picture"></div>
+    <script type="module">
+        import { start } from "../js/windmills/scene.js";
+        start(document.querySelector(".picture"));
+    </script>
+</body>
+</html>

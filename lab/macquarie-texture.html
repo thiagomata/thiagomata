@@ -1,0 +1,570 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Macquarie texture</title>
+    <style>
+        /* Macquarie card texture lab. The previous live card (js/macquarie-rings.js,
+           replaced by js/macquarie-waves.js after this lab) animated
+           img/macquarie-background.svg: 30 evenly spaced rings. But the static fallback
+           everyone compares it with is img/macquarie-background.webp — a denser, organic
+           image (~2x the line crossings, wider softer strokes, glints). This lab mocks the
+           real homepage card six times and tries different ways to give the animation the
+           same richness: denser geometry, the photo itself as an underlay, turbulence
+           displacement, grain + glow, and a canvas wave field built from superposed
+           cosines (after desarrollolibre.net's canvas wave technique). Same engine,
+           constants and interactions as production (wave of light, scroll stirs it,
+           parallax on scroll, reduced motion draws one still frame). */
+        html { background: #08090a; }
+        body {
+            margin: 0;
+            font-family: Roboto, "Helvetica Neue", Arial, sans-serif;
+            color: #e9ecef;
+        }
+        .bar {
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px 24px;
+            align-items: baseline;
+            padding: 12px 20px;
+            background: rgba(8, 9, 10, 0.92);
+            border-bottom: 1px solid #23262a;
+        }
+        .bar h1 {
+            margin: 0;
+            font-size: 1rem;
+            font-weight: 600;
+            letter-spacing: 0.04em;
+        }
+        .bar p { margin: 0; font-size: 0.8rem; color: #9aa1a8; }
+        .bar button {
+            font: inherit;
+            color: #e9ecef;
+            background: #1c1d1e;
+            border: 1px solid #3a3e43;
+            border-radius: 4px;
+            padding: 2px 12px;
+            cursor: pointer;
+        }
+        .bar button:hover { background: #26282a; }
+        main { max-width: 1200px; margin: 0 auto; padding: 24px 16px 80px; }
+        .variant-head {
+            margin: 40px 4px 10px;
+            font-size: 0.8rem;
+            line-height: 1.5;
+            color: #9aa1a8;
+        }
+        .variant-head strong { color: #e9ecef; font-size: 0.95rem; }
+        .card {
+            position: relative;
+            isolation: isolate;
+            overflow: hidden;
+            min-height: 670px;
+            padding: clamp(24px, 4vw, 48px);
+            color: #e9ecef;
+            background: #111315;
+            display: flex;
+            flex-direction: column;
+        }
+        .card[data-variant="ref"] {
+            background-image: url("../img/macquarie-background.webp");
+            background-position: center;
+            background-size: cover;
+            background-repeat: no-repeat;
+        }
+        /* Gentle darkening on the copy side, same idea for every card, so the
+           variants are judged with equally readable text. */
+        .card::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            z-index: -1;
+            background: linear-gradient(90deg, rgba(10, 11, 12, 0.6), rgba(10, 11, 12, 0) 55%);
+            pointer-events: none;
+        }
+        .card .live-bg {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            pointer-events: none;
+        }
+        .card .company-name { margin: 0 0 28px; }
+        .card .company-name img {
+            display: block;
+            width: 260px;
+            max-width: 100%;
+            height: auto;
+            filter: invert(1);
+        }
+        .card h4 {
+            margin: 0;
+            font-family: Teko, "Roboto Condensed", sans-serif;
+            font-size: 1.4rem;
+            letter-spacing: 0.06em;
+        }
+        .card .duration { margin: 4px 0 0; color: #9aa1a8; font-size: 0.9rem; }
+        .card .call {
+            margin: 24px 0;
+            max-width: 460px;
+            font-family: Teko, "Roboto Condensed", sans-serif;
+            font-size: 1.9rem;
+            line-height: 1.15;
+        }
+        .card .description { max-width: 460px; line-height: 1.6; font-size: 0.95rem; }
+        .card .see-more { padding-top: 32px; margin-top: auto; }
+        .card .see-more a {
+            display: inline-block;
+            padding: 10px 18px;
+            border: 1px solid #4a4e54;
+            border-radius: 4px;
+            color: #e9ecef;
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+        .card .see-more a:hover { background: rgba(233, 236, 239, 0.08); }
+    </style>
+</head>
+<body>
+    <header class="bar">
+        <h1>Macquarie card · texture lab</h1>
+        <p>Scroll stirs the water, like the homepage.</p>
+        <button id="pause" type="button">Pause</button>
+    </header>
+    <main id="deck"></main>
+    <script>
+        (() => {
+            const NS = "http://www.w3.org/2000/svg";
+
+            // Shared constants, identical to js/macquarie-rings.js.
+            const CX = 1390, CY = 195, R0 = 230, STEP = 14, ASPECT = 0.83;
+            const CURVES = 14;
+            const CALM_SPEED = 0.0006, STIR_SPEED = 0.004;
+            const CALM_AMP = 3, STIR_AMP = 18, GLOW = 0.45;
+            const STIR = 0.0025, SETTLE = 1200, DRIFT = 60;
+
+            // Deterministic per-ring jitter (no Math.random: every load looks the same).
+            const hash = n => { const x = Math.sin(n * 127.1 + 311.7) * 43758.5453; return x - Math.floor(x); };
+
+            // ---- SVG scaffolding shared by all variants ----
+            const scaffold = (uid, defsExtra = "", layers = "") => {
+                const svg = document.createElementNS(NS, "svg");
+                svg.setAttribute("class", "live-bg");
+                svg.setAttribute("viewBox", "0 0 1600 700");
+                svg.setAttribute("preserveAspectRatio", "xMidYMid slice");
+                svg.setAttribute("aria-hidden", "true");
+                svg.innerHTML = `
+                    <defs>
+                        <linearGradient id="mq-base-${uid}"><stop stop-color="#111315"/><stop offset="1" stop-color="#1c1d1e"/></linearGradient>
+                        <linearGradient id="mq-fade-${uid}"><stop offset="0.35" stop-color="white" stop-opacity="0"/><stop offset="0.7" stop-color="white" stop-opacity="0.5"/><stop offset="1" stop-color="white"/></linearGradient>
+                        <mask id="mq-lines-${uid}"><path fill="url(#mq-fade-${uid})" d="M0 0H1600V700H0Z"/></mask>
+                        ${defsExtra}
+                    </defs>
+                    <path fill="url(#mq-base-${uid})" d="M0 0H1600V700H0Z"/>
+                    ${layers}`;
+                return svg;
+            };
+
+            // <g mask><g class="lines" fill=none stroke=#c3b9a6 stroke-width=.7> …
+            const linesGroup = (svg, uid) => {
+                const outer = document.createElementNS(NS, "g");
+                outer.setAttribute("mask", `url(#mq-lines-${uid})`);
+                const inner = document.createElementNS(NS, "g");
+                inner.setAttribute("class", "lines");
+                inner.setAttribute("fill", "none");
+                inner.setAttribute("stroke", "#c3b9a6");
+                inner.setAttribute("stroke-width", "0.7");
+                outer.appendChild(inner);
+                svg.appendChild(outer);
+                return inner;
+            };
+
+            // Production ring field: 30 rings, perfectly even. Returns draw(phase, energy, progress).
+            const uniformField = (parent, opts = {}) => {
+                const n = opts.rings ?? 30, glow = opts.glow ?? GLOW;
+                const els = Array.from({ length: n }, () => parent.appendChild(document.createElementNS(NS, "ellipse")));
+                els.forEach(e => { e.setAttribute("cx", CX); e.setAttribute("cy", CY); });
+                return (phase, energy, progress) => {
+                    const amp = CALM_AMP + STIR_AMP * energy;
+                    const spacing = 0.25 + 0.3 * progress;
+                    els.forEach((e, i) => {
+                        const wave = Math.sin(phase - i * spacing);
+                        const rx = R0 + i * STEP + amp * wave;
+                        e.setAttribute("rx", rx.toFixed(1));
+                        e.setAttribute("ry", (rx * ASPECT).toFixed(1));
+                        e.setAttribute("stroke-opacity", (0.25 + (glow + 0.2 * energy) * Math.max(wave, 0) ** 4).toFixed(3));
+                    });
+                };
+            };
+
+            // Dense organic field: radius steps, widths, opacities, aspect and wave phase all
+            // jittered per ring, plus a second slow shimmer so the surface never looks
+            // machine-drawn. This is the workhorse the webp's density is rebuilt from.
+            const denseField = (parent, opts = {}) => {
+                const n = opts.rings ?? 56, glow = opts.glow ?? GLOW, widthScale = opts.widthScale ?? 1;
+                const rings = [];
+                let r = R0;
+                for (let i = 0; i < n; i++) {
+                    const el = parent.appendChild(document.createElementNS(NS, "ellipse"));
+                    el.setAttribute("cx", CX);
+                    el.setAttribute("cy", CY);
+                    el.setAttribute("stroke-width", ((0.5 + 1.5 * hash(i * 7 + 2) ** 3) * widthScale).toFixed(2));
+                    rings.push({
+                        el, r,
+                        op: 0.13 + 0.2 * hash(i * 11 + 5),
+                        asp: ASPECT + (hash(i * 5 + 9) - 0.5) * 0.06,
+                        amp: 0.6 + 0.8 * hash(i * 13 + 4),
+                        ph: hash(i * 3 + 1) * 2.6,
+                        ph2: hash(i * 17 + 6) * 6.283,
+                        sp: 0.8 + 0.4 * hash(i * 19 + 8)
+                    });
+                    r += 6.5 + 5.5 * hash(i * 3 + 1); // organic steps instead of a fixed 14
+                }
+                return (phase, energy, progress) => {
+                    const amp = CALM_AMP + STIR_AMP * energy;
+                    const spacing = 0.25 + 0.3 * progress;
+                    rings.forEach((g, i) => {
+                        const wave = Math.sin(phase - (i * 0.9 + g.ph) * spacing * g.sp);
+                        const shimmer = 0.5 + 0.5 * Math.sin(phase * 0.21 - g.r * 0.012 + g.ph2);
+                        const rx = g.r + amp * g.amp * wave;
+                        g.el.setAttribute("rx", rx.toFixed(1));
+                        g.el.setAttribute("ry", (rx * g.asp).toFixed(1));
+                        g.el.setAttribute("stroke-opacity",
+                            (g.op * (0.7 + 0.5 * shimmer) + (glow + 0.2 * energy) * Math.max(wave, 0) ** 4).toFixed(3));
+                    });
+                };
+            };
+
+            // The 14 curves, straight from production.
+            const curveField = parent => {
+                const els = Array.from({ length: CURVES }, () => parent.appendChild(document.createElementNS(NS, "path")));
+                return phase => {
+                    els.forEach((p, i) => {
+                        const sway = (8 + 24 * phaseEnergy) * Math.sin(phase * 0.6 + i * 0.2);
+                        p.setAttribute("d",
+                            `M ${770 + 14 * i} 700 C ${870 + 10 * i} ${380 + sway} ${1260 + 8 * i} ${440 - sway} 1600 ${220 + 12 * i}`);
+                    });
+                };
+            };
+            // curveField closes over the engine's energy; set once per frame before drawing.
+            let phaseEnergy = 0;
+
+            // ---- The variants ----
+            const builders = {
+
+                // A: the live card exactly as shipped (30 even rings, .lines dimmed to .85,
+                //    base stroke-opacity .25 — the CSS from style.css baked in).
+                a: card => {
+                    const svg = scaffold("a");
+                    const lines = linesGroup(svg, "a");
+                    lines.setAttribute("stroke-opacity", "0.25");
+                    lines.style.opacity = "0.85";
+                    const rings = uniformField(lines);
+                    const curves = curveField(lines);
+                    card.prepend(svg);
+                    return (phase, energy, progress) => {
+                        rings(phase, energy, progress);
+                        curves(phase);
+                        lines.setAttribute("transform", `translate(0 ${((progress - 0.5) * DRIFT).toFixed(1)})`);
+                    };
+                },
+
+                // B: same engine, dense organic field — the pure-geometry route to the webp's
+                //    richness (about 2x the lines, varied weights, shimmering surface).
+                b: card => {
+                    const svg = scaffold("b");
+                    const lines = linesGroup(svg, "b");
+                    lines.setAttribute("stroke-opacity", "0.22"); // inherited by the curves only
+                    lines.style.opacity = "0.9";
+                    const rings = denseField(lines);
+                    const curves = curveField(lines);
+                    card.prepend(svg);
+                    return (phase, energy, progress) => {
+                        rings(phase, energy, progress);
+                        curves(phase);
+                        lines.setAttribute("transform", `translate(0 ${((progress - 0.5) * DRIFT).toFixed(1)})`);
+                    };
+                },
+
+                // C: the webp itself as a dimmed underlay, counter-drifting with the parallax,
+                //    with the production ring field waving above it (stronger glow).
+                c: card => {
+                    const svg = scaffold("c", "", `
+                        <g class="photo" opacity="0.55">
+                            <image href="../img/macquarie-background.webp" x="-70" y="-30" width="1740" height="760" preserveAspectRatio="xMidYMid slice"/>
+                        </g>`);
+                    const lines = linesGroup(svg, "c");
+                    lines.style.opacity = "0.9";
+                    const rings = uniformField(lines, { glow: 0.6 });
+                    const curves = curveField(lines);
+                    const photo = svg.querySelector(".photo");
+                    card.prepend(svg);
+                    return (phase, energy, progress) => {
+                        rings(phase, energy, progress);
+                        curves(phase);
+                        lines.setAttribute("transform", `translate(0 ${((progress - 0.5) * DRIFT).toFixed(1)})`);
+                        photo.setAttribute("transform",
+                            `translate(${((0.5 - progress) * 60).toFixed(1)} ${((progress - 0.5) * 24).toFixed(1)})`);
+                    };
+                },
+
+                // D: B's field pushed through feTurbulence + feDisplacementMap. The distortion
+                //    scale breathes with the wave, so the geometry stays alive but organic.
+                //    Filter region is padded so displaced rings are not clipped.
+                d: card => {
+                    const svg = scaffold("d", `
+                        <filter id="mq-wob-d" x="-8%" y="-8%" width="116%" height="116%">
+                            <feTurbulence type="fractalNoise" baseFrequency="0.009 0.016" numOctaves="2" seed="7" result="n"/>
+                            <feDisplacementMap id="mq-wobmap-d" in="SourceGraphic" in2="n" scale="10" xChannelSelector="R" yChannelSelector="G"/>
+                        </filter>`);
+                    const lines = linesGroup(svg, "d");
+                    lines.setAttribute("stroke-opacity", "0.22");
+                    lines.style.opacity = "0.9";
+                    lines.setAttribute("filter", "url(#mq-wob-d)");
+                    const rings = denseField(lines, { rings: 48 });
+                    const curves = curveField(lines);
+                    const map = svg.querySelector("#mq-wobmap-d");
+                    card.prepend(svg);
+                    let tick = 0;
+                    return (phase, energy, progress) => {
+                        rings(phase, energy, progress);
+                        curves(phase);
+                        lines.setAttribute("transform", `translate(0 ${((progress - 0.5) * DRIFT).toFixed(1)})`);
+                        // Every other frame is plenty for the filter and halves its cost.
+                        if ((tick = (tick + 1) & 1) === 0)
+                            map.setAttribute("scale", (7 + 9 * (0.5 + 0.5 * Math.sin(phase * 0.5)) + 10 * energy).toFixed(1));
+                    };
+                },
+
+                // E: B plus a blurred, fatter twin of the rings underneath (the soft luminous
+                //    bands the webp has) and a grain sweep above (static feTurbulence, only its
+                //    opacity travels). The glow twin redraws every 3rd frame — it is soft, so
+                //    20fps updates are invisible.
+                e: card => {
+                    const svg = scaffold("e", `
+                        <filter id="mq-blur-e"><feGaussianBlur stdDeviation="3.2"/></filter>
+                        <filter id="mq-grain-e" x="0" y="0" width="100%" height="100%">
+                            <feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="2" seed="3"/>
+                            <feColorMatrix values="0 0 0 0 0.765  0 0 0 0 0.725  0 0 0 0 0.651  0.4 0 0 0 0"/>
+                        </filter>`);
+                    const lines = linesGroup(svg, "e");
+                    lines.setAttribute("stroke-opacity", "0.22");
+                    lines.style.opacity = "0.95";
+                    const glowLayer = document.createElementNS(NS, "g");
+                    glowLayer.setAttribute("filter", "url(#mq-blur-e)");
+                    glowLayer.setAttribute("stroke-width", "2.6");
+                    glowLayer.setAttribute("opacity", "0.5");
+                    lines.appendChild(glowLayer);
+                    const glowRings = denseField(glowLayer, { rings: 48, glow: 0.5, widthScale: 3 });
+                    const rings = denseField(lines, { rings: 56 });
+                    const curves = curveField(lines);
+                    const grainLayer = document.createElementNS(NS, "g");
+                    grainLayer.setAttribute("mask", "url(#mq-lines-e)");
+                    const grain = document.createElementNS(NS, "rect");
+                    grain.setAttribute("x", "0"); grain.setAttribute("y", "0");
+                    grain.setAttribute("width", "1600"); grain.setAttribute("height", "700");
+                    grain.setAttribute("filter", "url(#mq-grain-e)");
+                    grainLayer.appendChild(grain);
+                    svg.appendChild(grainLayer);
+                    card.prepend(svg);
+                    let tick = 0;
+                    return (phase, energy, progress) => {
+                        rings(phase, energy, progress);
+                        curves(phase);
+                        if ((tick = (tick + 1) % 3) === 0) glowRings(phase, energy, progress);
+                        lines.setAttribute("transform", `translate(0 ${((progress - 0.5) * DRIFT).toFixed(1)})`);
+                        const sweep = Math.max(Math.sin(phase * 0.35 - 0.8), 0) ** 3;
+                        grainLayer.setAttribute("opacity", (0.16 + 0.34 * sweep).toFixed(3));
+                    };
+                },
+
+                // F: canvas wave field, after the wave effect from
+                //    desarrollolibre.net/blog/javascript/how-to-create-a-wave-effect-with-canvas-and-javascript —
+                //    many parallel polylines, each point a superposition of cosines with different
+                //    frequencies and phases (a single sine reads as mechanical; stacked ones read as
+                //    water). Adapted to the card: x = j + 0.008j² fans the lines out to the right,
+                //    the left-to-right stroke gradient stands in for the mq-fade mask, and the
+                //    engine still drives it (wave of light, scroll energy, parallax).
+                f: card => {
+                    const canvas = document.createElement("canvas");
+                    canvas.setAttribute("class", "live-bg");
+                    canvas.setAttribute("aria-hidden", "true");
+                    card.prepend(canvas);
+                    const ctx = canvas.getContext("2d");
+                    let w = 1, h = 1, dpr = 1, stroke = null, base = null;
+                    const fit = () => {
+                        const box = card.getBoundingClientRect();
+                        dpr = Math.min(window.devicePixelRatio || 1, 2);
+                        w = Math.max(1, Math.round(box.width));
+                        h = Math.max(1, Math.round(box.height));
+                        canvas.width = w * dpr;
+                        canvas.height = h * dpr;
+                        // Same shape as the mq-fade mask: invisible under the copy, full strength right.
+                        stroke = ctx.createLinearGradient(0, 0, w, 0);
+                        stroke.addColorStop(0.30, "rgba(195,185,166,0)");
+                        stroke.addColorStop(0.65, "rgba(195,185,166,0.5)");
+                        stroke.addColorStop(1, "rgba(195,185,166,1)");
+                        base = ctx.createLinearGradient(0, 0, w, h);
+                        base.addColorStop(0, "#111315");
+                        base.addColorStop(1, "#1c1d1e");
+                    };
+                    fit();
+                    window.addEventListener("resize", fit);
+
+                    const LINES = 110;   // the article draws -60..60
+                    // The field keeps its own unhurried clock: at rest it drifts like the other
+                    // variants, and a hard scroll quickens it about threefold — reusing the
+                    // engine's phase directly would spin it up ~8x, which reads as frantic.
+                    let ft = 0;
+                    return (phase, energy, progress, dt = 16) => {
+                        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+                        ctx.fillStyle = base;
+                        ctx.fillRect(0, 0, w, h);
+
+                        ft += dt * (0.054 + 0.126 * energy);   // calm 0.054/ms, full stir 0.18/ms
+                        const t = ft;
+                        const amp = 1 + 1.4 * energy;          // …and the scroll stirs the amplitude
+                        const y0 = h * 0.55 + (progress - 0.5) * DRIFT;  // parallax
+                        // x = j + 0.008j² leaves the canvas early; stop before the maths runs away.
+                        const maxJ = Math.min(w, Math.ceil((Math.sqrt(1 + 0.032 * (w + 20)) - 1) / 0.016));
+                        ctx.strokeStyle = stroke;
+
+                        for (let i = -55; i < 55; i++) {
+                            const n = i + 55;
+                            ctx.lineWidth = 0.6 + 0.8 * hash(n * 7 + 2);
+                            ctx.globalAlpha = 0.18 + 0.2 * hash(n * 11 + 5)
+                                + (GLOW + 0.2 * energy) * Math.max(Math.sin(phase - n * 0.09), 0) ** 4;
+                            ctx.beginPath();
+                            ctx.moveTo(0, y0 + i * 1.1);
+                            for (let j = 0; j <= maxJ; j += 10) {
+                                ctx.lineTo(
+                                    10 * Math.cos(i) + j + 0.008 * j * j,
+                                    y0 + i * 1.1
+                                        + j * 0.22 * amp * Math.cos(j / 50 - t / 50 - i / 118)
+                                        + (i * 0.9) * amp * Math.cos(j / 25 - (i + t) / 65));
+                            }
+                            ctx.stroke();
+                        }
+                        ctx.globalAlpha = 1;
+                    };
+                }
+            };
+
+            // ---- The deck: every variant gets the real homepage card content ----
+            const COPY = `
+                <div class="company-name">
+                    <img src="../img/macquarie-horizontal.svg" alt="Macquarie Bank" width="260" height="33" />
+                </div>
+                <div class="position"><h4>Senior Manager</h4></div>
+                <div class="duration"><span>2024–Present</span></div>
+                <div class="call">Term deposit accounts, opened in minutes</div>
+                <div class="description">
+                    <p>
+                        I contributed to delivering a new digital term deposit experience,
+                        reducing account creation time from days to minutes. For customers,
+                        this means a shorter wait between choosing a term deposit and opening
+                        their account, making the process faster and more convenient.
+                    </p>
+                </div>
+                <div class="see-more"><a href="../cases/macquarie-term-deposits.html">Term Deposits</a></div>`;
+
+            const VARIANTS = [
+                { key: "ref", name: "Reference · today's static image",
+                  note: "img/macquarie-background.webp — the fallback and the case-study background. Not a render of macquarie-background.svg: about 2× the line density of the animation, wider softer strokes, glints." },
+                { key: "a", name: "A · Previous animation",
+                  note: "js/macquarie-rings.js, the live card before this lab: 30 evenly spaced rings + 14 curves, one wave of light, scroll energy. The baseline the lab replaced." },
+                { key: "b", name: "B · Dense organic rings",
+                  note: "Same engine, ~56 rings: jittered spacing, width, opacity, aspect and wave phase, plus a slow shimmer. Pure geometry — the cheapest way to the webp's density." },
+                { key: "c", name: "C · Photo composite",
+                  note: "The webp itself, dimmed to 55% and counter-drifting, under the animated rings with a stronger wave. Real texture now, motion stays." },
+                { key: "d", name: "D · Water wobble",
+                  note: "B's field through feTurbulence + feDisplacementMap; the distortion breathes with the wave. Most organic, but the filter repaints (updated every 2nd frame)." },
+                { key: "e", name: "E · Grain &amp; glow",
+                  note: "B plus a blurred twin of the rings (soft luminous bands) and a travelling grain sweep. Closest to a photographic feel without a photo." },
+                { key: "f", name: "F · Canvas superposed waves",
+                  note: "After desarrollolibre.net's canvas wave effect: ~110 parallel polylines, each point a superposition of cosines — single sines look mechanical, stacked ones look like water. The x = j + 0.008j² term fans the field open toward the right; the stroke gradient stands in for the fade mask. Raster, so it never redraws offscreen. The field keeps its own unhurried clock — a hard scroll quickens it about threefold, not eightfold." }
+            ];
+
+            const deck = document.getElementById("deck");
+            const cards = [];
+            VARIANTS.forEach(({ key, name, note }) => {
+                const head = document.createElement("div");
+                head.className = "variant-head";
+                head.innerHTML = `<strong>${name}</strong><br />${note}`;
+                deck.appendChild(head);
+                const card = document.createElement("section");
+                card.className = "card";
+                card.dataset.variant = key;
+                card.innerHTML = COPY;
+                deck.appendChild(card);
+                const build = builders[key];
+                const draw = build ? build(card) : null;
+                cards.push({ el: card, draw, active: true });
+            });
+
+            // ---- Engine: one loop for all cards, production interactions ----
+            const progressOf = el => {
+                const box = el.getBoundingClientRect();
+                const p = (window.innerHeight - box.top) / (window.innerHeight + box.height);
+                return Math.min(Math.max(p, 0), 1);
+            };
+
+            let phase = 0, energy = 0, lastY = window.scrollY, lastT = null, frame = null, running = true, tick = 0;
+            const loop = t => {
+                if (!running) return;
+                const dt = lastT === null ? 16 : Math.min(t - lastT, 64);
+                lastT = t;
+                energy *= Math.exp(-dt / SETTLE);
+                phase += dt * (CALM_SPEED + STIR_SPEED * energy);
+                phaseEnergy = energy;
+                tick++;
+                for (const c of cards) if (c.active && c.draw) c.draw(phase, energy, progressOf(c.el), dt);
+                frame = requestAnimationFrame(loop);
+            };
+            const start = () => { if (frame === null && running) { lastT = null; frame = requestAnimationFrame(loop); } };
+            const stop = () => { if (frame !== null) cancelAnimationFrame(frame); frame = null; };
+
+            window.addEventListener("scroll", () => {
+                energy = Math.min(1, energy + Math.abs(window.scrollY - lastY) * STIR);
+                lastY = window.scrollY;
+            }, { passive: true });
+
+            const still = window.matchMedia("(prefers-reduced-motion: reduce)");
+            const restFrame = () => { for (const c of cards) if (c.draw) c.draw(0.9, 0, 0.5); };
+            if (still.matches) {
+                restFrame();
+            } else {
+                restFrame(); // paint something before the first tick
+                // Only animate the cards on screen.
+                const io = new IntersectionObserver(entries => {
+                    let anyVisible = false;
+                    entries.forEach(e => {
+                        const c = cards.find(c => c.el === e.target);
+                        if (c) c.active = e.isIntersecting;
+                        if (e.isIntersecting) anyVisible = true;
+                    });
+                    if (anyVisible && running) start(); else stop();
+                });
+                cards.forEach(c => io.observe(c.el));
+            }
+
+            const button = document.getElementById("pause");
+            button.addEventListener("click", () => {
+                running = !running;
+                button.textContent = running ? "Pause" : "Play";
+                running ? start() : stop();
+            });
+
+            still.addEventListener("change", () => {
+                if (still.matches) { stop(); restFrame(); }
+                else start();
+            });
+        })();
+    </script>
+</body>
+</html>

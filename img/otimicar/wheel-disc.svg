@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-52 -52 104 104">
+    <!-- The dark inside of the OtimiCar wheel and its brake disc, drawn straight on; turns with the wheel. -->
+    <defs>
+        <radialGradient id="disc">
+            <stop offset="0.35" stop-color="#2E0404" />
+            <stop offset="1" stop-color="#8E2412" />
+        </radialGradient>
+        <circle id="drill" r="1.6" fill="#1a0302" />
+    </defs>
+    <circle r="46" fill="#121212" />
+    <circle r="34" fill="url(#disc)" />
+    <use href="#drill" x="0" y="-26" />
+    <use href="#drill" x="22.5" y="13" />
+    <use href="#drill" x="-22.5" y="13" />
+    <use href="#drill" x="22.5" y="-13" />
+    <use href="#drill" x="-22.5" y="-13" />
+    <use href="#drill" x="0" y="26" />
+</svg>

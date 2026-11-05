@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-200 -200 400 400">
+    <!--
+        A speedometer behind the OtimiCar car, in the flat style of the illustrations and kept
+        faint so it reads as background. Generated: speeds map to angles from straight up,
+        0 at -120 degrees and 240 at 120. The needle is drawn separately (speedometer-needle.svg) so the page can turn it.
+    -->
+    <style>
+        .face { fill: #013c3a; fill-opacity: 0.45; }
+        .rim { fill: none; stroke: white; stroke-opacity: 0.35; stroke-width: 3; }
+        .red-zone { fill: none; stroke: #D83200; stroke-opacity: 0.7; stroke-width: 8; }
+        line { stroke: white; stroke-linecap: round; }
+        .major { stroke-opacity: 0.6; stroke-width: 3; }
+        .minor { stroke-opacity: 0.35; stroke-width: 1.5; }
+        .red { stroke: #ff6a3d; }
+        text {
+            fill: white; fill-opacity: 0.6;
+            font: 600 22px "Arial Narrow", Arial, sans-serif;
+            text-anchor: middle; dominant-baseline: central;
+        }
+        .unit { font-size: 14px; fill-opacity: 0.45; }
+    </style>
+    <circle class="face" r="190" />
+    <path class="rim" d="M -164.5 95.0 A 190 190 0 1 1 164.5 95.0" />
+    <path class="red-zone" d="M 183.2 -32.3 A 186 186 0 0 1 161.1 93.0" />
+    <line class="major" x1="-157.6" y1="91.0" x2="-138.6" y2="80.0" /><line class="minor" x1="-171.0" y1="62.2" x2="-161.6" y2="58.8" /><line class="major" x1="-179.2" y1="31.6" x2="-157.6" y2="27.8" /><line class="minor" x1="-182.0" y1="-0.0" x2="-172.0" y2="-0.0" /><line class="major" x1="-179.2" y1="-31.6" x2="-157.6" y2="-27.8" /><line class="minor" x1="-171.0" y1="-62.2" x2="-161.6" y2="-58.8" /><line class="major" x1="-157.6" y1="-91.0" x2="-138.6" y2="-80.0" /><line class="minor" x1="-139.4" y1="-117.0" x2="-131.8" y2="-110.6" /><line class="major" x1="-117.0" y1="-139.4" x2="-102.8" y2="-122.6" /><line class="minor" x1="-91.0" y1="-157.6" x2="-86.0" y2="-149.0" /><line class="major" x1="-62.2" y1="-171.0" x2="-54.7" y2="-150.4" /><line class="minor" x1="-31.6" y1="-179.2" x2="-29.9" y2="-169.4" /><line class="major" x1="0.0" y1="-182.0" x2="0.0" y2="-160.0" /><line class="minor" x1="31.6" y1="-179.2" x2="29.9" y2="-169.4" /><line class="major" x1="62.2" y1="-171.0" x2="54.7" y2="-150.4" /><line class="minor" x1="91.0" y1="-157.6" x2="86.0" y2="-149.0" /><line class="major" x1="117.0" y1="-139.4" x2="102.8" y2="-122.6" /><line class="minor" x1="139.4" y1="-117.0" x2="131.8" y2="-110.6" /><line class="major" x1="157.6" y1="-91.0" x2="138.6" y2="-80.0" /><line class="minor" x1="171.0" y1="-62.2" x2="161.6" y2="-58.8" /><line class="major red" x1="179.2" y1="-31.6" x2="157.6" y2="-27.8" /><line class="minor red" x1="182.0" y1="-0.0" x2="172.0" y2="-0.0" /><line class="major red" x1="179.2" y1="31.6" x2="157.6" y2="27.8" /><line class="minor red" x1="171.0" y1="62.2" x2="161.6" y2="58.8" /><line class="major red" x1="157.6" y1="91.0" x2="138.6" y2="80.0" />
+    <text x="-116.0" y="67.0">0</text><text x="-132.0" y="-23.3">40</text><text x="-86.1" y="-102.6">80</text><text x="0.0" y="-134.0">120</text><text x="86.1" y="-102.6">160</text><text x="132.0" y="-23.3">200</text><text x="116.0" y="67.0">240</text>
+    <text class="unit" x="0" y="70">km/h</text>
+</svg>

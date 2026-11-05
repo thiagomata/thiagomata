@@ -1,0 +1,410 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Ideia street</title>
+    <style>
+        /* Ideia background experiment, HTML and CSS only: a street of cube buildings and trees
+           seen in 3D. Scrolling drives the camera (a scroll-driven CSS animation) from street
+           level up to a rooftop view. */
+        :root {
+            --ground: #1a1d2b;
+            --street: #23263a;
+            --sidewalk: #34374a;
+            --line: #e6cf86;
+            --leaf: #2f6b4f;
+            --bark: #4a3426;
+        }
+        html, body {
+            margin: 0;
+            background: #0d0f1a;
+            color: #cfd3e6;
+            font: 14px/1.4 system-ui, sans-serif;
+        }
+        .track {
+            height: 250vh;          /* scroll distance for the whole camera move */
+        }
+        .viewport {
+            position: sticky;
+            top: 0;
+            height: 100vh;
+            overflow: hidden;
+            perspective: 1000px;
+            perspective-origin: 50% 50%;
+            background: linear-gradient(#0d0f1a, #1c2036 60%, #2a2440);
+        }
+        .hint {
+            position: absolute;
+            left: 16px;
+            bottom: 16px;
+            opacity: .6;
+        }
+        .camera, .world, .cube, .cube i {
+            transform-style: preserve-3d;
+        }
+        .camera {
+            position: absolute;
+            inset: 0;
+            /* Standing in the street (small turn keeps the camera between the buildings); street level by default (and where scroll-driven animations are not supported). */
+            transform: translateZ(560px) rotateX(87deg) rotateZ(-8deg);
+            animation: fly linear both;
+            animation-timeline: scroll(root);
+        }
+        /* From a person in the street to someone on a rooftop, looking down the same street. */
+        @keyframes fly {
+            from { transform: translateZ(560px) rotateX(87deg) rotateZ(-8deg); }
+            to   { transform: translateY(10vh) translateZ(200px) rotateX(64deg) rotateZ(-8deg); }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            .camera { animation: none; }
+        }
+        .world {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            width: 2000px;
+            height: 6000px;           /* the street runs far ahead of the camera */
+            margin: -5000px 0 0 -1000px;
+            background:
+                linear-gradient(90deg, transparent 880px, var(--sidewalk) 880px 920px, var(--street) 920px 1080px, var(--sidewalk) 1080px 1120px, transparent 1120px),
+                var(--ground);
+        }
+        /* Dashed centre line. */
+        .world::after {
+            content: "";
+            position: absolute;
+            left: 997px;
+            top: 0;
+            width: 6px;
+            height: 6000px;
+            background: repeating-linear-gradient(var(--line) 0 40px, transparent 40px 90px);
+            opacity: .7;
+            transform: translateZ(.5px);   /* not on the same plane as the road */
+        }
+
+        /* A cube sits on the ground at (--x, --y), --w wide, --d deep and --h tall, lifted by --z.
+           Its faces are the top and the four walls; walls stand up by rotating around an edge. */
+        .cube {
+            position: absolute;
+            left: var(--x);
+            top: var(--y);
+            width: var(--w);
+            height: var(--d);
+            /* 1px above the ground: walls that start exactly on the ground plane flicker. */
+            transform: translateZ(calc(var(--z) + 1px));
+        }
+        .cube i {
+            position: absolute;
+            background: var(--c);
+        }
+        .cube .top {
+            inset: 0;
+            transform: translateZ(var(--h));
+            background: color-mix(in srgb, var(--c), white 18%);
+        }
+        .cube .north, .cube .south {
+            left: 0;
+            width: var(--w);
+            height: var(--h);
+            transform-origin: top;
+            transform: rotateX(90deg);
+        }
+        .cube .north { top: 0; background-color: color-mix(in srgb, var(--c), black 35%); }
+        .cube .south { top: var(--d); }
+        .cube .west, .cube .east {
+            top: 0;
+            width: var(--h);
+            height: var(--d);
+            transform-origin: left;
+            transform: rotateY(-90deg);
+        }
+        .cube .west { left: 0; background-color: color-mix(in srgb, var(--c), black 15%); }
+        .cube .east { left: var(--w); background-color: color-mix(in srgb, var(--c), black 50%); }
+
+        /* Lit windows on building walls: floor bands drawn over window columns. */
+        .building i:not(.top) {
+            background-image:
+                repeating-linear-gradient(90deg, color-mix(in srgb, var(--c), black 30%) 0 12px, transparent 12px 26px),
+                repeating-linear-gradient(0deg, transparent 0 10px, rgba(255, 205, 120, .55) 10px 22px, transparent 22px 30px);
+        }
+        .building .north, .building .south {
+            background-image:
+                repeating-linear-gradient(0deg, color-mix(in srgb, var(--c), black 30%) 0 12px, transparent 12px 26px),
+                repeating-linear-gradient(90deg, transparent 0 10px, rgba(255, 205, 120, .55) 10px 22px, transparent 22px 30px);
+        }
+        .trunk { --c: var(--bark); }
+        .canopy { --c: var(--leaf); }
+    </style>
+</head>
+<body>
+    <div class="track">
+        <div class="viewport">
+            <div class="camera">
+                <div class="world">
+                <div class="cube building" style="--x:691px;--y:40px;--w:189px;--d:151px;--h:220px;--z:0px;--c:#3b4166"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube building" style="--x:698px;--y:207px;--w:182px;--d:178px;--h:180px;--z:0px;--c:#383d52"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube building" style="--x:683px;--y:400px;--w:197px;--d:174px;--h:90px;--z:0px;--c:#3b4166"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube building" style="--x:702px;--y:601px;--w:178px;--d:163px;--h:140px;--z:0px;--c:#3b4166"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube building" style="--x:703px;--y:795px;--w:177px;--d:164px;--h:400px;--z:0px;--c:#383d52"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube building" style="--x:630px;--y:976px;--w:250px;--d:138px;--h:320px;--z:0px;--c:#383d52"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube building" style="--x:636px;--y:1129px;--w:244px;--d:183px;--h:220px;--z:0px;--c:#3b4166"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube building" style="--x:639px;--y:1333px;--w:241px;--d:115px;--h:400px;--z:0px;--c:#463a5e"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube building" style="--x:692px;--y:1471px;--w:188px;--d:163px;--h:260px;--z:0px;--c:#3b4166"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube building" style="--x:639px;--y:1666px;--w:241px;--d:149px;--h:400px;--z:0px;--c:#463a5e"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube building" style="--x:637px;--y:1832px;--w:243px;--d:184px;--h:320px;--z:0px;--c:#463a5e"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube building" style="--x:640px;--y:2041px;--w:240px;--d:122px;--h:320px;--z:0px;--c:#3b4166"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube building" style="--x:631px;--y:2195px;--w:249px;--d:117px;--h:140px;--z:0px;--c:#4b4458"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube building" style="--x:656px;--y:2347px;--w:224px;--d:178px;--h:400px;--z:0px;--c:#2f4a5c"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube building" style="--x:652px;--y:2553px;--w:228px;--d:184px;--h:180px;--z:0px;--c:#2f4a5c"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube building" style="--x:621px;--y:2758px;--w:259px;--d:133px;--h:400px;--z:0px;--c:#463a5e"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube building" style="--x:672px;--y:2907px;--w:208px;--d:183px;--h:260px;--z:0px;--c:#4b4458"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube building" style="--x:653px;--y:3114px;--w:227px;--d:203px;--h:180px;--z:0px;--c:#383d52"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube building" style="--x:645px;--y:3333px;--w:235px;--d:125px;--h:220px;--z:0px;--c:#463a5e"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube building" style="--x:691px;--y:3496px;--w:189px;--d:153px;--h:220px;--z:0px;--c:#4b4458"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube building" style="--x:701px;--y:3664px;--w:179px;--d:195px;--h:400px;--z:0px;--c:#383d52"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube building" style="--x:667px;--y:3891px;--w:213px;--d:150px;--h:320px;--z:0px;--c:#2f4a5c"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube building" style="--x:636px;--y:4074px;--w:244px;--d:173px;--h:400px;--z:0px;--c:#4b4458"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube building" style="--x:676px;--y:4263px;--w:204px;--d:121px;--h:220px;--z:0px;--c:#3b4166"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube building" style="--x:621px;--y:4399px;--w:259px;--d:203px;--h:180px;--z:0px;--c:#383d52"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube building" style="--x:674px;--y:4637px;--w:206px;--d:167px;--h:320px;--z:0px;--c:#4b4458"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube building" style="--x:708px;--y:4839px;--w:172px;--d:154px;--h:220px;--z:0px;--c:#2f4a5c"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube building" style="--x:696px;--y:5012px;--w:184px;--d:188px;--h:220px;--z:0px;--c:#3b4166"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube building" style="--x:674px;--y:5220px;--w:206px;--d:208px;--h:140px;--z:0px;--c:#463a5e"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube building" style="--x:647px;--y:5454px;--w:233px;--d:160px;--h:90px;--z:0px;--c:#463a5e"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube building" style="--x:640px;--y:5642px;--w:240px;--d:161px;--h:180px;--z:0px;--c:#463a5e"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube building" style="--x:640px;--y:5843px;--w:240px;--d:165px;--h:180px;--z:0px;--c:#4b4458"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube building" style="--x:297px;--y:80px;--w:293px;--d:237px;--h:460px;--z:0px;--c:#463a5e"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube building" style="--x:388px;--y:346px;--w:202px;--d:160px;--h:280px;--z:0px;--c:#463a5e"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube building" style="--x:348px;--y:540px;--w:242px;--d:151px;--h:280px;--z:0px;--c:#2f4a5c"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube building" style="--x:392px;--y:729px;--w:198px;--d:150px;--h:460px;--z:0px;--c:#383d52"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube building" style="--x:338px;--y:922px;--w:252px;--d:228px;--h:360px;--z:0px;--c:#463a5e"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube building" style="--x:327px;--y:1202px;--w:263px;--d:229px;--h:200px;--z:0px;--c:#4b4458"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube building" style="--x:360px;--y:1486px;--w:230px;--d:200px;--h:460px;--z:0px;--c:#4b4458"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube building" style="--x:329px;--y:1712px;--w:261px;--d:211px;--h:460px;--z:0px;--c:#3b4166"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube building" style="--x:384px;--y:1955px;--w:206px;--d:158px;--h:460px;--z:0px;--c:#463a5e"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube building" style="--x:334px;--y:2140px;--w:256px;--d:193px;--h:200px;--z:0px;--c:#3b4166"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube building" style="--x:391px;--y:2353px;--w:199px;--d:222px;--h:200px;--z:0px;--c:#2f4a5c"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube building" style="--x:401px;--y:2634px;--w:189px;--d:153px;--h:280px;--z:0px;--c:#383d52"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube building" style="--x:329px;--y:2831px;--w:261px;--d:169px;--h:360px;--z:0px;--c:#2f4a5c"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube building" style="--x:350px;--y:3058px;--w:240px;--d:196px;--h:200px;--z:0px;--c:#3b4166"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube building" style="--x:349px;--y:3305px;--w:241px;--d:209px;--h:460px;--z:0px;--c:#2f4a5c"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube building" style="--x:397px;--y:3539px;--w:193px;--d:168px;--h:360px;--z:0px;--c:#2f4a5c"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube building" style="--x:322px;--y:3757px;--w:268px;--d:256px;--h:280px;--z:0px;--c:#383d52"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube building" style="--x:343px;--y:4034px;--w:247px;--d:176px;--h:360px;--z:0px;--c:#463a5e"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube building" style="--x:313px;--y:4264px;--w:277px;--d:153px;--h:360px;--z:0px;--c:#3b4166"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube building" style="--x:364px;--y:4453px;--w:226px;--d:216px;--h:280px;--z:0px;--c:#2f4a5c"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube building" style="--x:341px;--y:4703px;--w:249px;--d:218px;--h:360px;--z:0px;--c:#463a5e"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube building" style="--x:310px;--y:4980px;--w:280px;--d:253px;--h:280px;--z:0px;--c:#463a5e"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube building" style="--x:308px;--y:5278px;--w:282px;--d:244px;--h:280px;--z:0px;--c:#463a5e"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube building" style="--x:365px;--y:5575px;--w:225px;--d:213px;--h:200px;--z:0px;--c:#3b4166"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube building" style="--x:377px;--y:5825px;--w:213px;--d:210px;--h:280px;--z:0px;--c:#383d52"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube building" style="--x:1120px;--y:40px;--w:214px;--d:167px;--h:180px;--z:0px;--c:#3b4166"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube building" style="--x:1120px;--y:228px;--w:199px;--d:123px;--h:220px;--z:0px;--c:#463a5e"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube building" style="--x:1120px;--y:375px;--w:231px;--d:136px;--h:260px;--z:0px;--c:#383d52"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube building" style="--x:1120px;--y:551px;--w:231px;--d:110px;--h:320px;--z:0px;--c:#2f4a5c"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube building" style="--x:1120px;--y:700px;--w:180px;--d:192px;--h:400px;--z:0px;--c:#3b4166"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube building" style="--x:1120px;--y:918px;--w:195px;--d:210px;--h:220px;--z:0px;--c:#463a5e"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube building" style="--x:1120px;--y:1155px;--w:212px;--d:191px;--h:90px;--z:0px;--c:#4b4458"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube building" style="--x:1120px;--y:1374px;--w:180px;--d:161px;--h:320px;--z:0px;--c:#463a5e"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube building" style="--x:1120px;--y:1554px;--w:173px;--d:126px;--h:140px;--z:0px;--c:#383d52"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube building" style="--x:1120px;--y:1708px;--w:188px;--d:193px;--h:260px;--z:0px;--c:#383d52"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube building" style="--x:1120px;--y:1930px;--w:214px;--d:194px;--h:140px;--z:0px;--c:#383d52"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube building" style="--x:1120px;--y:2155px;--w:172px;--d:126px;--h:90px;--z:0px;--c:#3b4166"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube building" style="--x:1120px;--y:2311px;--w:187px;--d:205px;--h:220px;--z:0px;--c:#463a5e"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube building" style="--x:1120px;--y:2556px;--w:173px;--d:137px;--h:180px;--z:0px;--c:#463a5e"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube building" style="--x:1120px;--y:2716px;--w:200px;--d:174px;--h:400px;--z:0px;--c:#383d52"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube building" style="--x:1120px;--y:2914px;--w:239px;--d:143px;--h:220px;--z:0px;--c:#463a5e"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube building" style="--x:1120px;--y:3072px;--w:215px;--d:204px;--h:220px;--z:0px;--c:#383d52"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube building" style="--x:1120px;--y:3316px;--w:223px;--d:176px;--h:400px;--z:0px;--c:#383d52"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube building" style="--x:1120px;--y:3510px;--w:189px;--d:178px;--h:260px;--z:0px;--c:#383d52"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube building" style="--x:1120px;--y:3702px;--w:193px;--d:166px;--h:260px;--z:0px;--c:#3b4166"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube building" style="--x:1120px;--y:3906px;--w:192px;--d:129px;--h:140px;--z:0px;--c:#4b4458"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube building" style="--x:1120px;--y:4068px;--w:185px;--d:202px;--h:260px;--z:0px;--c:#3b4166"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube building" style="--x:1120px;--y:4294px;--w:236px;--d:197px;--h:260px;--z:0px;--c:#383d52"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube building" style="--x:1120px;--y:4520px;--w:183px;--d:210px;--h:260px;--z:0px;--c:#3b4166"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube building" style="--x:1120px;--y:4751px;--w:205px;--d:134px;--h:90px;--z:0px;--c:#3b4166"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube building" style="--x:1120px;--y:4915px;--w:241px;--d:167px;--h:90px;--z:0px;--c:#3b4166"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube building" style="--x:1120px;--y:5110px;--w:248px;--d:151px;--h:260px;--z:0px;--c:#383d52"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube building" style="--x:1120px;--y:5291px;--w:258px;--d:135px;--h:180px;--z:0px;--c:#4b4458"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube building" style="--x:1120px;--y:5456px;--w:231px;--d:178px;--h:260px;--z:0px;--c:#463a5e"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube building" style="--x:1120px;--y:5670px;--w:203px;--d:176px;--h:260px;--z:0px;--c:#463a5e"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube building" style="--x:1120px;--y:5886px;--w:187px;--d:167px;--h:220px;--z:0px;--c:#3b4166"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube building" style="--x:1410px;--y:80px;--w:220px;--d:206px;--h:200px;--z:0px;--c:#463a5e"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube building" style="--x:1410px;--y:333px;--w:207px;--d:159px;--h:360px;--z:0px;--c:#3b4166"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube building" style="--x:1410px;--y:521px;--w:262px;--d:241px;--h:360px;--z:0px;--c:#463a5e"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube building" style="--x:1410px;--y:798px;--w:239px;--d:167px;--h:280px;--z:0px;--c:#3b4166"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube building" style="--x:1410px;--y:1010px;--w:200px;--d:212px;--h:280px;--z:0px;--c:#463a5e"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube building" style="--x:1410px;--y:1269px;--w:231px;--d:215px;--h:360px;--z:0px;--c:#4b4458"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube building" style="--x:1410px;--y:1516px;--w:220px;--d:195px;--h:200px;--z:0px;--c:#2f4a5c"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube building" style="--x:1410px;--y:1732px;--w:250px;--d:193px;--h:460px;--z:0px;--c:#4b4458"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube building" style="--x:1410px;--y:1946px;--w:222px;--d:199px;--h:360px;--z:0px;--c:#383d52"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube building" style="--x:1410px;--y:2169px;--w:297px;--d:164px;--h:280px;--z:0px;--c:#3b4166"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube building" style="--x:1410px;--y:2358px;--w:214px;--d:183px;--h:200px;--z:0px;--c:#463a5e"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube building" style="--x:1410px;--y:2578px;--w:196px;--d:246px;--h:460px;--z:0px;--c:#2f4a5c"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube building" style="--x:1410px;--y:2869px;--w:248px;--d:169px;--h:460px;--z:0px;--c:#2f4a5c"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube building" style="--x:1410px;--y:3063px;--w:187px;--d:185px;--h:280px;--z:0px;--c:#4b4458"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube building" style="--x:1410px;--y:3272px;--w:300px;--d:184px;--h:200px;--z:0px;--c:#3b4166"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube building" style="--x:1410px;--y:3492px;--w:257px;--d:160px;--h:280px;--z:0px;--c:#3b4166"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube building" style="--x:1410px;--y:3688px;--w:195px;--d:260px;--h:460px;--z:0px;--c:#3b4166"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube building" style="--x:1410px;--y:3989px;--w:233px;--d:220px;--h:360px;--z:0px;--c:#383d52"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube building" style="--x:1410px;--y:4237px;--w:247px;--d:155px;--h:280px;--z:0px;--c:#3b4166"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube building" style="--x:1410px;--y:4422px;--w:186px;--d:183px;--h:280px;--z:0px;--c:#463a5e"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube building" style="--x:1410px;--y:4644px;--w:219px;--d:230px;--h:280px;--z:0px;--c:#2f4a5c"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube building" style="--x:1410px;--y:4922px;--w:266px;--d:214px;--h:280px;--z:0px;--c:#2f4a5c"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube building" style="--x:1410px;--y:5178px;--w:182px;--d:252px;--h:360px;--z:0px;--c:#3b4166"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube building" style="--x:1410px;--y:5450px;--w:273px;--d:152px;--h:280px;--z:0px;--c:#383d52"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube building" style="--x:1410px;--y:5652px;--w:299px;--d:181px;--h:460px;--z:0px;--c:#3b4166"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube building" style="--x:1410px;--y:5880px;--w:243px;--d:234px;--h:460px;--z:0px;--c:#383d52"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube trunk" style="--x:895px;--y:85px;--w:10px;--d:10px;--h:36px;--z:0px"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube canopy" style="--x:882px;--y:72px;--w:36px;--d:36px;--h:44px;--z:36px"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube trunk" style="--x:895px;--y:255px;--w:10px;--d:10px;--h:36px;--z:0px"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube canopy" style="--x:882px;--y:242px;--w:36px;--d:36px;--h:44px;--z:36px"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube trunk" style="--x:895px;--y:425px;--w:10px;--d:10px;--h:36px;--z:0px"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube canopy" style="--x:882px;--y:412px;--w:36px;--d:36px;--h:44px;--z:36px"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube trunk" style="--x:895px;--y:595px;--w:10px;--d:10px;--h:36px;--z:0px"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube canopy" style="--x:882px;--y:582px;--w:36px;--d:36px;--h:44px;--z:36px"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube trunk" style="--x:895px;--y:765px;--w:10px;--d:10px;--h:36px;--z:0px"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube canopy" style="--x:882px;--y:752px;--w:36px;--d:36px;--h:44px;--z:36px"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube trunk" style="--x:895px;--y:935px;--w:10px;--d:10px;--h:36px;--z:0px"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube canopy" style="--x:882px;--y:922px;--w:36px;--d:36px;--h:44px;--z:36px"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube trunk" style="--x:895px;--y:1105px;--w:10px;--d:10px;--h:36px;--z:0px"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube canopy" style="--x:882px;--y:1092px;--w:36px;--d:36px;--h:44px;--z:36px"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube trunk" style="--x:895px;--y:1275px;--w:10px;--d:10px;--h:36px;--z:0px"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube canopy" style="--x:882px;--y:1262px;--w:36px;--d:36px;--h:44px;--z:36px"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube trunk" style="--x:895px;--y:1445px;--w:10px;--d:10px;--h:36px;--z:0px"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube canopy" style="--x:882px;--y:1432px;--w:36px;--d:36px;--h:44px;--z:36px"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube trunk" style="--x:895px;--y:1615px;--w:10px;--d:10px;--h:36px;--z:0px"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube canopy" style="--x:882px;--y:1602px;--w:36px;--d:36px;--h:44px;--z:36px"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube trunk" style="--x:895px;--y:1785px;--w:10px;--d:10px;--h:36px;--z:0px"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube canopy" style="--x:882px;--y:1772px;--w:36px;--d:36px;--h:44px;--z:36px"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube trunk" style="--x:895px;--y:1955px;--w:10px;--d:10px;--h:36px;--z:0px"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube canopy" style="--x:882px;--y:1942px;--w:36px;--d:36px;--h:44px;--z:36px"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube trunk" style="--x:895px;--y:2125px;--w:10px;--d:10px;--h:36px;--z:0px"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube canopy" style="--x:882px;--y:2112px;--w:36px;--d:36px;--h:44px;--z:36px"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube trunk" style="--x:895px;--y:2295px;--w:10px;--d:10px;--h:36px;--z:0px"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube canopy" style="--x:882px;--y:2282px;--w:36px;--d:36px;--h:44px;--z:36px"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube trunk" style="--x:895px;--y:2465px;--w:10px;--d:10px;--h:36px;--z:0px"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube canopy" style="--x:882px;--y:2452px;--w:36px;--d:36px;--h:44px;--z:36px"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube trunk" style="--x:895px;--y:2635px;--w:10px;--d:10px;--h:36px;--z:0px"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube canopy" style="--x:882px;--y:2622px;--w:36px;--d:36px;--h:44px;--z:36px"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube trunk" style="--x:895px;--y:2805px;--w:10px;--d:10px;--h:36px;--z:0px"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube canopy" style="--x:882px;--y:2792px;--w:36px;--d:36px;--h:44px;--z:36px"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube trunk" style="--x:895px;--y:2975px;--w:10px;--d:10px;--h:36px;--z:0px"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube canopy" style="--x:882px;--y:2962px;--w:36px;--d:36px;--h:44px;--z:36px"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube trunk" style="--x:895px;--y:3145px;--w:10px;--d:10px;--h:36px;--z:0px"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube canopy" style="--x:882px;--y:3132px;--w:36px;--d:36px;--h:44px;--z:36px"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube trunk" style="--x:895px;--y:3315px;--w:10px;--d:10px;--h:36px;--z:0px"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube canopy" style="--x:882px;--y:3302px;--w:36px;--d:36px;--h:44px;--z:36px"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube trunk" style="--x:895px;--y:3485px;--w:10px;--d:10px;--h:36px;--z:0px"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube canopy" style="--x:882px;--y:3472px;--w:36px;--d:36px;--h:44px;--z:36px"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube trunk" style="--x:895px;--y:3655px;--w:10px;--d:10px;--h:36px;--z:0px"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube canopy" style="--x:882px;--y:3642px;--w:36px;--d:36px;--h:44px;--z:36px"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube trunk" style="--x:895px;--y:3825px;--w:10px;--d:10px;--h:36px;--z:0px"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube canopy" style="--x:882px;--y:3812px;--w:36px;--d:36px;--h:44px;--z:36px"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube trunk" style="--x:895px;--y:3995px;--w:10px;--d:10px;--h:36px;--z:0px"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube canopy" style="--x:882px;--y:3982px;--w:36px;--d:36px;--h:44px;--z:36px"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube trunk" style="--x:895px;--y:4165px;--w:10px;--d:10px;--h:36px;--z:0px"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube canopy" style="--x:882px;--y:4152px;--w:36px;--d:36px;--h:44px;--z:36px"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube trunk" style="--x:895px;--y:4335px;--w:10px;--d:10px;--h:36px;--z:0px"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube canopy" style="--x:882px;--y:4322px;--w:36px;--d:36px;--h:44px;--z:36px"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube trunk" style="--x:895px;--y:4505px;--w:10px;--d:10px;--h:36px;--z:0px"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube canopy" style="--x:882px;--y:4492px;--w:36px;--d:36px;--h:44px;--z:36px"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube trunk" style="--x:895px;--y:4675px;--w:10px;--d:10px;--h:36px;--z:0px"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube canopy" style="--x:882px;--y:4662px;--w:36px;--d:36px;--h:44px;--z:36px"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube trunk" style="--x:895px;--y:4845px;--w:10px;--d:10px;--h:36px;--z:0px"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube canopy" style="--x:882px;--y:4832px;--w:36px;--d:36px;--h:44px;--z:36px"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube trunk" style="--x:895px;--y:5015px;--w:10px;--d:10px;--h:36px;--z:0px"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube canopy" style="--x:882px;--y:5002px;--w:36px;--d:36px;--h:44px;--z:36px"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube trunk" style="--x:895px;--y:5185px;--w:10px;--d:10px;--h:36px;--z:0px"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube canopy" style="--x:882px;--y:5172px;--w:36px;--d:36px;--h:44px;--z:36px"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube trunk" style="--x:895px;--y:5355px;--w:10px;--d:10px;--h:36px;--z:0px"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube canopy" style="--x:882px;--y:5342px;--w:36px;--d:36px;--h:44px;--z:36px"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube trunk" style="--x:895px;--y:5525px;--w:10px;--d:10px;--h:36px;--z:0px"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube canopy" style="--x:882px;--y:5512px;--w:36px;--d:36px;--h:44px;--z:36px"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube trunk" style="--x:895px;--y:5695px;--w:10px;--d:10px;--h:36px;--z:0px"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube canopy" style="--x:882px;--y:5682px;--w:36px;--d:36px;--h:44px;--z:36px"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube trunk" style="--x:895px;--y:5865px;--w:10px;--d:10px;--h:36px;--z:0px"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube canopy" style="--x:882px;--y:5852px;--w:36px;--d:36px;--h:44px;--z:36px"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube trunk" style="--x:1095px;--y:85px;--w:10px;--d:10px;--h:36px;--z:0px"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube canopy" style="--x:1082px;--y:72px;--w:36px;--d:36px;--h:44px;--z:36px"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube trunk" style="--x:1095px;--y:255px;--w:10px;--d:10px;--h:36px;--z:0px"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube canopy" style="--x:1082px;--y:242px;--w:36px;--d:36px;--h:44px;--z:36px"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube trunk" style="--x:1095px;--y:425px;--w:10px;--d:10px;--h:36px;--z:0px"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube canopy" style="--x:1082px;--y:412px;--w:36px;--d:36px;--h:44px;--z:36px"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube trunk" style="--x:1095px;--y:595px;--w:10px;--d:10px;--h:36px;--z:0px"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube canopy" style="--x:1082px;--y:582px;--w:36px;--d:36px;--h:44px;--z:36px"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube trunk" style="--x:1095px;--y:765px;--w:10px;--d:10px;--h:36px;--z:0px"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube canopy" style="--x:1082px;--y:752px;--w:36px;--d:36px;--h:44px;--z:36px"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube trunk" style="--x:1095px;--y:935px;--w:10px;--d:10px;--h:36px;--z:0px"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube canopy" style="--x:1082px;--y:922px;--w:36px;--d:36px;--h:44px;--z:36px"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube trunk" style="--x:1095px;--y:1105px;--w:10px;--d:10px;--h:36px;--z:0px"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube canopy" style="--x:1082px;--y:1092px;--w:36px;--d:36px;--h:44px;--z:36px"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube trunk" style="--x:1095px;--y:1275px;--w:10px;--d:10px;--h:36px;--z:0px"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube canopy" style="--x:1082px;--y:1262px;--w:36px;--d:36px;--h:44px;--z:36px"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube trunk" style="--x:1095px;--y:1445px;--w:10px;--d:10px;--h:36px;--z:0px"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube canopy" style="--x:1082px;--y:1432px;--w:36px;--d:36px;--h:44px;--z:36px"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube trunk" style="--x:1095px;--y:1615px;--w:10px;--d:10px;--h:36px;--z:0px"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube canopy" style="--x:1082px;--y:1602px;--w:36px;--d:36px;--h:44px;--z:36px"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube trunk" style="--x:1095px;--y:1785px;--w:10px;--d:10px;--h:36px;--z:0px"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube canopy" style="--x:1082px;--y:1772px;--w:36px;--d:36px;--h:44px;--z:36px"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube trunk" style="--x:1095px;--y:1955px;--w:10px;--d:10px;--h:36px;--z:0px"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube canopy" style="--x:1082px;--y:1942px;--w:36px;--d:36px;--h:44px;--z:36px"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube trunk" style="--x:1095px;--y:2125px;--w:10px;--d:10px;--h:36px;--z:0px"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube canopy" style="--x:1082px;--y:2112px;--w:36px;--d:36px;--h:44px;--z:36px"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube trunk" style="--x:1095px;--y:2295px;--w:10px;--d:10px;--h:36px;--z:0px"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube canopy" style="--x:1082px;--y:2282px;--w:36px;--d:36px;--h:44px;--z:36px"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube trunk" style="--x:1095px;--y:2465px;--w:10px;--d:10px;--h:36px;--z:0px"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube canopy" style="--x:1082px;--y:2452px;--w:36px;--d:36px;--h:44px;--z:36px"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube trunk" style="--x:1095px;--y:2635px;--w:10px;--d:10px;--h:36px;--z:0px"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube canopy" style="--x:1082px;--y:2622px;--w:36px;--d:36px;--h:44px;--z:36px"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube trunk" style="--x:1095px;--y:2805px;--w:10px;--d:10px;--h:36px;--z:0px"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube canopy" style="--x:1082px;--y:2792px;--w:36px;--d:36px;--h:44px;--z:36px"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube trunk" style="--x:1095px;--y:2975px;--w:10px;--d:10px;--h:36px;--z:0px"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube canopy" style="--x:1082px;--y:2962px;--w:36px;--d:36px;--h:44px;--z:36px"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube trunk" style="--x:1095px;--y:3145px;--w:10px;--d:10px;--h:36px;--z:0px"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube canopy" style="--x:1082px;--y:3132px;--w:36px;--d:36px;--h:44px;--z:36px"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube trunk" style="--x:1095px;--y:3315px;--w:10px;--d:10px;--h:36px;--z:0px"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube canopy" style="--x:1082px;--y:3302px;--w:36px;--d:36px;--h:44px;--z:36px"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube trunk" style="--x:1095px;--y:3485px;--w:10px;--d:10px;--h:36px;--z:0px"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube canopy" style="--x:1082px;--y:3472px;--w:36px;--d:36px;--h:44px;--z:36px"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube trunk" style="--x:1095px;--y:3655px;--w:10px;--d:10px;--h:36px;--z:0px"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube canopy" style="--x:1082px;--y:3642px;--w:36px;--d:36px;--h:44px;--z:36px"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube trunk" style="--x:1095px;--y:3825px;--w:10px;--d:10px;--h:36px;--z:0px"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube canopy" style="--x:1082px;--y:3812px;--w:36px;--d:36px;--h:44px;--z:36px"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube trunk" style="--x:1095px;--y:3995px;--w:10px;--d:10px;--h:36px;--z:0px"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube canopy" style="--x:1082px;--y:3982px;--w:36px;--d:36px;--h:44px;--z:36px"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube trunk" style="--x:1095px;--y:4165px;--w:10px;--d:10px;--h:36px;--z:0px"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube canopy" style="--x:1082px;--y:4152px;--w:36px;--d:36px;--h:44px;--z:36px"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube trunk" style="--x:1095px;--y:4335px;--w:10px;--d:10px;--h:36px;--z:0px"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube canopy" style="--x:1082px;--y:4322px;--w:36px;--d:36px;--h:44px;--z:36px"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube trunk" style="--x:1095px;--y:4505px;--w:10px;--d:10px;--h:36px;--z:0px"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube canopy" style="--x:1082px;--y:4492px;--w:36px;--d:36px;--h:44px;--z:36px"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube trunk" style="--x:1095px;--y:4675px;--w:10px;--d:10px;--h:36px;--z:0px"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube canopy" style="--x:1082px;--y:4662px;--w:36px;--d:36px;--h:44px;--z:36px"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube trunk" style="--x:1095px;--y:4845px;--w:10px;--d:10px;--h:36px;--z:0px"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube canopy" style="--x:1082px;--y:4832px;--w:36px;--d:36px;--h:44px;--z:36px"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube trunk" style="--x:1095px;--y:5015px;--w:10px;--d:10px;--h:36px;--z:0px"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube canopy" style="--x:1082px;--y:5002px;--w:36px;--d:36px;--h:44px;--z:36px"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube trunk" style="--x:1095px;--y:5185px;--w:10px;--d:10px;--h:36px;--z:0px"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube canopy" style="--x:1082px;--y:5172px;--w:36px;--d:36px;--h:44px;--z:36px"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube trunk" style="--x:1095px;--y:5355px;--w:10px;--d:10px;--h:36px;--z:0px"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube canopy" style="--x:1082px;--y:5342px;--w:36px;--d:36px;--h:44px;--z:36px"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube trunk" style="--x:1095px;--y:5525px;--w:10px;--d:10px;--h:36px;--z:0px"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube canopy" style="--x:1082px;--y:5512px;--w:36px;--d:36px;--h:44px;--z:36px"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube trunk" style="--x:1095px;--y:5695px;--w:10px;--d:10px;--h:36px;--z:0px"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube canopy" style="--x:1082px;--y:5682px;--w:36px;--d:36px;--h:44px;--z:36px"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube trunk" style="--x:1095px;--y:5865px;--w:10px;--d:10px;--h:36px;--z:0px"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube canopy" style="--x:1082px;--y:5852px;--w:36px;--d:36px;--h:44px;--z:36px"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube car" style="--x:945px;--y:4420px;--w:30px;--d:56px;--h:22px;--z:0px;--c:#c4483e"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube car" style="--x:1025px;--y:4980px;--w:30px;--d:56px;--h:22px;--z:0px;--c:#d9b44a"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube car" style="--x:945px;--y:3400px;--w:30px;--d:56px;--h:22px;--z:0px;--c:#4f8fc4"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube car" style="--x:1025px;--y:2300px;--w:30px;--d:56px;--h:22px;--z:0px;--c:#c4483e"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                <div class="cube car" style="--x:945px;--y:1200px;--w:30px;--d:56px;--h:22px;--z:0px;--c:#d9b44a"><i class="top"></i><i class="north"></i><i class="south"></i><i class="west"></i><i class="east"></i></div>
+                </div>
+            </div>
+            <p class="hint">Scroll to lift the camera</p>
+        </div>
+    </div>
+</body>
+</html>
