@@ -6,9 +6,13 @@
     "scripts": {
         "test": "node --test \"test/**/*.test.js\"",
         "serve": "python3 tools/serve.py",
-        "stamp": "node tools/version-assets.js"
+        "stamp": "node tools/version-assets.js",
+        "contrast": "node tools/check-contrast.js"
     },
     "engines": {
         "node": ">=20"
+    },
+    "devDependencies": {
+        "playwright": "1.64.1"
     }
 }

@@ -1,0 +1,105 @@
+{
+    "measuredAt": "2026-11-05T19:46:37.823Z",
+    "variants": {
+        "today": {
+            "desktop": {
+                "worstContrast": 8.63,
+                "worstText": "Everything should be made as simple as possible, but not simpler.",
+                "required": 4.5,
+                "passes": true,
+                "failingLines": 0,
+                "lines": 9,
+                "sceneKept": 0.63
+            },
+            "phone": {
+                "worstContrast": 11.46,
+                "worstText": "Everything should be made as simple as possible, but not simpler.",
+                "required": 4.5,
+                "passes": true,
+                "failingLines": 0,
+                "lines": 9,
+                "sceneKept": 0.12
+            }
+        },
+        "black": {
+            "desktop": {
+                "worstContrast": 1,
+                "worstText": "Albert Einstein",
+                "required": 4.5,
+                "passes": false,
+                "failingLines": 9,
+                "lines": 9,
+                "sceneKept": 0.63
+            },
+            "phone": {
+                "worstContrast": 1,
+                "worstText": "Albert Einstein",
+                "required": 4.5,
+                "passes": false,
+                "failingLines": 9,
+                "lines": 9,
+                "sceneKept": 0.12
+            }
+        },
+        "darker": {
+            "desktop": {
+                "worstContrast": 13.4,
+                "worstText": "Albert Einstein",
+                "required": 4.5,
+                "passes": true,
+                "failingLines": 0,
+                "lines": 9,
+                "sceneKept": 0.4
+            },
+            "phone": {
+                "worstContrast": 4.33,
+                "worstText": "Everything should be made as simple as possible, but not simpler.",
+                "required": 4.5,
+                "passes": false,
+                "failingLines": 1,
+                "lines": 9,
+                "sceneKept": 0.44
+            }
+        },
+        "shadow": {
+            "desktop": {
+                "worstContrast": 10.94,
+                "worstText": "Everything should be made as simple as possible, but not simpler.",
+                "required": 4.5,
+                "passes": true,
+                "failingLines": 0,
+                "lines": 9,
+                "sceneKept": 0.63
+            },
+            "phone": {
+                "worstContrast": 12.77,
+                "worstText": "Cleanliness",
+                "required": 4.5,
+                "passes": true,
+                "failingLines": 0,
+                "lines": 9,
+                "sceneKept": 0.12
+            }
+        },
+        "halo": {
+            "desktop": {
+                "worstContrast": 8.81,
+                "worstText": "Albert Einstein",
+                "required": 4.5,
+                "passes": true,
+                "failingLines": 0,
+                "lines": 9,
+                "sceneKept": 0.84
+            },
+            "phone": {
+                "worstContrast": 6.24,
+                "worstText": "Cleanliness",
+                "required": 4.5,
+                "passes": true,
+                "failingLines": 0,
+                "lines": 9,
+                "sceneKept": 0.72
+            }
+        }
+    }
+}

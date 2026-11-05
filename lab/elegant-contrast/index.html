@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Elegant contrast</title>
+    <script src="https://kit.fontawesome.com/0c3ce68536.js" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="../../style/style.css" />
+    <link rel="stylesheet" href="../../style/windmills.css" />
+    <style>
+        /* The Elegant card in each way of keeping its text readable (variants.js), live, with the
+           numbers from `npm run contrast` (tools/check-contrast.js) under each. The card's markup
+           is copied from index.html when the page loads, so it is always the real card. */
+        body { background: #0b0d10; color: #e9ecef; }
+        .lab-intro { max-width: 900px; margin: 24px 16px; font: 16px/1.5 Roboto, sans-serif; }
+        .lab-intro h1 { font: bold 32px/1.2 Roboto, sans-serif; margin: 0 0 12px; text-transform: none; }
+        .variant { margin: 48px 0 0; }
+        .variant > h3 { font: 22px Roboto, sans-serif; margin: 0 16px 8px; }
+        .scores { margin: 0 16px 12px; font: 14px/1.6 Roboto, sans-serif; color: #c9ced4; }
+        .scores b { color: #fff; }
+        .scores .fails { color: #ff8a80; }
+        .scores .passes { color: #9be29b; }
+        .narrow { width: 393px; max-width: 100%; }
+    </style>
+    <script type="importmap">
+        {
+            "imports": {
+                "three": "https://cdn.jsdelivr.net/npm/three@0.187.0/build/three.module.min.js",
+                "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.187.0/examples/jsm/"
+            }
+        }
+    </script>
+</head>
+<body>
+    <div class="lab-intro">
+        <h1>Elegant card: text contrast</h1>
+        <p>Each variant is the real card with its live scene. Under each, two numbers from
+            <code>npm run contrast</code>, measured on the real page at desktop and phone sizes, at a few
+            moments (the northern lights move):</p>
+        <ul>
+            <li><b>Text contrast</b>: the worst line of text against what is behind it, as a WCAG ratio.
+                Small text needs 4.5:1, large text 3:1.</li>
+            <li><b>Scene kept</b>: how much of the scene's detail still shows through the layer, compared
+                with no layer at all. Higher means the windmills and lights are easier to see.</li>
+        </ul>
+    </div>
+    <article id="values"></article>
+
+    <script type="module">
+        import { start } from "../../js/windmills/scene.js";
+        import { VARIANTS } from "./variants.js";
+
+        const WINDMILLS_IMAGE = "../../img/simple2-windmills.svg";
+
+        /** The real card, from the page. */
+        async function realCard() {
+            const page = new DOMParser().parseFromString(await (await fetch("../../index.html")).text(), "text/html");
+            return page.querySelector("#values section.value-elegant");
+        }
+
+        /** The card's live windmills, as js/windmills-card.js adds them. */
+        function showWindmills(card) {
+            const scene = document.createElement("div");
+            scene.className = "windmills-scene";
+            scene.setAttribute("aria-hidden", "true");
+            const stage = document.createElement("div");
+            stage.className = "windmills-stage";
+            scene.append(stage);
+            card.prepend(scene);
+            start(stage, { grass: "front", aurora: true, windmillsImage: WINDMILLS_IMAGE });
+            card.classList.add("windmills-live");
+        }
+
+        /** The measured scores, if `npm run contrast` has been run. */
+        async function scores() {
+            try {
+                return await (await fetch("./results.json", { cache: "no-store" })).json();
+            } catch {
+                return null;
+            }
+        }
+
+        const describe = result => {
+            if (!result) return "not measured yet: run <code>npm run contrast</code>";
+            const verdict = result.passes ? "passes" : "fails";
+            return `text contrast <b class="${verdict}">${result.worstContrast.toFixed(1)}:1</b> at worst
+                (“${result.worstText}”, needs ${result.required}:1; ${result.failingLines} of ${result.lines} lines short),
+                scene kept <b>${Math.round(result.sceneKept * 100)}%</b>`;
+        };
+
+        const template = await realCard();
+        const results = await scores();
+        const article = document.querySelector("#values");
+        const style = document.createElement("style");
+        for (const variant of VARIANTS) {
+            const block = document.createElement("div");
+            block.className = "variant";
+            const heading = document.createElement("h3");
+            heading.textContent = variant.label;
+            const scoreLine = document.createElement("div");
+            scoreLine.className = "scores";
+            const measured = results?.variants?.[variant.id];
+            scoreLine.innerHTML = ["desktop", "phone"]
+                .map(size => `${size}: ${describe(measured?.[size])}`).join("<br>");
+            const wide = template.cloneNode(true);
+            const narrow = template.cloneNode(true);
+            const narrowFrame = document.createElement("div");
+            narrowFrame.className = "narrow";
+            narrowFrame.append(narrow);
+            for (const card of [wide, narrow]) {
+                card.removeAttribute("id");
+                card.querySelectorAll("[id]").forEach(element => element.removeAttribute("id"));
+                card.classList.add(`variant-${variant.id}`);
+            }
+            style.textContent += variant.css(`#values section.value-elegant.variant-${variant.id}`);
+            block.append(heading, scoreLine, wide, narrowFrame);
+            article.append(block);
+            showWindmills(wide);
+            showWindmills(narrow);
+        }
+        document.head.append(style);
+    </script>
+</body>
+</html>
