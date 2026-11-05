@@ -10,7 +10,7 @@ import { MILLISECONDS_PER_SECOND, isTimeToDraw, pixelRatio } from "../shared/fra
 import { FULL_TURN } from "../shared/motion.js";
 import { Aurora } from "./aurora.js";
 import { Grass } from "./grass.js";
-import { PICTURE, WINDMILLS } from "./picture.js";
+import { PICTURE, WINDMILLS, placeOnSlice, shownSlice } from "./picture.js";
 import { sailSpeedAt } from "./wind.js";
 
 const SAILS_PER_WINDMILL = 4;
@@ -144,13 +144,18 @@ export function start(container, { grass = "none", windmillsImage = "", aurora: 
         for (const layer of grassLayers) layer.draw(seconds);
     };
     const resize = () => {
-        const { clientWidth: widthPixels, clientHeight: heightPixels } = container;
+        const { clientWidth: widthPixels, clientHeight: heightPixels, offsetLeft: stageLeft } = container;
         if (!widthPixels || !heightPixels) return;
-        renderer.setSize(widthPixels, heightPixels, false);
-        // The picture keeps its shape and its frame crops it: the card shows only this much of it.
-        const shownWidth = Math.min(widthPixels, container.parentElement?.clientWidth ?? widthPixels);
-        for (const layer of grassLayers) layer.resize(widthPixels, heightPixels, shownWidth);
-        aurora?.resize(widthPixels, heightPixels);
+        // The picture keeps its shape and the card crops it: every layer draws only the slice shown.
+        const slice = shownSlice(stageLeft, widthPixels, container.parentElement?.clientWidth ?? widthPixels);
+        if (!slice.width) return;
+        renderer.setSize(slice.width, heightPixels, false);
+        placeOnSlice(canvas, slice);
+        camera.left = slice.pictureLeft;
+        camera.right = slice.pictureLeft + slice.pictureWidth;
+        camera.updateProjectionMatrix();
+        for (const layer of grassLayers) layer.resize(slice, heightPixels);
+        aurora?.resize(slice, heightPixels);
         draw(performance.now() / MILLISECONDS_PER_SECOND);
     };
     animateWhileVisible(container, { turnSails, draw });

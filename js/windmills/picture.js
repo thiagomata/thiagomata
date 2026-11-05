@@ -2,13 +2,49 @@
 //
 // Everything is in picture units: the units of the original drawing's viewBox
 // (img/simple2.svg), with x to the right and y down from its top-left corner.
-import { lerp } from "../shared/motion.js";
+import { clamp, lerp } from "../shared/motion.js";
 
 export const PICTURE = { width: 4294, height: 2474 };
 
-/** Makes a 2D context draw in picture units, filling its canvas. */
-export const scaleToPicture = (context, canvas) =>
-    context.setTransform(canvas.width / PICTURE.width, 0, 0, canvas.height / PICTURE.height, 0, 0);
+/**
+ * The part of the picture a card shows. The stage (the whole picture, `stageWidth` pixels wide)
+ * sits `stageLeft` pixels from the card's left edge (0 or less), and the card is `cardWidth`
+ * pixels wide. The slice is given in the stage's pixels (`left`, `width`) and in picture units
+ * (`pictureLeft`, `pictureWidth`); the layers draw only this much, not the whole picture.
+ */
+export function shownSlice(stageLeft, stageWidth, cardWidth) {
+    const fromPixel = clamp(-stageLeft, 0, stageWidth);
+    const toPixel = clamp(cardWidth - stageLeft, fromPixel, stageWidth);
+    const picturePerPixel = PICTURE.width / stageWidth;
+    return {
+        left: fromPixel,
+        width: toPixel - fromPixel,
+        pictureLeft: fromPixel * picturePerPixel,
+        pictureWidth: (toPixel - fromPixel) * picturePerPixel,
+    };
+}
+
+/** The whole picture, for a canvas that covers all of it. */
+export const WHOLE_PICTURE = { pictureLeft: 0, pictureWidth: PICTURE.width };
+
+/** Makes a 2D context draw in picture units, its canvas covering `slice` of the picture. */
+export function scaleToPicture(context, canvas, slice = WHOLE_PICTURE) {
+    const scaleX = canvas.width / slice.pictureWidth;
+    context.setTransform(scaleX, 0, 0, canvas.height / PICTURE.height, -slice.pictureLeft * scaleX, 0);
+}
+
+/** Places `canvas` over `slice` of the stage. */
+export function placeOnSlice(canvas, slice) {
+    canvas.style.left = `${slice.left}px`;
+    canvas.style.width = `${slice.width}px`;
+}
+
+/** Sizes `canvas` to `slice` of the stage, `heightPixels` tall, at `resolution` pixels per CSS pixel, and places it there. */
+export function fitToSlice(canvas, slice, heightPixels, resolution) {
+    canvas.width = Math.max(1, Math.round(slice.width * resolution));
+    canvas.height = Math.max(1, Math.round(heightPixels * resolution));
+    placeOnSlice(canvas, slice);
+}
 
 /** Where the sky meets the field. */
 export const HORIZON_Y = 1950;

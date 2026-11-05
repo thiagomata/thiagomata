@@ -8,7 +8,7 @@
 import { pixelRatio } from "../shared/frame-rate.js";
 import { lerp } from "../shared/motion.js";
 import { seededRandom } from "../shared/random.js";
-import { HORIZON_Y, PICTURE, isBehindAWindmill, isOnRoad, scaleToPicture } from "./picture.js";
+import { HORIZON_Y, PICTURE, WHOLE_PICTURE, fitToSlice, isBehindAWindmill, isOnRoad, scaleToPicture } from "./picture.js";
 import { windAt } from "./wind.js";
 
 export const BLADES = 1400;
@@ -133,19 +133,20 @@ export class Grass {
         this.context = this.canvas.getContext("2d");
         this.blades = bladesFor(layer);
         this.drawn = this.blades;
+        this.slice = WHOLE_PICTURE;
         container.append(this.canvas);
     }
 
-    /** Sizes the canvas; `shownWidth` is how much of it the card shows, which sets how many blades are drawn. */
-    resize(widthPixels, heightPixels, shownWidth = widthPixels) {
-        this.canvas.width = Math.round(widthPixels * pixelRatio());
-        this.canvas.height = Math.round(heightPixels * pixelRatio());
-        this.drawn = bladesToDraw(this.blades, shownWidth);
+    /** Sizes the canvas to the `slice` of the picture the card shows (picture.js), which also sets how many blades are drawn. */
+    resize(slice, heightPixels) {
+        this.slice = slice;
+        fitToSlice(this.canvas, slice, heightPixels, pixelRatio());
+        this.drawn = bladesToDraw(this.blades, slice.width);
     }
 
     draw(seconds) {
         const { context, canvas } = this;
-        scaleToPicture(context, canvas);
+        scaleToPicture(context, canvas, this.slice);
         context.clearRect(0, 0, PICTURE.width, PICTURE.height);
         context.lineCap = "round";
         for (const blade of this.drawn) drawBlade(context, blade, seconds);

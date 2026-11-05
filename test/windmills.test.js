@@ -4,7 +4,7 @@ import {
     CURTAINS, RAYS, STARS, STAR_SKY_BOTTOM, curtainBrightness, placeRays, placeStars, rayOpacity, starOpacity,
 } from "../js/windmills/aurora.js";
 import { BLADES, HEIGHT, bladeShape, bladesFor, bladesToDraw, plantBlades } from "../js/windmills/grass.js";
-import { HORIZON_Y, PICTURE, WINDMILLS, isBehindAWindmill, isOnRoad } from "../js/windmills/picture.js";
+import { HORIZON_Y, PICTURE, WINDMILLS, isBehindAWindmill, isOnRoad, shownSlice } from "../js/windmills/picture.js";
 import { SAIL_SPEED, sailSpeedAt, windAt } from "../js/windmills/wind.js";
 
 /** Times over a minute and spots across the picture, for checks that must hold everywhere. */
@@ -18,6 +18,20 @@ describe("windmills: the picture", () => {
             assert.ok(left < hubX && hubX < right, "the sails' reach is around the hub");
             assert.ok(baseY > HORIZON_Y && baseY > hubY, "the base is below the hub, in the field");
         }
+    });
+
+    it("finds the slice of the picture a card shows", () => {
+        const stageWidth = 1163;
+        // A wide card shows all of it.
+        assert.deepEqual(shownSlice(0, stageWidth, stageWidth), { left: 0, width: stageWidth, pictureLeft: 0, pictureWidth: PICTURE.width });
+        // A phone card, the stage slid 615 pixels left: 361 pixels from the 615th.
+        const phone = shownSlice(-615, stageWidth, 361);
+        assert.equal(phone.left, 615);
+        assert.equal(phone.width, 361);
+        assert.ok(Math.abs(phone.pictureLeft - 615 / stageWidth * PICTURE.width) < 1e-9);
+        assert.ok(Math.abs(phone.pictureWidth - 361 / stageWidth * PICTURE.width) < 1e-9);
+        // Never past the picture's edges.
+        assert.equal(shownSlice(-1000, stageWidth, 361).width, stageWidth - 1000);
     });
 
     it("knows where the road is, widening towards the viewer", () => {

@@ -9,7 +9,7 @@
 import { MILLISECONDS_PER_SECOND, isTimeToDraw, pixelRatio } from "../shared/frame-rate.js";
 import { FULL_TURN, pulse, toUnitRange, travellingWave } from "../shared/motion.js";
 import { seededRandom } from "../shared/random.js";
-import { PICTURE, scaleToPicture } from "./picture.js";
+import { PICTURE, WHOLE_PICTURE, fitToSlice, scaleToPicture } from "./picture.js";
 
 const RAYS_SEED = 33;
 const STARS_SEED = 34;
@@ -171,13 +171,14 @@ export class Aurora {
         this.stars = placeStars();
         this.lastDrawn = null;
         this.lastSeconds = null;
+        this.slice = WHOLE_PICTURE;
         container.append(this.canvas);
     }
 
-    resize(widthPixels, heightPixels) {
-        const resolution = pixelRatio() * AURORA_RESOLUTION;
-        this.canvas.width = Math.round(widthPixels * resolution);
-        this.canvas.height = Math.round(heightPixels * resolution);
+    /** Sizes the canvas to the `slice` of the picture the card shows (picture.js). */
+    resize(slice, heightPixels) {
+        this.slice = slice;
+        fitToSlice(this.canvas, slice, heightPixels, pixelRatio() * AURORA_RESOLUTION);
         this.lastDrawn = null;            // a resized canvas is blank: draw on the next frame
     }
 
@@ -193,7 +194,7 @@ export class Aurora {
         this.lastSeconds = seconds;
         this.drawSoftRays(seconds);
         const { context, canvas } = this;
-        scaleToPicture(context, canvas);
+        scaleToPicture(context, canvas, this.slice);
         context.globalCompositeOperation = "source-over";
         context.clearRect(0, 0, PICTURE.width, PICTURE.height);
         // Stretching the small canvas to full size is what blurs the rays.
