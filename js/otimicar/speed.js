@@ -5,8 +5,8 @@
 export const SPEED_KMH = { low: 150, high: 175, cycleSeconds: 5.2 };
 /** The dial reads 0 to `maxKmh` over `sweepDegrees`, centred on straight up. */
 const DIAL = { maxKmh: 240, sweepDegrees: 240 };
-/** At 160 km/h, the wheels turn once every 0.9 s. */
-const WHEEL_DEGREES_PER_SECOND_PER_KMH = 2.5;
+/** At 160 km/h, the wheels turn once every 0.3 s: fast enough to blur (style/otimicar.css). */
+const WHEEL_DEGREES_PER_SECOND_PER_KMH = 7.5;
 const FULL_TURN_DEGREES = 360;
 
 /** The speed between the low and the high, halfway between them: shown when motion is reduced. */

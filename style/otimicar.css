@@ -85,7 +85,11 @@
     --height: var(--rim-height);
     transform: scaleX(var(--squash));
 }
-.otimicar-stage .wheel.turns { transform: scaleX(var(--squash)) rotate(var(--wheel-turn)); }
+/* The turning parts spin fast enough to blur, as at speed (a wheel is about 9% of the stage's width). */
+.otimicar-stage .wheel.turns {
+    transform: scaleX(var(--squash)) rotate(var(--wheel-turn));
+    filter: blur(0.25cqw);
+}
 .otimicar-stage .wheel.front { --centre-x: 542.5; --centre-y: 429; --squash: calc(81 / 104); }
 .otimicar-stage .wheel.rear { --centre-x: 939; --centre-y: 420; --squash: calc(80 / 104); }
 
@@ -133,5 +137,8 @@
     .otimicar-stage .body,
     .otimicar-stage .puff {
         animation: none;
+    }
+    .otimicar-stage .wheel.turns {
+        filter: none;                /* the wheels stand still */
     }
 }

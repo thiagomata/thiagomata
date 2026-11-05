@@ -34,8 +34,8 @@ describe("OtimiCar speed", () => {
         }
     });
 
-    it("turns the wheels once every 0.9 seconds at 160 km/h", () => {
-        closeTo(turnWheels(0, 160, 0.9), 0);
-        closeTo(turnWheels(0, 160, 0.45), 180);
+    it("turns the wheels once every 0.3 seconds at 160 km/h", () => {
+        closeTo(turnWheels(0, 160, 0.3), 0);
+        closeTo(turnWheels(0, 160, 0.15), 180);
     });
 });
