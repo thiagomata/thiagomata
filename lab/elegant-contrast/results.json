@@ -1,5 +1,5 @@
 {
-    "measuredAt": "2026-11-05T21:35:40.548Z",
+    "measuredAt": "2026-11-05T21:40:12.879Z",
     "variants": {
         "today": {
             "desktop": {
@@ -279,6 +279,26 @@
                 "failingLines": 0,
                 "lines": 9,
                 "sceneKept": 0.46
+            }
+        },
+        "black-light-aurora-cover": {
+            "desktop": {
+                "worstContrast": 7.62,
+                "worstText": "Traceability",
+                "required": 4.5,
+                "passes": true,
+                "failingLines": 0,
+                "lines": 9,
+                "sceneKept": 0.74
+            },
+            "phone": {
+                "worstContrast": 7.63,
+                "worstText": "Traceability",
+                "required": 4.5,
+                "passes": true,
+                "failingLines": 0,
+                "lines": 9,
+                "sceneKept": 0.45
             }
         }
     }

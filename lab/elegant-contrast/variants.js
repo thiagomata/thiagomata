@@ -63,10 +63,17 @@ const FASTER = {
     wide: [[0.8, 0], [0.8, 24], [0, 36]],
     phone: [[0.8, 0], [0.8, 85], [0.4, 100]],
 };
+/**
+ * One rule for every width: hold 80% until past the text (the further of 28% and 460px: the text
+ * reaches at most 440px, its 400px blocks after the 40px padding), then clear by the further of 45%
+ * and 640px. A phone card is narrower than 460px, so it stays covered all the way across.
+ */
+const COVER_THE_TEXT = "linear-gradient(90deg, rgba(0, 0, 0, 0.8) 0, rgba(0, 0, 0, 0.8) max(28%, 460px), transparent max(45%, 640px))";
+
 /** The site's phone layout starts below this width. */
 const PHONE_WIDTH = "43em";
 
-const lightLayer = (card, colours, strength = 1, shape = null) => layer(card, "linear-gradient(transparent, transparent)") + `
+const lightLayer = (card, colours, strength = 1, shape = null, mask = null) => layer(card, "linear-gradient(transparent, transparent)") + `
     ${card}::after {
         content: "";
         position: absolute;
@@ -75,7 +82,7 @@ const lightLayer = (card, colours, strength = 1, shape = null) => layer(card, "l
         pointer-events: none;
         background: linear-gradient(${colours.join(", ")});
         opacity: 1;
-        mask-image: ${fadeMask(shape ? shape.wide : LAYER_FADE.map(([opacity, at]) => [opacity * strength, at]))};
+        mask-image: ${mask ?? fadeMask(shape ? shape.wide : LAYER_FADE.map(([opacity, at]) => [opacity * strength, at]))};
     }
     ${shape ? `@media (max-width: ${PHONE_WIDTH}) { ${card}::after { mask-image: ${fadeMask(shape.phone)}; } }` : ""}
     ${card} { position: relative; isolation: isolate; }
@@ -116,6 +123,11 @@ export const VARIANTS = [
         label: `Black text on a light layer across the left: ${label}`,
         css: card => lightLayer(card, colours),
     })),
+    {
+        id: "black-light-aurora-cover",
+        label: "Black text on the northern lights layer: 80% until past the text (28% or 460px), clear by 45% or 640px",
+        css: card => lightLayer(card, LIGHT_COLOURS.aurora.colours, 1, null, COVER_THE_TEXT),
+    },
     {
         id: "black-light-aurora-left",
         label: "Black text on the northern lights layer: 80% across the text, clear by 45% (phone: across the text)",
