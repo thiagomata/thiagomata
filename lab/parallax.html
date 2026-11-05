@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Parallax tunnel</title>
+    <style>
+        /* The Parallax card's live tunnel (js/parallax/scene.js), at the card's desktop and phone
+           shapes, next to today's static picture. Move the mouse over a card to look around. */
+        body {
+            margin: 0;
+            padding: 24px;
+            background: #0b0d10;
+            color: #e9ecef;
+            font: 16px Roboto, sans-serif;
+        }
+        h2 { font-weight: normal; margin: 32px 0 12px; }
+        .row { display: flex; gap: 24px; flex-wrap: wrap; align-items: flex-start; }
+        .card {
+            position: relative;
+            isolation: isolate;
+            overflow: hidden;
+            height: 670px;
+            padding: 40px;
+            box-sizing: border-box;
+            background: #10171c center / cover no-repeat;
+        }
+        .wide { width: min(1400px, 100%); }
+        .phone { width: 360px; height: 640px; padding: 24px; }
+        .static { background-image: url("../img/parallax-depth.webp"); }
+        /* The card's readability gradient, over the tunnel and under the text. */
+        .card::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            z-index: -1;
+            background: linear-gradient(90deg, rgba(13, 15, 18, .94), rgba(13, 15, 18, .68) 42%, rgba(13, 15, 18, .08));
+            pointer-events: none;
+        }
+        .phone::after { background: linear-gradient(90deg, rgba(13, 15, 18, .90), rgba(13, 15, 18, .45)); }
+        .parallax-tunnel {
+            position: absolute;
+            inset: 0;
+            z-index: -2;
+            width: 100%;
+            height: 100%;
+        }
+        .card h3 { font-size: 30px; margin: 0 0 36px; }
+        .card h4 { font: 45px/1.1 Teko, sans-serif; text-transform: uppercase; max-width: 420px; margin: 0 0 40px; }
+        .card p { max-width: 500px; line-height: 1.6; }
+    </style>
+    <script type="importmap">
+        {
+            "imports": {
+                "three": "https://cdn.jsdelivr.net/npm/three@0.187.0/build/three.module.min.js",
+                "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.187.0/examples/jsm/"
+            }
+        }
+    </script>
+</head>
+<body>
+    <h2>Live (three.js)</h2>
+    <div class="row">
+        <section class="card wide live">
+            <h3>Parallax Engine</h3>
+            <h4>Interactive graphics with testable scene logic</h4>
+            <p>A 3D experiment with webcam head tracking: the scene shifts as you move your head, giving real depth. It separates scene behaviour from rendering, with repeatable transformations and hands-on tutorials.</p>
+        </section>
+    </div>
+    <h2>Phone</h2>
+    <div class="row">
+        <section class="card phone live">
+            <h3>Parallax Engine</h3>
+            <h4>Interactive graphics with testable scene logic</h4>
+        </section>
+    </div>
+    <h2>Today (static picture)</h2>
+    <div class="row">
+        <section class="card wide static">
+            <h3>Parallax Engine</h3>
+            <h4>Interactive graphics with testable scene logic</h4>
+            <p>A 3D experiment with webcam head tracking: the scene shifts as you move your head, giving real depth. It separates scene behaviour from rendering, with repeatable transformations and hands-on tutorials.</p>
+        </section>
+    </div>
+    <script type="module">
+        import { start } from "../js/parallax/scene.js";
+        for (const card of document.querySelectorAll(".card.live")) start(card);
+    </script>
+</body>
+</html>
