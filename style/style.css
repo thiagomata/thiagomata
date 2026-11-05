@@ -1137,14 +1137,11 @@ p {
     width: calc(100% - 2px);
     height: calc(100% - 2px);
 }
+/* Colours and bridge sizes are faded by js/sli-blobs.js; a bridge grows from its middle. */
 #top-companies section[data-company="sli"] .live-bg circle {
-    fill: #BEBCBF;
     transform-box: fill-box;
     transform-origin: center;
-    transition: fill 1800ms ease, transform 2200ms cubic-bezier(.6, 0, .3, 1);
 }
-#top-companies section[data-company="sli"] .live-bg circle[data-colour="lavender"] { fill: #BBB3DC; }
-#top-companies section[data-company="sli"] .live-bg circle[data-colour="white"] { fill: #FFFFFF; }
 #top-companies section[data-company="sli"] .live-bg .shade { mix-blend-mode: multiply; }
 #top-companies section[data-company="macquarie"] .live-bg {
     opacity: 0.9;

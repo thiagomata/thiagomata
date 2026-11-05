@@ -1,28 +1,43 @@
 // Live background for the SLI card, from lab/sli-circles.html: circles in a fixed grid switch
 // between the SLI lavender, grey and white; neighbours of the same colour melt together through a
 // "goo" filter (blur, then a hard alpha threshold), so blobs form and dissolve as the colours
-// change. The static img/sli-bg.svg stays as the fallback.
-(() => {
-    const card = document.querySelector('#top-companies section[data-company="sli"]');
-    if (!card) return;
+// change. The changes fade smoothly (js/sli/fading.js), redrawn at most 30 times a second while
+// the card is on screen. The static img/sli-bg.svg stays as the fallback.
+import { isTimeToDraw } from "./shared/frame-rate.js";
+import { COLOURS, FADE_MILLISECONDS, Fade, cssColour, mixColour } from "./sli/fading.js";
+import { lerp } from "./shared/motion.js";
 
-    const SVG_NAMESPACE = "http://www.w3.org/2000/svg";
-    const COLOURS = ["grey", "lavender", "white"];
-    const SPACING = 72;             // px between circle centres (16px gap between edges)
-    const RADIUS = 28;              // px
-    const BRIDGE_RADIUS = 14;       // px, the ball that joins two neighbours of the same colour
-    const FLIP_SHARE = 0.01;        // share of circles that switch colour each tick
-    const TICK_MILLISECONDS = 300;  // half the lab page's pace: it sits behind text
-    const MINIMUM_FLIPS = 1;
-    const DECIMALS = 1;
+const card = document.querySelector('#top-companies section[data-company="sli"]');
 
-    // The goo: blur the balls, then turn the soft edge back into a sharp outline (alpha × 20 − 9),
-    // so balls close enough to blur into each other become one shape.
-    const GOO = { blur: 8, alphaGain: 20, alphaShift: -9 };
-    // The same shade as the static image, multiplied over the balls so the text stays readable.
-    const SHADE = { top: "#877B7B", bottom: "#211E1E", opacity: 0.85 };
-    const BRIDGE_SHOWN = "scale(1)", BRIDGE_HIDDEN = "scale(0)";
+const SVG_NAMESPACE = "http://www.w3.org/2000/svg";
+const COLOUR_NAMES = Object.keys(COLOURS);
+const SPACING = 72;             // px between circle centres (16px gap between edges)
+const RADIUS = 28;              // px
+const BRIDGE_RADIUS = 14;       // px, the ball that joins two neighbours of the same colour
+const FLIP_SHARE = 0.01;        // share of circles that switch colour each tick
+const TICK_MILLISECONDS = 300;  // half the lab page's pace: it sits behind text
+const MINIMUM_FLIPS = 1;
+const DECIMALS = 1;
+/** A bridge's size: grown (its neighbours share a colour) or gone. */
+const BRIDGE_SHOWN = 1, BRIDGE_HIDDEN = 0;
 
+// The goo: blur the balls, then turn the soft edge back into a sharp outline (alpha × 20 − 9),
+// so balls close enough to blur into each other become one shape.
+const GOO = { blur: 8, alphaGain: 20, alphaShift: -9 };
+// The same shade as the static image, multiplied over the balls so the text stays readable.
+const SHADE = { top: "#877B7B", bottom: "#211E1E", opacity: 0.85 };
+
+const pickFrom = choices => choices[Math.floor(Math.random() * choices.length)];
+
+function newCircle(centreX, centreY, radius) {
+    const circle = document.createElementNS(SVG_NAMESPACE, "circle");
+    circle.setAttribute("cx", centreX.toFixed(DECIMALS));
+    circle.setAttribute("cy", centreY.toFixed(DECIMALS));
+    circle.setAttribute("r", radius);
+    return circle;
+}
+
+function newSvg() {
     const svg = document.createElementNS(SVG_NAMESPACE, "svg");
     svg.setAttribute("class", "live-bg");
     svg.setAttribute("aria-hidden", "true");
@@ -40,17 +55,18 @@
         <rect width="100%" height="100%" fill="white"/>
         <g class="balls" filter="url(#sli-goo)"></g>
         <rect class="shade" width="100%" height="100%" fill="url(#sli-shade)" fill-opacity="${SHADE.opacity}"/>`;
+    return svg;
+}
+
+function start() {
+    const svg = newSvg();
     const balls = svg.querySelector(".balls");
     let circles = [], bridges = [];
 
-    const pickFrom = choices => choices[Math.floor(Math.random() * choices.length)];
-
-    const newCircle = (centreX, centreY, radius) => {
-        const circle = document.createElementNS(SVG_NAMESPACE, "circle");
-        circle.setAttribute("cx", centreX.toFixed(DECIMALS));
-        circle.setAttribute("cy", centreY.toFixed(DECIMALS));
-        circle.setAttribute("r", radius);
-        return circle;
+    /** A ball: its colour's name, and its fill fading towards that colour. */
+    const newBall = (centreX, centreY) => {
+        const colour = pickFrom(COLOUR_NAMES);
+        return { element: newCircle(centreX, centreY, RADIUS), colour, fill: new Fade(COLOURS[colour], FADE_MILLISECONDS.colour, mixColour) };
     };
 
     /**
@@ -80,9 +96,9 @@
                     grid[row].push(null);
                     continue;
                 }
-                const ball = newCircle(centreX, centreY, RADIUS);
-                ball.dataset.colour = pickFrom(COLOURS);
-                circles.push(balls.appendChild(ball));
+                const ball = newBall(centreX, centreY);
+                balls.appendChild(ball.element);
+                circles.push(ball);
                 grid[row].push(ball);
             }
         }
@@ -90,29 +106,38 @@
         grid.forEach((line, row) => line.forEach((ball, column) => {
             for (const neighbour of [line[column + 1], grid[row + 1]?.[column]]) {
                 if (!ball || !neighbour) continue;
-                const middleX = (Number(ball.getAttribute("cx")) + Number(neighbour.getAttribute("cx"))) / 2;
-                const middleY = (Number(ball.getAttribute("cy")) + Number(neighbour.getAttribute("cy"))) / 2;
-                const bridge = bridgeLayer.appendChild(newCircle(middleX, middleY, BRIDGE_RADIUS));
-                bridges.push({ bridge, ball, neighbour });
+                const middleX = (Number(ball.element.getAttribute("cx")) + Number(neighbour.element.getAttribute("cx"))) / 2;
+                const middleY = (Number(ball.element.getAttribute("cy")) + Number(neighbour.element.getAttribute("cy"))) / 2;
+                const element = bridgeLayer.appendChild(newCircle(middleX, middleY, BRIDGE_RADIUS));
+                const shown = ball.colour === neighbour.colour ? BRIDGE_SHOWN : BRIDGE_HIDDEN;
+                bridges.push({ element, ball, neighbour, size: new Fade(shown, FADE_MILLISECONDS.size, lerp) });
             }
         }));
-        connect();
+        paint(performance.now(), { everything: true });
     };
 
-    /** A few balls switch to one of the other colours. */
-    const flip = () => {
+    /** A few balls switch to one of the other colours; bridges grow between neighbours that now match. */
+    const flip = now => {
         const flips = Math.max(MINIMUM_FLIPS, Math.round(circles.length * FLIP_SHARE));
         for (let flipped = 0; flipped < flips; flipped++) {
             const ball = pickFrom(circles);
-            ball.dataset.colour = pickFrom(COLOURS.filter(colour => colour !== ball.dataset.colour));
+            ball.colour = pickFrom(COLOUR_NAMES.filter(colour => colour !== ball.colour));
+            ball.fill.towards(COLOURS[ball.colour], now);
+        }
+        for (const bridge of bridges) {
+            const shown = bridge.ball.colour === bridge.neighbour.colour ? BRIDGE_SHOWN : BRIDGE_HIDDEN;
+            if (shown !== bridge.size.to) bridge.size.towards(shown, now);
         }
     };
 
-    /** Balls stay in place; the bridge between two neighbours grows when they share a colour. */
-    const connect = () => {
-        for (const { bridge, ball, neighbour } of bridges) {
-            bridge.dataset.colour = ball.dataset.colour;
-            bridge.style.transform = ball.dataset.colour === neighbour.dataset.colour ? BRIDGE_SHOWN : BRIDGE_HIDDEN;
+    /** Draws what is still fading (or, after a rebuild, everything). A bridge wears its ball's colour. */
+    const paint = (now, { everything = false } = {}) => {
+        for (const ball of circles) {
+            if (everything || !ball.fill.settled(now)) ball.element.setAttribute("fill", cssColour(ball.fill.at(now)));
+        }
+        for (const bridge of bridges) {
+            if (everything || !bridge.ball.fill.settled(now)) bridge.element.setAttribute("fill", cssColour(bridge.ball.fill.at(now)));
+            if (everything || !bridge.size.settled(now)) bridge.element.style.transform = `scale(${bridge.size.at(now)})`;
         }
     };
 
@@ -129,17 +154,34 @@
     }).observe(card);
 
     const still = window.matchMedia("(prefers-reduced-motion: reduce)");
-    let timer = null;
-    const start = () => {
-        if (still.matches) return window.logAnimation?.("sli", "still", "reduced motion");
-        if (timer === null) timer = setInterval(() => { flip(); connect(); }, TICK_MILLISECONDS);
-        window.logAnimation?.("sli", "running");
+    let onScreen = false, frameRequest = null, lastDrawn = null, lastFlip = null;
+    const frame = now => {
+        frameRequest = requestAnimationFrame(frame);
+        if (!isTimeToDraw(now, lastDrawn)) return;
+        lastDrawn = now;
+        if (lastFlip === null || now - lastFlip >= TICK_MILLISECONDS) {
+            lastFlip = now;
+            flip(now);
+        }
+        paint(now);
     };
-    const stop = () => {
-        clearInterval(timer);
-        timer = null;
-        window.logAnimation?.("sli", "paused", "off screen");
+    const run = () => {
+        if (still.matches) window.logAnimation?.("sli", "still", "reduced motion");
+        else window.logAnimation?.("sli", onScreen ? "running" : "paused", onScreen ? "" : "off screen");
+        if (onScreen && !still.matches) {
+            if (frameRequest === null) frameRequest = requestAnimationFrame(frame);
+            return;
+        }
+        if (frameRequest !== null) cancelAnimationFrame(frameRequest);
+        frameRequest = null;
+        lastDrawn = null;
+        lastFlip = null;
     };
-    new IntersectionObserver(([entry]) => (entry.isIntersecting ? start() : stop())).observe(card);
-    still.addEventListener("change", () => (still.matches ? stop() : start()));
-})();
+    new IntersectionObserver(([entry]) => {
+        onScreen = entry.isIntersecting;
+        run();
+    }).observe(card);
+    still.addEventListener("change", run);
+}
+
+if (card) start();
