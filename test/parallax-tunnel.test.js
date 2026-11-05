@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 import {
-    EYE_DISTANCE, EYE_REACH, TUNNEL, WINDOW_SIDE, easeTowards, eyeAt, frameGrey, windowFrustum, windowSize,
+    CUBES, EYE_DISTANCE, EYE_REACH, TARGET, TARGET_POSITIONS, TUNNEL, WINDOW_SIDE, easeTowards, eyeAt, frameGrey, windowFrustum, windowSize,
 } from "../js/parallax/tunnel.js";
 
 const closeTo = (actual, expected, message) => assert.ok(Math.abs(actual - expected) < 1e-9, message ?? `${actual} ≠ ${expected}`);
@@ -32,6 +32,23 @@ describe("Parallax tunnel", () => {
     it("skews the view away from the eye: looking from the right shows more of the left", () => {
         const view = windowFrustum([100, 0, EYE_DISTANCE], 800, 400, NEAR);
         assert.ok(-view.left > view.right);
+    });
+
+    it("keeps every target, and its stick, out of the cubes", () => {
+        // A target is its disc and the stick behind it: a box from its front back by the stick's length.
+        const targetBox = ([x, y, depth]) => ({
+            from: [x - TARGET.radius, y - TARGET.radius, depth - TARGET.stickLength],
+            to: [x + TARGET.radius, y + TARGET.radius, depth],
+        });
+        const cubeBox = ({ position, size }) => ({
+            from: position.map(value => value - size / 2),
+            to: position.map(value => value + size / 2),
+        });
+        const overlap = (first, second) => first.from.every((_, axis) =>
+            first.from[axis] < second.to[axis] && second.from[axis] < first.to[axis]);
+        for (const target of TARGET_POSITIONS) {
+            for (const cube of CUBES) assert.ok(!overlap(targetBox(target), cubeBox(cube)), `target ${target} is in a ${cube.colour} cube`);
+        }
     });
 
     it("darkens the frames with depth, never below black", () => {
