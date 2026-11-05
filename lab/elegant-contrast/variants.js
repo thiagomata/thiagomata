@@ -26,6 +26,37 @@ const halos = (card, colour, opacity) => `
         width: fit-content;
     }`;
 
+/**
+ * The approved effect, black text on a light layer across the left, in different colours: each a
+ * top-to-bottom gradient of the scene's own colours mixed about 45% with white. Light enough for
+ * black text (the darkest, the blue-grey, still gives about 8.6:1), but clearly coloured.
+ */
+const LIGHT_COLOURS = {
+    white: { label: "plain white", colours: [`rgb(${MIST})`, `rgb(${MIST})`] },
+    sky: {
+        label: "the sky's colours: teal, blue-grey, lavender, rose, amber",
+        colours: ["rgb(157, 199, 204)", "rgb(146, 170, 175) 30%", "rgb(182, 178, 196) 55%", "rgb(213, 149, 173) 80%", "rgb(219, 182, 154)"],
+    },
+    aurora: { label: "the northern lights: green, teal, blue", colours: ["rgb(187, 240, 174)", "rgb(157, 199, 204) 50%", "rgb(149, 185, 238)"] },
+    dusk: { label: "the horizon: lavender, rose, amber", colours: ["rgb(182, 178, 196)", "rgb(213, 149, 173) 55%", "rgb(219, 182, 154)"] },
+    teal: { label: "the sky's teal", colours: ["rgb(157, 199, 204)", "rgb(157, 199, 204)"] },
+};
+
+/** The light layer: the colours top to bottom, solid on the left and fading out before the windmills. */
+const lightLayer = (card, colours) => layer(card, "linear-gradient(transparent, transparent)") + `
+    ${card}::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        z-index: -1;
+        pointer-events: none;
+        background: linear-gradient(${colours.join(", ")});
+        opacity: 1;
+        mask-image: linear-gradient(90deg, rgba(0, 0, 0, 0.88), rgba(0, 0, 0, 0.7) 35%, transparent 60%);
+    }
+    ${card} { position: relative; isolation: isolate; }
+    ${card} ${TEXT} { color: #000 !important; }`;
+
 export const VARIANTS = [
     {
         id: "today",
@@ -56,12 +87,11 @@ export const VARIANTS = [
             + halos(card, DEEP_BLUE, 0.5) + `
             ${card} ${TEXT} { text-shadow: 0 1px 3px rgba(0, 0, 0, 0.85); }`,
     },
-    {
-        id: "black-light-layer",
-        label: "Black text on a light layer across the left",
-        css: card => layer(card, `linear-gradient(90deg, rgba(${MIST}, 0.88), rgba(${MIST}, 0.7) 35%, rgba(${MIST}, 0) 60%)`) + `
-            ${card} ${TEXT} { color: #000 !important; }`,
-    },
+    ...Object.entries(LIGHT_COLOURS).map(([id, { label, colours }]) => ({
+        id: `black-light-${id}`,
+        label: `Black text on a light layer across the left: ${label}`,
+        css: card => lightLayer(card, colours),
+    })),
     {
         id: "black-light-halo",
         label: "Black text on a soft light halo behind each block, no layer",

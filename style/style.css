@@ -1301,17 +1301,15 @@ p {
 
 /* The Elegant card's text is black on a light layer across its left, instead of white on a dark
    one: its scene is light (the northern lights and the glowing horizon), and a dark layer hid most
-   of it. The layer's colours are the scene's own sky, lightened (teal at the top, through
-   blue-grey and lavender, to rose and amber at the horizon), and it fades out before the windmills.
-   The same layer serves the static picture and the live scene (style/windmills.css). */
+   of it. The layer takes the northern lights' colours (green, teal, blue), mixed about 45% with
+   white: clearly coloured, yet light enough for black text (8:1 or more). It is solid on the left
+   and fades out before the windmills. The same layer serves the static picture and the live
+   scene (style/windmills.css). Chosen in lab/elegant-contrast. */
 #values section.value-elegant {
-    --sky-teal: rgb(228, 240, 241);
-    --sky-blue-grey: rgb(225, 232, 233);
-    --sky-lavender: rgb(235, 234, 239);
-    --sky-rose: rgb(244, 226, 232);
-    --sky-amber: rgb(245, 235, 227);
-    --layer-opacity: 0.85;
-    --layer-fade: linear-gradient(90deg, #000 30%, rgba(0, 0, 0, 0.75) 45%, transparent 65%);
+    --aurora-green: rgb(187, 240, 174);
+    --aurora-teal: rgb(157, 199, 204);
+    --aurora-blue: rgb(149, 185, 238);
+    --layer-fade: linear-gradient(90deg, rgba(0, 0, 0, 0.88), rgba(0, 0, 0, 0.7) 35%, transparent 60%);
     position: relative;
     isolation: isolate;
     border-image: none;
@@ -1326,8 +1324,7 @@ p {
     inset: 0;
     z-index: -1;
     pointer-events: none;
-    background: linear-gradient(var(--sky-teal), var(--sky-blue-grey) 30%, var(--sky-lavender) 55%, var(--sky-rose) 80%, var(--sky-amber));
-    opacity: var(--layer-opacity);
+    background: linear-gradient(var(--aurora-green), var(--aurora-teal) 50%, var(--aurora-blue));
     mask-image: var(--layer-fade);
 }
 /* On a phone the text runs across most of the card, so the layer does too. */
