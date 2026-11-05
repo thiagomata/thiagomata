@@ -67,4 +67,17 @@ describe("contrast", () => {
         const stripedLeft = image(20, 20, column => (column < 10 && column % 2 ? WHITE : BLACK));
         assert.equal(detail(stripedLeft, whole, [{ left: 0, top: 0, width: 11, height: 20 }]), 0);
     });
+
+    it("finds a light layer hides detail as much as a dark one of the same opacity", () => {
+        // Dark stripes, then a half-opaque white or black layer blended over them.
+        const [dim, bright] = [40, 90];
+        const blend = (value, over) => Math.round((value + over) / 2);
+        const whole = { left: 0, top: 0, width: 20, height: 20 };
+        const stripes = shade => image(20, 20, column => Array(3).fill(column % 2 ? shade(bright) : shade(dim)));
+        const bare = detail(stripes(value => value), whole);
+        const underWhite = detail(stripes(value => blend(value, 255)), whole);
+        const underBlack = detail(stripes(value => blend(value, 0)), whole);
+        closeTo(underWhite / bare, 0.5, 0.02);
+        closeTo(underBlack / bare, 0.5, 0.02);
+    });
 });

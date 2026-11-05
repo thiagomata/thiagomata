@@ -58,11 +58,22 @@ export function percentile(values, share) {
     return sorted[Math.min(sorted.length - 1, Math.floor(share * sorted.length))];
 }
 
-/** The luminance of the pixel at (`column`, `row`) of `image` ({ data, width }, as ImageData). */
-export function pixelLuminance(image, column, row) {
+/** The [red, green, blue] of the pixel at (`column`, `row`) of `image` ({ data, width }, as ImageData). */
+const pixelColour = (image, column, row) => {
     const start = (row * image.width + column) * BYTES_PER_PIXEL;
-    return relativeLuminance([image.data[start], image.data[start + 1], image.data[start + 2]]);
-}
+    return [image.data[start], image.data[start + 1], image.data[start + 2]];
+};
+
+/** The luminance of the pixel at (`column`, `row`) of `image`. */
+export const pixelLuminance = (image, column, row) => relativeLuminance(pixelColour(image, column, row));
+
+/**
+ * The pixel's brightness as the screen stores it (0 to 1, not linear light). Layers are blended
+ * in these values, so a layer of opacity `a` scales differences between pixels by exactly 1 − a,
+ * whether the layer is dark or light.
+ */
+const pixelBrightness = (image, column, row) =>
+    pixelColour(image, column, row).reduce((total, channel, index) => total + channel * WEIGHTS[index], 0) / CHANNEL_MAX;
 
 /** Whole pixels of `rect` ({ left, top, width, height }) inside `image`, every `step` pixels. */
 function* pixelsIn(image, rect, step) {
@@ -90,16 +101,17 @@ const isInside = (column, row, rect) =>
     column >= rect.left && column < rect.left + rect.width && row >= rect.top && row < rect.top + rect.height;
 
 /**
- * How much detail `region` of `image` shows: the average change in luminance between neighbouring
- * pixels, skipping pixels inside `skipped` rects (the text). A layer over the scene lowers it.
+ * How much detail `region` of `image` shows: the average change in brightness between neighbouring
+ * pixels, skipping pixels inside `skipped` rects (the text). A layer over the scene, dark or light,
+ * lowers it.
  */
 export function detail(image, region, skipped = [], step = 1) {
     let total = 0, counted = 0;
     for (const [column, row] of pixelsIn(image, region, step)) {
         if (column + 1 >= image.width || row + 1 >= image.height) continue;
         if (skipped.some(rect => isInside(column, row, rect))) continue;
-        const here = pixelLuminance(image, column, row);
-        total += Math.abs(pixelLuminance(image, column + 1, row) - here) + Math.abs(pixelLuminance(image, column, row + 1) - here);
+        const here = pixelBrightness(image, column, row);
+        total += Math.abs(pixelBrightness(image, column + 1, row) - here) + Math.abs(pixelBrightness(image, column, row + 1) - here);
         counted++;
     }
     return counted ? total / counted : 0;

@@ -9,7 +9,8 @@
 //
 // The results go to lab/elegant-contrast/results.json, which the lab shows under each variant.
 //
-// Usage: npm run contrast
+// Usage: npm run contrast                    (every variant)
+//        npm run contrast -- black halo      (just these, keeping the others' last results)
 import { readFile, writeFile } from "node:fs/promises";
 import { createServer } from "node:http";
 import { extname, join, normalize } from "node:path";
@@ -78,7 +79,8 @@ const readText = page => page.evaluate(selector => {
 
 /** Photographs the page with the card's text hidden; `withLayer` false also takes the variant and the layer away. */
 async function photograph(page, variantStyle, withLayer) {
-    const hidden = await page.addStyleTag({ content: `${CARD} * { color: transparent !important; }` });
+    // Through the text's fill, which no variant sets, so a variant's own colour can't show it again.
+    const hidden = await page.addStyleTag({ content: `${CARD} * { -webkit-text-fill-color: transparent !important; }` });
     const noLayer = withLayer ? null : await page.addStyleTag({
         content: `${CARD}, ${CARD}::after { border-image: none !important; }`,
     });
@@ -158,12 +160,27 @@ async function measure(browser, origin, variant, size) {
     };
 }
 
+/** The last results, so measuring a few variants keeps the others'. */
+async function lastResults() {
+    try {
+        return JSON.parse(await readFile(RESULTS, "utf8"));
+    } catch {
+        return { variants: {} };
+    }
+}
+
+const chosen = process.argv.slice(2);
+const unknown = chosen.filter(id => !VARIANTS.some(variant => variant.id === id));
+if (unknown.length) throw new Error(`No such variant: ${unknown.join(", ")}. Variants: ${VARIANTS.map(variant => variant.id).join(", ")}`);
+const toMeasure = chosen.length ? VARIANTS.filter(variant => chosen.includes(variant.id)) : VARIANTS;
+
 const server = await serveSite();
 const origin = `http://127.0.0.1:${server.address().port}`;
 const browser = await chromium.launch({ args: BROWSER_ARGS });
-const results = { measuredAt: new Date().toISOString(), variants: {} };
+const results = await lastResults();
+results.measuredAt = new Date().toISOString();
 try {
-    for (const variant of VARIANTS) {
+    for (const variant of toMeasure) {
         results.variants[variant.id] = {};
         for (const [name, size] of Object.entries(SIZES)) {
             const result = await measure(browser, origin, variant, size);

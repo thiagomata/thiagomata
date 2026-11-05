@@ -1,5 +1,5 @@
 {
-    "measuredAt": "2026-11-05T19:46:37.823Z",
+    "measuredAt": "2026-11-05T21:13:52.350Z",
     "variants": {
         "today": {
             "desktop": {
@@ -99,6 +99,46 @@
                 "failingLines": 0,
                 "lines": 9,
                 "sceneKept": 0.72
+            }
+        },
+        "black-light-layer": {
+            "desktop": {
+                "worstContrast": 1,
+                "worstText": "Albert Einstein",
+                "required": 4.5,
+                "passes": false,
+                "failingLines": 9,
+                "lines": 9,
+                "sceneKept": 1.03
+            },
+            "phone": {
+                "worstContrast": 1,
+                "worstText": "Albert Einstein",
+                "required": 4.5,
+                "passes": false,
+                "failingLines": 9,
+                "lines": 9,
+                "sceneKept": 1.1
+            }
+        },
+        "black-light-halo": {
+            "desktop": {
+                "worstContrast": 1,
+                "worstText": "Albert Einstein",
+                "required": 4.5,
+                "passes": false,
+                "failingLines": 9,
+                "lines": 9,
+                "sceneKept": 1.01
+            },
+            "phone": {
+                "worstContrast": 1,
+                "worstText": "Albert Einstein",
+                "required": 4.5,
+                "passes": false,
+                "failingLines": 9,
+                "lines": 9,
+                "sceneKept": 1.05
             }
         }
     }

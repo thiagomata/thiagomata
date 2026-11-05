@@ -14,6 +14,17 @@ const layer = (card, gradient) => `
 
 const SHADOW = "0 1px 3px rgba(0, 0, 0, 0.85), 0 0 14px rgba(0, 0, 0, 0.55)";
 const DEEP_BLUE = "2, 20, 34";
+/** A pale, slightly cool white, so a light patch sits in the night scene rather than glaring. */
+const MIST = "236, 242, 246";
+
+/** Soft rounded patches of `colour` behind each text block. */
+const halos = (card, colour, opacity) => `
+    ${card} ${BLOCKS} {
+        background: rgba(${colour}, ${opacity});
+        box-shadow: 0 0 28px 18px rgba(${colour}, ${opacity});
+        border-radius: 18px;
+        width: fit-content;
+    }`;
 
 export const VARIANTS = [
     {
@@ -41,13 +52,20 @@ export const VARIANTS = [
     {
         id: "halo",
         label: "White text, a soft dark halo behind each block, a light layer",
-        css: card => layer(card, `linear-gradient(90deg, rgba(${DEEP_BLUE}, 0.45), rgba(${DEEP_BLUE}, 0) 55%)`) + `
-            ${card} ${BLOCKS} {
-                background: rgba(${DEEP_BLUE}, 0.5);
-                box-shadow: 0 0 28px 18px rgba(${DEEP_BLUE}, 0.5);
-                border-radius: 18px;
-                width: fit-content;
-            }
+        css: card => layer(card, `linear-gradient(90deg, rgba(${DEEP_BLUE}, 0.45), rgba(${DEEP_BLUE}, 0) 55%)`)
+            + halos(card, DEEP_BLUE, 0.5) + `
             ${card} ${TEXT} { text-shadow: 0 1px 3px rgba(0, 0, 0, 0.85); }`,
+    },
+    {
+        id: "black-light-layer",
+        label: "Black text on a light layer across the left",
+        css: card => layer(card, `linear-gradient(90deg, rgba(${MIST}, 0.88), rgba(${MIST}, 0.7) 35%, rgba(${MIST}, 0) 60%)`) + `
+            ${card} ${TEXT} { color: #000 !important; }`,
+    },
+    {
+        id: "black-light-halo",
+        label: "Black text on a soft light halo behind each block, no layer",
+        css: card => layer(card, "linear-gradient(transparent, transparent)") + halos(card, MIST, 0.8) + `
+            ${card} ${TEXT} { color: #000 !important; }`,
     },
 ];
