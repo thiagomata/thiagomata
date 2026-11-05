@@ -1,6 +1,6 @@
 // The OtimiCar scene: the car in pieces in front of a speedometer (styles in style/otimicar.css).
 // One speed (js/otimicar/speed.js) drives the needle and the wheels, so they always agree.
-import { MILLISECONDS_PER_SECOND } from "../shared/frame-rate.js";
+import { MILLISECONDS_PER_SECOND, isTimeToDraw } from "../shared/frame-rate.js";
 import { versioned } from "../shared/picture-versions.js";
 import { CRUISING_KMH, SPEED_KMH, needleAngle, speedAt, turnWheels } from "./speed.js";
 
@@ -52,8 +52,9 @@ function buildStage(imageFolder) {
 }
 
 /**
- * Builds the scene inside `container` (a positioned element) and runs it while it is on screen.
- * `imageFolder` is where the pieces are, relative to the page.
+ * Builds the scene inside `container` (a positioned element) and runs it while it is on screen,
+ * at most 30 frames a second. `imageFolder` is where the pieces are, relative to the page. The
+ * container keeps its static picture until every piece has loaded, and for good if one fails.
  */
 export function start(container, imageFolder) {
     const scene = document.createElement("div");
@@ -62,7 +63,7 @@ export function start(container, imageFolder) {
     const stage = buildStage(imageFolder);
     scene.append(stage);
 
-    let wheelAngle = 0, last = null, onScreen = false, frameRequest = null;
+    let wheelAngle = 0, last = null, lastDrawn = null, onScreen = false, frameRequest = null;
     const show = speed => {
         stage.style.setProperty("--needle-turn", `${needleAngle(speed)}deg`);
         // The car drives to the left, so its wheels turn anticlockwise.
@@ -71,13 +72,15 @@ export function start(container, imageFolder) {
     const still = window.matchMedia("(prefers-reduced-motion: reduce)");
     const frame = now => {
         frameRequest = null;
+        if (onScreen && !still.matches) frameRequest = requestAnimationFrame(frame);
+        if (!isTimeToDraw(now, lastDrawn)) return;
+        lastDrawn = now;
         const seconds = now / MILLISECONDS_PER_SECOND;
         const step = last === null ? 0 : Math.min(seconds - last, MAX_STEP_SECONDS);
         last = seconds;
         const speed = speedAt(seconds);
         wheelAngle = turnWheels(wheelAngle, speed, step);
         show(speed);
-        if (onScreen && !still.matches) frameRequest = requestAnimationFrame(frame);
     };
     const run = () => {
         stage.classList.toggle("paused", !onScreen);
@@ -86,16 +89,24 @@ export function start(container, imageFolder) {
         if (still.matches) show(CRUISING_KMH);
         else if (onScreen && frameRequest === null) {
             last = null;
+            lastDrawn = null;
             frameRequest = requestAnimationFrame(frame);
         }
     };
-    new IntersectionObserver(([entry]) => {
-        onScreen = entry.isIntersecting;
-        run();
-    }).observe(container);
-    still.addEventListener("change", run);
+    const begin = () => {
+        scene.hidden = false;
+        container.classList.add("is-live");          // the static picture goes
+        show(SPEED_KMH.low);
+        new IntersectionObserver(([entry]) => {
+            onScreen = entry.isIntersecting;
+            run();
+        }).observe(container);
+        still.addEventListener("change", run);
+    };
 
+    // Hidden until every piece has loaded, so the car never appears part by part.
+    scene.hidden = true;
     container.prepend(scene);
-    container.classList.add("is-live");
-    show(SPEED_KMH.low);
+    const pieces = [...stage.querySelectorAll("img")];
+    Promise.all(pieces.map(piece => piece.decode())).then(begin, () => scene.remove());
 }
