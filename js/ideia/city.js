@@ -353,9 +353,9 @@ function addTrees(scene, random) {
             const spread = (1 - height) * CANOPY.bottomSpread;
             placement.scale.setScalar(radius);
             placement.position.set(
-                x + Math.cos(angle) * spread,
+                spotX + Math.cos(angle) * spread,
                 CANOPY.bottomHeight + height * CANOPY.rise,
-                z + Math.sin(angle) * spread,
+                spotZ + Math.sin(angle) * spread,
             );
             placement.updateMatrix();
             const index = tree * CANOPY.puffs + puff;
