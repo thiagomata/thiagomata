@@ -77,10 +77,10 @@ const readText = page => page.evaluate(([selector, seenPixels]) => {
         if (!text) continue;
         const range = document.createRange();
         range.selectNodeContents(node);
-        // Text hidden for screen readers only (clipped to a pixel, as a logo's name is) is never seen.
-        const rects = [...range.getClientRects()].filter(rect => rect.width > seenPixels && rect.height > seenPixels)
-            .map(({ left, top, width, height }) => ({ left, top, width, height }));
-        if (!rects.length) continue;
+        // Text hidden for screen readers only (its element clipped to a pixel, as a logo's name is) is never seen.
+        const shown = node.parentElement.getBoundingClientRect();
+        if (shown.width <= seenPixels || shown.height <= seenPixels) continue;
+        const rects = [...range.getClientRects()].map(({ left, top, width, height }) => ({ left, top, width, height }));
         const style = getComputedStyle(node.parentElement);
         lines.push({ text, rects, colour: style.color, fontSize: parseFloat(style.fontSize), fontWeight: Number(style.fontWeight) });
     }

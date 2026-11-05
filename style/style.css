@@ -1331,3 +1331,16 @@ p {
     background: linear-gradient(var(--aurora-green), var(--aurora-teal) 50%, var(--aurora-blue));
     mask-image: var(--layer-fade);
 }
+
+/* The Ideia card's layer over its live street: the card's deep blue, strongest across the middle
+   where the description is (85% at 61% down), light at the top and bottom (22% and 21%), and from
+   left to right fading out by 75% (or 860px, past the text, so a phone card stays covered). The two
+   shapes multiply. Tuned in lab/ideia-contrast/tuner.html. */
+#top-companies section[data-company="ideia"].is-live::after {
+    border-image: none;
+    background: rgb(26, 26, 61);
+    mask-image:
+        linear-gradient(90deg, #000 0, #000 max(0%, 680px), transparent max(75%, 860px)),
+        linear-gradient(rgba(0, 0, 0, 0.22), rgba(0, 0, 0, 0.85) 61%, rgba(0, 0, 0, 0.21));
+    mask-composite: intersect;
+}
