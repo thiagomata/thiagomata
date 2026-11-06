@@ -4,7 +4,8 @@
 // change. The changes fade smoothly (js/sli/fading.js), redrawn at most 30 times a second while
 // the card is on screen. The static img/sli-bg.svg stays as the fallback.
 import { isTimeToDraw } from "./shared/frame-rate.js";
-import { COLOURS, FADE_MILLISECONDS, Fade, cssColour, mixColour } from "./sli/fading.js";
+import { cssColour, mixColour } from "./shared/colour.js";
+import { COLOURS, FADE_MILLISECONDS, Fade } from "./sli/fading.js";
 import { lerp } from "./shared/motion.js";
 
 const card = document.querySelector('#top-companies section[data-company="sli"]');

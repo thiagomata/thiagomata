@@ -1,15 +1,30 @@
 // The "Perceptions of Probability" card's live chart: how people read a phrase as a probability
-// (survey.js), as a curve that morphs from phrase to phrase, from "Almost No Chance" to "Almost
-// Certainly". It keeps the static picture's look (img/project-probability.svg) and draws at most 30
-// frames a second, only while the card is on screen; with reduced motion, it shows one phrase, still.
+// (survey.js), morphing from phrase to phrase, from "Almost No Chance" to "Almost Certainly". It
+// comes in two forms: a smoothed curve, or a histogram of the answers with a colour for each phrase
+// (from one palette, blending as the bars morph). It keeps the static picture's look
+// (img/project-probability.svg) and draws at most 30 frames a second, only while the card is on
+// screen; with reduced motion, it shows one phrase, still.
 import { MILLISECONDS_PER_SECOND, isTimeToDraw } from "../shared/frame-rate.js";
+import { cssColour, fromHex, mixColour } from "../shared/colour.js";
 import { clamp, easeInOut } from "../shared/motion.js";
 import { curvePoints, fitView, mixCurves, smooth, smoothPath, toPeak } from "./curve.js";
 import { ANSWERS } from "./survey.js";
 
 const SVG_NAMESPACE = "http://www.w3.org/2000/svg";
-/** The phrases shown, in turn; after the last, back to the first. */
-const PHRASES = ["Almost No Chance", "Unlikely", "We Doubt", "About Even", "Probably", "Almost Certainly"];
+/**
+ * The phrases shown, in turn (after the last, back to the first), and each one's colour in the
+ * histogram: one palette, from blue-teal (unlikely) through the card's mint (about even) to lime
+ * (certain).
+ */
+const PHRASE_COLOURS = {
+    "Almost No Chance": "#5fa8c7",
+    "Unlikely": "#6cb8c4",
+    "We Doubt": "#7cc6bd",
+    "About Even": "#91d3b8",
+    "Probably": "#a8dba0",
+    "Almost Certainly": "#c3e08a",
+};
+const PHRASES = Object.keys(PHRASE_COLOURS);
 /** With reduced motion, this phrase shows, still. */
 const STILL_PHRASE = "Probably";
 /** Each phrase holds, then morphs into the next. */
@@ -27,11 +42,16 @@ const MARGIN = 60;
 const COLOURS = { stroke: "#91d3b8", from: "#10171c", to: "#202c36" };
 const STROKE_WIDTH = 3;
 const OPACITY = 0.5;
+/** Each bar takes this share of its slot; the rest is the gap between bars. */
+const BAR_SHARE = 0.72;
+const BAR_OPACITY = 0.75;
 /** The background reaches far past the drawing, for cards taller or wider than it. */
 const BACKGROUND_REACH = 4000;
 
-/** Each phrase's curve, smoothed and scaled to one height. */
+/** Each phrase's curve, smoothed and scaled to one height; and its answers as they are, for the bars. */
 const CURVES = Object.fromEntries(PHRASES.map(phrase => [phrase, toPeak(smooth(ANSWERS[phrase]))]));
+const HISTOGRAMS = Object.fromEntries(PHRASES.map(phrase => [phrase, toPeak(ANSWERS[phrase])]));
+const BAR_COLOURS = Object.fromEntries(PHRASES.map(phrase => [phrase, fromHex(PHRASE_COLOURS[phrase])]));
 
 function svgElement(name, attributes = {}) {
     const element = document.createElementNS(SVG_NAMESPACE, name);
@@ -39,8 +59,8 @@ function svgElement(name, attributes = {}) {
     return element;
 }
 
-/** The chart's elements: background, axes and curve. */
-function chart() {
+/** The chart's elements: background, axes, and the curve or the bars (one per probability answered). */
+function chart(form) {
     const svg = svgElement("svg", { class: "probability-chart", "aria-hidden": "true" });
     const gradient = svgElement("linearGradient", { id: "probability-background" });
     gradient.append(svgElement("stop", { "stop-color": COLOURS.from }), svgElement("stop", { offset: 1, "stop-color": COLOURS.to }));
@@ -52,10 +72,14 @@ function chart() {
     });
     const lines = svgElement("g", { fill: "none", stroke: COLOURS.stroke, "stroke-width": STROKE_WIDTH, opacity: OPACITY });
     lines.append(svgElement("path", { d: `M${AXES.left - 20} ${AXES.baseline}H${AXES.right} M${AXES.left} ${AXES.baseline}V${AXES.top}` }));
-    const curve = svgElement("path");
-    lines.append(curve);
-    svg.append(defs, background, lines);
-    return { svg, curve };
+    const curve = form === "curve" ? lines.appendChild(svgElement("path")) : null;
+    const barGroup = svgElement("g", { opacity: BAR_OPACITY });
+    const slot = CURVE.width / ANSWERS[PHRASES[0]].length;
+    const bars = form === "bars" ? ANSWERS[PHRASES[0]].map((_, index) => barGroup.appendChild(svgElement("rect", {
+        x: (CURVE.left + slot * (index + (1 - BAR_SHARE) / 2)).toFixed(1), width: (slot * BAR_SHARE).toFixed(1),
+    }))) : [];
+    svg.append(defs, background, barGroup, lines);
+    return { svg, curve, barGroup, bars };
 }
 
 /** Which phrase is showing at `seconds`, which is next, and how far the morph between them is (0 to 1). */
@@ -68,15 +92,26 @@ function moment(seconds) {
     return { current, next, share: easeInOut(clamp((into - HOLD_SECONDS) / MORPH_SECONDS, 0, 1)) };
 }
 
-/** Draws the curve between `current` and `next` phrases, `share` of the way, never outside its box. */
-function draw({ curve }, { current, next, share }) {
-    const values = mixCurves(CURVES[current], CURVES[next], share);
-    curve.setAttribute("d", smoothPath(curvePoints(values, CURVE), CURVE));
+/** Draws the chart between `current` and `next` phrases, `share` of the way. */
+function draw({ curve, barGroup, bars }, { current, next, share }) {
+    if (curve) {
+        const values = mixCurves(CURVES[current], CURVES[next], share);
+        curve.setAttribute("d", smoothPath(curvePoints(values, CURVE), CURVE));
+    }
+    if (bars.length) {
+        const values = mixCurves(HISTOGRAMS[current], HISTOGRAMS[next], share);
+        values.forEach((value, index) => {
+            const height = value * CURVE.height;
+            bars[index].setAttribute("y", (AXES.baseline - height).toFixed(1));
+            bars[index].setAttribute("height", height.toFixed(1));
+        });
+        barGroup.setAttribute("fill", cssColour(mixColour(BAR_COLOURS[current], BAR_COLOURS[next], share)));
+    }
 }
 
-/** Draws the live chart behind `card`'s text, in place of its static picture. */
-export function start(card) {
-    const parts = chart();
+/** Draws the live chart behind `card`'s text, in place of its static picture, as a "curve" or as "bars". */
+export function start(card, { form = "curve" } = {}) {
+    const parts = chart(form);
     card.prepend(parts.svg);
     card.classList.add("probability-live");
 

@@ -1,7 +1,8 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 import { lerp } from "../js/shared/motion.js";
-import { COLOURS, Fade, cssColour, fadeShare, mixColour } from "../js/sli/fading.js";
+import { cssColour, fromHex, mixColour } from "../js/shared/colour.js";
+import { COLOURS, Fade, fadeShare } from "../js/sli/fading.js";
 
 const DURATION = 1000;
 
@@ -17,6 +18,7 @@ describe("SLI fading", () => {
         assert.deepEqual(mixColour(COLOURS.grey, COLOURS.white, 1), COLOURS.white);
         assert.deepEqual(mixColour([0, 0, 0], [255, 100, 11], 0.5), [128, 50, 6]);
         assert.equal(cssColour([1, 2, 3]), "rgb(1, 2, 3)");
+        assert.deepEqual(fromHex("#91d3b8"), [0x91, 0xd3, 0xb8]);
     });
 
     it("fades towards a new target and settles there", () => {
