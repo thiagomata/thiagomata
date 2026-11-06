@@ -32,10 +32,11 @@
         .controls code { flex-basis: 100%; font-size: 13px; color: #c9ced4; }
         .narrow { width: 393px; max-width: 100%; }
         #values section.value-elegant::after {
-            mask-image: linear-gradient(90deg,
-                rgba(0, 0, 0, var(--strength)) 0,
-                rgba(0, 0, 0, var(--strength)) max(var(--hold), 460px),
-                transparent max(var(--clear), 640px));
+            /* Across: solid, then fading out. Down: the strength at the top, middle and bottom. They multiply. */
+            mask-image:
+                linear-gradient(90deg, #000 0, #000 max(var(--hold), 460px), transparent max(var(--clear), 640px)),
+                linear-gradient(rgba(0, 0, 0, var(--top)), rgba(0, 0, 0, var(--middle)) var(--middle-at), rgba(0, 0, 0, var(--bottom)));
+            mask-composite: intersect;
         }
         #values.dark section.value-elegant::after {
             background: linear-gradient(rgb(41, 82, 56), rgb(24, 60, 59) 50%, rgb(20, 52, 91));
@@ -57,7 +58,10 @@
 <body>
     <div class="controls">
         <label><input type="checkbox" id="dark" checked style="width: auto" /> Dark: white text on deep colours</label>
-        <label>Strength <input type="range" id="strength" min="0" max="100" value="77" /> <output for="strength"></output></label>
+        <label>Top <input type="range" id="top" min="0" max="100" value="77" /> <output for="top"></output></label>
+        <label>Middle <input type="range" id="middle" min="0" max="100" value="77" /> <output for="middle"></output></label>
+        <label>Bottom <input type="range" id="bottom" min="0" max="100" value="77" /> <output for="bottom"></output></label>
+        <label>Middle at <input type="range" id="middle-at" min="0" max="100" value="50" /> <output for="middle-at"></output></label>
         <label>Starts to fade at <input type="range" id="hold" min="0" max="100" value="19" /> <output for="hold"></output></label>
         <label>Gone by <input type="range" id="clear" min="0" max="100" value="57" /> <output for="clear"></output></label>
         <code id="css"></code>
@@ -67,8 +71,9 @@
     <script type="module">
         import { realCard, showWindmills } from "./lab.js";
 
-        const sliders = ["strength", "hold", "clear"].map(id => document.getElementById(id));
-        const [strength, hold, clear] = sliders;
+        const sliders = ["top", "middle", "bottom", "middle-at", "hold", "clear"].map(id => document.getElementById(id));
+        const [top, middle, bottom, middleAt, hold, clear] = sliders;
+        const share = slider => slider.value / 100;
         const article = document.querySelector("#values");
         const dark = document.getElementById("dark");
         const showTheme = () => article.classList.toggle("dark", dark.checked);
@@ -78,15 +83,16 @@
         /** Moves the layer to the sliders, keeping the fade after its start, and shows its CSS. */
         const apply = changed => {
             if (Number(hold.value) > Number(clear.value)) (changed === clear ? hold : clear).value = changed.value;
-            article.style.setProperty("--strength", strength.value / 100);
-            article.style.setProperty("--hold", `${hold.value}%`);
-            article.style.setProperty("--clear", `${clear.value}%`);
+            for (const [name, slider] of [["--top", top], ["--middle", middle], ["--bottom", bottom]]) article.style.setProperty(name, share(slider));
+            for (const [name, slider] of [["--middle-at", middleAt], ["--hold", hold], ["--clear", clear]]) article.style.setProperty(name, `${slider.value}%`);
             for (const slider of sliders) slider.nextElementSibling.value = `${slider.value}%`;
-            document.getElementById("css").textContent = `mask-image: linear-gradient(90deg, rgba(0, 0, 0, ${strength.value / 100}) 0, `
-                + `rgba(0, 0, 0, ${strength.value / 100}) max(${hold.value}%, 460px), transparent max(${clear.value}%, 640px));`;
+            document.getElementById("css").textContent = `mask-image: `
+                + `linear-gradient(90deg, #000 0, #000 max(${hold.value}%, 460px), transparent max(${clear.value}%, 640px)), `
+                + `linear-gradient(rgba(0, 0, 0, ${share(top)}), rgba(0, 0, 0, ${share(middle)}) ${middleAt.value}%, rgba(0, 0, 0, ${share(bottom)})); `
+                + `mask-composite: intersect;`;
         };
         for (const slider of sliders) slider.addEventListener("input", () => apply(slider));
-        apply(strength);
+        apply(middle);
 
         const template = await realCard();
         const wide = template.cloneNode(true);
