@@ -1,5 +1,5 @@
 {
-    "measuredAt": "2026-11-06T05:38:24.558Z",
+    "measuredAt": "2026-11-06T05:42:10.215Z",
     "variants": {
         "today": {
             "desktop": {
@@ -333,6 +333,26 @@
             },
             "phone": {
                 "worstContrast": 6.5,
+                "worstText": "Cleanliness",
+                "required": 4.5,
+                "passes": true,
+                "failingLines": 0,
+                "lines": 9,
+                "sceneKept": 0.44
+            }
+        },
+        "dark-shadow": {
+            "desktop": {
+                "worstContrast": 4.77,
+                "worstText": "Straightforward but thorough",
+                "required": 3,
+                "passes": true,
+                "failingLines": 0,
+                "lines": 9,
+                "sceneKept": 0.77
+            },
+            "phone": {
+                "worstContrast": 6.87,
                 "worstText": "Cleanliness",
                 "required": 4.5,
                 "passes": true,

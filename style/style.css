@@ -1337,3 +1337,11 @@ p {
         linear-gradient(rgba(0, 0, 0, 0.22), rgba(0, 0, 0, 0.85) 61%, rgba(0, 0, 0, 0.21));
     mask-composite: intersect;
 }
+
+/* Every card's text has a dark shadow: a tight one for the letters' edges and a soft halo around
+   them, so white text stays readable wherever the scene behind it is bright. Text shadows are
+   inherited, so this covers all of a card's text. Tuned in lab/elegant-contrast/tuner.html: on the
+   Elegant card it lifts the worst line from 5.5:1 to 6.9:1 on a phone, and hides none of the scene. */
+:is(#top-companies section, #values section, #projects .project-banner) {
+    text-shadow: 0 1px 5px rgba(0, 0, 0, 0.87), 0 0 15px rgba(0, 0, 0, 0.61);
+}

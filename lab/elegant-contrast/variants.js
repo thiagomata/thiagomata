@@ -155,6 +155,13 @@ export const VARIANTS = [
         css: card => lightLayer(card, LIGHT_COLOURS.aurora.colours, 1, null, COVER_THE_TEXT),
     },
     {
+        id: "dark-shadow",
+        label: "The card's dark layer, with a text shadow: 87%, 15px",
+        css: card => `${card} ${TEXT} {
+            text-shadow: 0 1px 5px rgba(0, 0, 0, 0.87), 0 0 15px rgba(0, 0, 0, 0.61);
+        }`,
+    },
+    {
         id: "dark-aurora-tuned",
         label: "Dark: white text on the deep northern lights, 44% top, 73% middle (at 50%), 64% bottom; fading from 17% to 53%",
         css: card => tunedLayer(card, DEEP_AURORA, { hold: "17%", clear: "53%", top: 0.44, middle: 0.73, middleAt: "50%", bottom: 0.64 })
