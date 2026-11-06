@@ -1,0 +1,27 @@
+{
+    "variants": {
+        "today": {
+            "desktop": {
+                "worstContrast": 12.62,
+                "worstText": "Senior Data Engineer",
+                "required": 4.5,
+                "passes": true,
+                "failingLines": 0,
+                "lines": 5,
+                "sceneKept": 0.85
+            }
+        },
+        "tuned": {
+            "desktop": {
+                "worstContrast": 5.12,
+                "worstText": "To the Cloud",
+                "required": 4.5,
+                "passes": true,
+                "failingLines": 0,
+                "lines": 5,
+                "sceneKept": 1.16
+            }
+        }
+    },
+    "measuredAt": "2026-11-06T06:12:38.659Z"
+}
