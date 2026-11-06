@@ -10,7 +10,9 @@
     <style>
         /* Tune the Elegant card's northern lights layer by hand: how strong it is, where it starts
            to fade and where it is gone (each at least 460px and 640px from the left, so a phone
-           card stays covered). Both cards follow the sliders live; the CSS to use is shown below them. */
+           card stays covered). Both cards follow the sliders live; the CSS to use is shown below them.
+           "Dark" swaps the light layer and black text for white text on the same colours made deep
+           (each mixed 70% with the scene's navy, rgb(2, 20, 34)), for the site's dark design. */
         body { background: #0b0d10; color: #e9ecef; }
         .controls {
             position: sticky;
@@ -35,6 +37,13 @@
                 rgba(0, 0, 0, var(--strength)) max(var(--hold), 460px),
                 transparent max(var(--clear), 640px));
         }
+        #values.dark section.value-elegant::after {
+            background: linear-gradient(rgb(41, 82, 56), rgb(24, 60, 59) 50%, rgb(20, 52, 91));
+        }
+        #values.dark section.value-elegant,
+        #values.dark section.value-elegant :is(h3, h4, p, span, li, i) {
+            color: #fff;
+        }
     </style>
     <script type="importmap">
         {
@@ -47,9 +56,10 @@
 </head>
 <body>
     <div class="controls">
-        <label>Strength <input type="range" id="strength" min="0" max="100" value="80" /> <output for="strength"></output></label>
-        <label>Starts to fade at <input type="range" id="hold" min="0" max="100" value="28" /> <output for="hold"></output></label>
-        <label>Gone by <input type="range" id="clear" min="0" max="100" value="45" /> <output for="clear"></output></label>
+        <label><input type="checkbox" id="dark" checked style="width: auto" /> Dark: white text on deep colours</label>
+        <label>Strength <input type="range" id="strength" min="0" max="100" value="77" /> <output for="strength"></output></label>
+        <label>Starts to fade at <input type="range" id="hold" min="0" max="100" value="19" /> <output for="hold"></output></label>
+        <label>Gone by <input type="range" id="clear" min="0" max="100" value="57" /> <output for="clear"></output></label>
         <code id="css"></code>
     </div>
     <article id="values"></article>
@@ -60,6 +70,10 @@
         const sliders = ["strength", "hold", "clear"].map(id => document.getElementById(id));
         const [strength, hold, clear] = sliders;
         const article = document.querySelector("#values");
+        const dark = document.getElementById("dark");
+        const showTheme = () => article.classList.toggle("dark", dark.checked);
+        dark.addEventListener("change", showTheme);
+        showTheme();
 
         /** Moves the layer to the sliders, keeping the fade after its start, and shows its CSS. */
         const apply = changed => {
