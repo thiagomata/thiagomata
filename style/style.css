@@ -1347,6 +1347,43 @@ p {
     mask-composite: intersect;
 }
 
+/* The Probability card's live chart (js/probability/scene.js), in place of its static picture,
+   and a layer over it as the Ideia card has: the card's own dark, across shaped to hold until past
+   the text (at least 600px, so a phone card, where the chart sits behind the text, stays covered)
+   and then fade out before the chart; down, strongest where the text is. The two shapes multiply.
+   Tune it in lab/probability/tuner.html. */
+#projects [data-project="probability"].probability-live {
+    --layer-hold: max(0%, 600px);
+    --layer-clear: max(45%, 760px);
+    --layer-top: 0.5;
+    --layer-middle: 0.8;
+    --layer-middle-at: 55%;
+    --layer-bottom: 0.5;
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    background-image: none;
+}
+#projects [data-project="probability"] .probability-chart {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+}
+#projects [data-project="probability"].probability-live::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    background: rgb(16, 23, 28);
+    mask-image:
+        linear-gradient(90deg, #000 0, #000 var(--layer-hold), transparent var(--layer-clear)),
+        linear-gradient(rgba(0, 0, 0, var(--layer-top)), rgba(0, 0, 0, var(--layer-middle)) var(--layer-middle-at), rgba(0, 0, 0, var(--layer-bottom)));
+    mask-composite: intersect;
+}
+
 /* Every card's text has a dark shadow: a tight one for the letters' edges and a soft halo around
    them, so white text stays readable wherever the scene behind it is bright. Text shadows are
    inherited, so this covers all of a card's text. Tuned in lab/elegant-contrast/tuner.html: on the

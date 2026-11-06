@@ -1,0 +1,99 @@
+{
+    "variants": {
+        "today": {
+            "desktop": {
+                "worstContrast": 17.94,
+                "worstText": "An interactive tool for discussing uncertainty, with survey-based distributions, a model of Sherman Kent’s probability scale, and estimation cards.",
+                "required": 4.5,
+                "passes": true,
+                "failingLines": 0,
+                "lines": 7,
+                "byLine": [
+                    {
+                        "text": "Perceptions of Probability",
+                        "contrast": 14.84,
+                        "required": 3
+                    },
+                    {
+                        "text": "Making uncertainty easier to discuss",
+                        "contrast": 14.72,
+                        "required": 3
+                    },
+                    {
+                        "text": "An interactive tool for discussing uncertainty, with survey-based distributions, a model of Sherman Kent’s probability scale, and estimation cards.",
+                        "contrast": 17.94,
+                        "required": 4.5
+                    },
+                    {
+                        "text": "Try the calculator",
+                        "contrast": 18.39,
+                        "required": 4.5
+                    },
+                    {
+                        "text": "Survey cards",
+                        "contrast": 18.51,
+                        "required": 4.5
+                    },
+                    {
+                        "text": "Kent model cards",
+                        "contrast": 18.48,
+                        "required": 4.5
+                    },
+                    {
+                        "text": "Explore the code",
+                        "contrast": 18.41,
+                        "required": 4.5
+                    }
+                ],
+                "sceneKept": 0.85
+            },
+            "phone": {
+                "worstContrast": 17.73,
+                "worstText": "An interactive tool for discussing uncertainty, with survey-based distributions, a model of Sherman Kent’s probability scale, and estimation cards.",
+                "required": 4.5,
+                "passes": true,
+                "failingLines": 0,
+                "lines": 7,
+                "byLine": [
+                    {
+                        "text": "Perceptions of Probability",
+                        "contrast": 14.81,
+                        "required": 3
+                    },
+                    {
+                        "text": "Making uncertainty easier to discuss",
+                        "contrast": 14.69,
+                        "required": 3
+                    },
+                    {
+                        "text": "An interactive tool for discussing uncertainty, with survey-based distributions, a model of Sherman Kent’s probability scale, and estimation cards.",
+                        "contrast": 17.73,
+                        "required": 4.5
+                    },
+                    {
+                        "text": "Try the calculator",
+                        "contrast": 18.42,
+                        "required": 4.5
+                    },
+                    {
+                        "text": "Survey cards",
+                        "contrast": 18.51,
+                        "required": 4.5
+                    },
+                    {
+                        "text": "Kent model cards",
+                        "contrast": 18.48,
+                        "required": 4.5
+                    },
+                    {
+                        "text": "Explore the code",
+                        "contrast": 18.51,
+                        "required": 4.5
+                    }
+                ],
+                "sceneKept": 0.92
+            }
+        }
+    },
+    "measuredAt": "2026-11-06T07:35:39.554Z"
+}

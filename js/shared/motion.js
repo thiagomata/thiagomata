@@ -9,6 +9,9 @@ export const lerp = (from, to, share) => from + (to - from) * share;
 /** `value`, kept between `lowest` and `highest`. */
 export const clamp = (value, lowest, highest) => Math.min(Math.max(value, lowest), highest);
 
+/** Starts and ends slowly, like CSS's ease-in-out (0 to 1 for a share 0 to 1 of the time). */
+export const easeInOut = share => share * share * (3 - 2 * share);
+
 /** A sine's value (-1 to 1) moved to the range 0 to 1. */
 export const toUnitRange = sine => (sine + 1) / 2;
 
