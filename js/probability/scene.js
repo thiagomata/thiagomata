@@ -1,12 +1,11 @@
 // The "Perceptions of Probability" card's live chart: how people read a phrase as a probability
 // (survey.js), as a curve that morphs from phrase to phrase, from "Almost No Chance" to "Almost
-// Certainly", with the phrase above its peak and dashed lines at the answers' median and quartiles.
-// It keeps the static picture's look (img/project-probability.svg) and draws at most 30 frames a
-// second, only while the card is on screen; with reduced motion, it shows one phrase, still.
+// Certainly". It keeps the static picture's look (img/project-probability.svg) and draws at most 30
+// frames a second, only while the card is on screen; with reduced motion, it shows one phrase, still.
 import { MILLISECONDS_PER_SECOND, isTimeToDraw } from "../shared/frame-rate.js";
 import { clamp, easeInOut } from "../shared/motion.js";
-import { curvePoints, fitView, mixCurves, quantile, smooth, smoothPath, toPeak } from "./curve.js";
-import { ANSWERS, PROBABILITIES } from "./survey.js";
+import { curvePoints, fitView, mixCurves, smooth, smoothPath, toPeak } from "./curve.js";
+import { ANSWERS } from "./survey.js";
 
 const SVG_NAMESPACE = "http://www.w3.org/2000/svg";
 /** The phrases shown, in turn; after the last, back to the first. */
@@ -19,29 +18,20 @@ const MORPH_SECONDS = 1.4;
 
 /** The static picture's drawing and chart, in its units (1600 × 670, the chart on the right). */
 const DESIGN = { width: 1600, height: 670 };
-/** The chart, with room above it for the phrase over the highest peak. */
-const CHART = { left: 790, top: 120, width: 720, height: 400 };
-/** The curve, inside the chart: its baseline and its highest peak. */
-const CURVE = { left: 800, top: 190, width: 700, height: 325 };
+const CHART = { left: 790, top: 150, width: 720, height: 370 };
 const AXES = { baseline: 520, left: 810, right: 1510, top: 160 };
-/** Kept around the chart, so the phrase above a peak at either end still fits. */
+/** The curve, inside the axes: 0% on the vertical axis, 100% at the horizontal one's end. */
+const CURVE = { left: AXES.left, top: 190, width: AXES.right - AXES.left, height: AXES.baseline - 190 };
+/** Kept around the chart on every card. */
 const MARGIN = 60;
-const LABEL = { above: 26, size: 30 };
 const COLOURS = { stroke: "#91d3b8", from: "#10171c", to: "#202c36" };
 const STROKE_WIDTH = 3;
-const DASHES = "6 9";
-/** The dashed lines: where a quarter, half and three quarters of the answers fall below. */
-const QUARTILES = [0.25, 0.5, 0.75];
 const OPACITY = 0.5;
-const LABEL_OPACITY = 0.85;
 /** The background reaches far past the drawing, for cards taller or wider than it. */
 const BACKGROUND_REACH = 4000;
 
 /** Each phrase's curve, smoothed and scaled to one height. */
 const CURVES = Object.fromEntries(PHRASES.map(phrase => [phrase, toPeak(smooth(ANSWERS[phrase]))]));
-
-/** A probability (in %) as a position across the curve. */
-const across = probability => CURVE.left + CURVE.width * probability / 100;
 
 function svgElement(name, attributes = {}) {
     const element = document.createElementNS(SVG_NAMESPACE, name);
@@ -49,7 +39,7 @@ function svgElement(name, attributes = {}) {
     return element;
 }
 
-/** The chart's elements: background, axes, curve, dashed lines and the phrase. */
+/** The chart's elements: background, axes and curve. */
 function chart() {
     const svg = svgElement("svg", { class: "probability-chart", "aria-hidden": "true" });
     const gradient = svgElement("linearGradient", { id: "probability-background" });
@@ -63,13 +53,9 @@ function chart() {
     const lines = svgElement("g", { fill: "none", stroke: COLOURS.stroke, "stroke-width": STROKE_WIDTH, opacity: OPACITY });
     lines.append(svgElement("path", { d: `M${AXES.left - 20} ${AXES.baseline}H${AXES.right} M${AXES.left} ${AXES.baseline}V${AXES.top}` }));
     const curve = svgElement("path");
-    const dashes = svgElement("path", { "stroke-dasharray": DASHES });
-    lines.append(curve, dashes);
-    const label = svgElement("text", {
-        fill: COLOURS.stroke, "font-family": "Roboto, sans-serif", "font-size": LABEL.size, "text-anchor": "middle",
-    });
-    svg.append(defs, background, lines, label);
-    return { svg, curve, dashes, label };
+    lines.append(curve);
+    svg.append(defs, background, lines);
+    return { svg, curve };
 }
 
 /** Which phrase is showing at `seconds`, which is next, and how far the morph between them is (0 to 1). */
@@ -82,19 +68,10 @@ function moment(seconds) {
     return { current, next, share: easeInOut(clamp((into - HOLD_SECONDS) / MORPH_SECONDS, 0, 1)) };
 }
 
-/** Draws the curve between `current` and `next` phrases, `share` of the way. */
-function draw({ curve, dashes, label }, { current, next, share }) {
+/** Draws the curve between `current` and `next` phrases, `share` of the way, never outside its box. */
+function draw({ curve }, { current, next, share }) {
     const values = mixCurves(CURVES[current], CURVES[next], share);
-    const points = curvePoints(values, CURVE);
-    curve.setAttribute("d", smoothPath(points));
-    const quartiles = QUARTILES.map(fraction => across(quantile(PROBABILITIES, values, fraction)));
-    dashes.setAttribute("d", quartiles.map(position => `M${position.toFixed(1)} ${AXES.baseline}V${CURVE.top + CURVE.height / 2}`).join(" "));
-    // The phrase above the peak: the one leaving fades out, then the one arriving fades in.
-    const [peakX, peakY] = points.reduce((highest, point) => (point[1] < highest[1] ? point : highest));
-    label.textContent = share < 0.5 ? current : next;
-    label.setAttribute("x", peakX.toFixed(1));
-    label.setAttribute("y", (peakY - LABEL.above).toFixed(1));
-    label.setAttribute("opacity", (LABEL_OPACITY * Math.abs(1 - 2 * share)).toFixed(2));
+    curve.setAttribute("d", smoothPath(curvePoints(values, CURVE), CURVE));
 }
 
 /** Draws the live chart behind `card`'s text, in place of its static picture. */
