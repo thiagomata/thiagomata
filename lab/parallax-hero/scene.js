@@ -49,11 +49,14 @@ const EYE = { at: [0, 60, 150], fieldOfViewDegrees: 45, near: 1, far: 10000 };
 const PAINTED = { up: 28, down: 41, across: 28 };
 /** Looking slightly up, where there is room to, shows the sky and mountains on wide cards. */
 const PREFERRED_TILT = 10;
+/** Turning right, where there is room to (on tall cards), brings in the houses on the right. */
+const PREFERRED_PAN = 12;
 
 /**
- * The camera for a card `aspect` (width / height) wide: its vertical field of view and its tilt
- * (degrees, up positive), as wide as the card allows without looking past the painted part. A wide
- * card crops top and bottom (and tilts up, towards the sky); a tall one crops the sides.
+ * The camera for a card `aspect` (width / height) wide: its vertical field of view, its tilt (up
+ * positive) and its pan (right positive), in degrees, as wide as the card allows without looking
+ * past the painted part. A wide card crops top and bottom (and tilts up, towards the sky); a tall
+ * one crops the sides (and turns right, towards the houses).
  */
 export function framing(aspect) {
     const tan = degrees => Math.tan(THREE.MathUtils.degToRad(degrees));
@@ -61,8 +64,10 @@ export function framing(aspect) {
     const tallest = (PAINTED.up + PAINTED.down) / 2;
     let halfUp = Math.min(EYE.fieldOfViewDegrees / 2, tallest);
     if (atan(tan(halfUp) * aspect) > PAINTED.across) halfUp = atan(tan(PAINTED.across) / aspect);
+    const halfAcross = atan(tan(halfUp) * aspect);
     const tilt = clamp(PREFERRED_TILT, halfUp - PAINTED.down, PAINTED.up - halfUp);
-    return { fieldOfView: 2 * halfUp, tilt };
+    const pan = clamp(PREFERRED_PAN, 0, PAINTED.across - halfAcross);
+    return { fieldOfView: 2 * halfUp, tilt, pan };
 }
 
 /** As the card scrolls through the screen, the eye moves this far up and down from its rest. */
@@ -122,7 +127,7 @@ export function start(container) {
 
     const draw = () => {
         camera.position.set(rest.x, eyeHeight, rest.z);
-        camera.rotation.x = THREE.MathUtils.degToRad(view.tilt);
+        camera.rotation.set(THREE.MathUtils.degToRad(view.tilt), -THREE.MathUtils.degToRad(view.pan), 0, "YXZ");
         renderer.render(scene, camera);
     };
     const resize = () => {
