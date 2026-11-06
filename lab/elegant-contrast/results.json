@@ -1,24 +1,24 @@
 {
-    "measuredAt": "2026-11-06T05:35:50.176Z",
+    "measuredAt": "2026-11-06T05:38:24.558Z",
     "variants": {
         "today": {
             "desktop": {
-                "worstContrast": 7.24,
-                "worstText": "Traceability",
+                "worstContrast": 5.9,
+                "worstText": "Albert Einstein",
                 "required": 4.5,
                 "passes": true,
                 "failingLines": 0,
                 "lines": 9,
-                "sceneKept": 0.71
+                "sceneKept": 0.77
             },
             "phone": {
-                "worstContrast": 7.25,
-                "worstText": "Traceability",
+                "worstContrast": 5.48,
+                "worstText": "Cleanliness",
                 "required": 4.5,
                 "passes": true,
                 "failingLines": 0,
                 "lines": 9,
-                "sceneKept": 0.47
+                "sceneKept": 0.43
             }
         },
         "black": {
