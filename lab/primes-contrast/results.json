@@ -1,0 +1,101 @@
+{
+    "variants": {
+        "today": {
+            "phone": {
+                "worstContrast": 16.91,
+                "worstText": "Research in Scala and Stainless, distinguishing verified properties from open questions.",
+                "required": 4.5,
+                "passes": true,
+                "failingLines": 0,
+                "lines": 7,
+                "byLine": [
+                    {
+                        "text": "Prime Numbers",
+                        "contrast": 14.21,
+                        "required": 3
+                    },
+                    {
+                        "text": "Exploring mathematics through formal verification",
+                        "contrast": 14.08,
+                        "required": 3
+                    },
+                    {
+                        "text": "Research in Scala and Stainless, distinguishing verified properties from open questions.",
+                        "contrast": 16.91,
+                        "required": 4.5
+                    },
+                    {
+                        "text": "Division & Modulo · Article",
+                        "contrast": 18.26,
+                        "required": 4.5
+                    },
+                    {
+                        "text": "Sieve Sequences · Article",
+                        "contrast": 18.27,
+                        "required": 4.5
+                    },
+                    {
+                        "text": "Gap Dynamics · Article",
+                        "contrast": 18.26,
+                        "required": 4.5
+                    },
+                    {
+                        "text": "Explore the code",
+                        "contrast": 18.37,
+                        "required": 4.5
+                    }
+                ],
+                "sceneKept": 1
+            }
+        },
+        "no-layer": {
+            "phone": {
+                "worstContrast": 16.11,
+                "worstText": "Research in Scala and Stainless, distinguishing verified properties from open questions.",
+                "required": 4.5,
+                "passes": true,
+                "failingLines": 0,
+                "lines": 7,
+                "byLine": [
+                    {
+                        "text": "Prime Numbers",
+                        "contrast": 13.44,
+                        "required": 3
+                    },
+                    {
+                        "text": "Exploring mathematics through formal verification",
+                        "contrast": 13.29,
+                        "required": 3
+                    },
+                    {
+                        "text": "Research in Scala and Stainless, distinguishing verified properties from open questions.",
+                        "contrast": 16.11,
+                        "required": 4.5
+                    },
+                    {
+                        "text": "Division & Modulo · Article",
+                        "contrast": 18.1,
+                        "required": 4.5
+                    },
+                    {
+                        "text": "Sieve Sequences · Article",
+                        "contrast": 18.12,
+                        "required": 4.5
+                    },
+                    {
+                        "text": "Gap Dynamics · Article",
+                        "contrast": 18.1,
+                        "required": 4.5
+                    },
+                    {
+                        "text": "Explore the code",
+                        "contrast": 18.22,
+                        "required": 4.5
+                    }
+                ],
+                "sceneKept": 0.92
+            }
+        }
+    },
+    "measuredAt": "2026-11-06T07:38:53.586Z"
+}
