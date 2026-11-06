@@ -1345,3 +1345,20 @@ p {
 :is(#top-companies section, #values section, #projects .project-banner) {
     text-shadow: 0 1px 5px rgba(0, 0, 0, 0.87), 0 0 15px rgba(0, 0, 0, 0.61);
 }
+
+/* On a phone the cards' text runs across their whole width, so their readability layer darkens
+   the right side too. With every card's text shadowed, it needs far less than it had (96% black at
+   the company cards' right edge, 60% on the value cards). Tuned in lab/cards-contrast/tuner.html
+   and measured with `npm run contrast -- --lab cards-contrast`: every line still passes, and the
+   pictures show through. Wider screens keep their own, lighter values. */
+@media not all and (min-width: 43em) {
+    #top-companies section {
+        --squared-darkness: 0.46;
+        --effect-darkness: 0.32;
+    }
+}
+@media not all and (min-width: 53em) {
+    #values section {
+        border-image: linear-gradient(269deg, rgba(0, 0, 0, 0.15), var(--border-gradient-color)) fill 1;
+    }
+}

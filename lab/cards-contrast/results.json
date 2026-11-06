@@ -3,19 +3,19 @@
         "today": {
             "mec": {
                 "phone": {
-                    "worstContrast": 9.74,
-                    "worstText": "While Working for the government, I analysed, specified, modelled and developed systems for the federal\n                    government to interact with students, schools and universities.",
-                    "required": 4.5,
+                    "worstContrast": 4.25,
+                    "worstText": "Brazilian Ministry of Education",
+                    "required": 3,
                     "passes": true,
                     "failingLines": 0,
                     "lines": 6,
-                    "sceneKept": 0.47
+                    "sceneKept": 0.69
                 }
             },
             "sli": {
                 "phone": {
-                    "worstContrast": 10.02,
-                    "worstText": "1.5 years",
+                    "worstContrast": 8.59,
+                    "worstText": "Senior Data Engineer",
                     "required": 4.5,
                     "passes": true,
                     "failingLines": 0,
@@ -25,24 +25,79 @@
             },
             "otimicar": {
                 "phone": {
-                    "worstContrast": 7.62,
+                    "worstContrast": 7.52,
                     "worstText": "Co-Founder",
                     "required": 4.5,
                     "passes": true,
                     "failingLines": 0,
                     "lines": 6,
-                    "sceneKept": 0.47
+                    "sceneKept": 0.71
                 }
             },
             "thrifty": {
                 "phone": {
-                    "worstContrast": 14.88,
-                    "worstText": "Benjamin Franklin",
+                    "worstContrast": 10.25,
+                    "worstText": "A penny saved is a penny earned.",
                     "required": 4.5,
                     "passes": true,
                     "failingLines": 0,
                     "lines": 9,
-                    "sceneKept": 0.46
+                    "sceneKept": 0.77
+                }
+            },
+            "macquarie": {
+                "phone": {
+                    "worstContrast": 15.71,
+                    "worstText": "2024–Present",
+                    "required": 4.5,
+                    "passes": true,
+                    "failingLines": 0,
+                    "lines": 5,
+                    "sceneKept": 1.04
+                }
+            },
+            "rokt": {
+                "phone": {
+                    "worstContrast": 5.82,
+                    "worstText": "Bot Detection",
+                    "required": 4.5,
+                    "passes": true,
+                    "failingLines": 0,
+                    "lines": 7,
+                    "sceneKept": 1.01
+                }
+            },
+            "ideia": {
+                "phone": {
+                    "worstContrast": 5.76,
+                    "worstText": "3 year",
+                    "required": 4.5,
+                    "passes": true,
+                    "failingLines": 0,
+                    "lines": 5,
+                    "sceneKept": 0.6
+                }
+            },
+            "useful": {
+                "phone": {
+                    "worstContrast": 8.77,
+                    "worstText": "Prototyping and Hypothesis Testing",
+                    "required": 4.5,
+                    "passes": true,
+                    "failingLines": 0,
+                    "lines": 9,
+                    "sceneKept": 0.59
+                }
+            },
+            "reliable": {
+                "phone": {
+                    "worstContrast": 8.11,
+                    "worstText": "In truth, whatever is worth doing at all, is worth doing well; and nothing can be done well\n                                without attention.",
+                    "required": 4.5,
+                    "passes": true,
+                    "failingLines": 0,
+                    "lines": 9,
+                    "sceneKept": 0.69
                 }
             }
         },
@@ -139,5 +194,5 @@
             }
         }
     },
-    "measuredAt": "2026-11-06T05:52:56.696Z"
+    "measuredAt": "2026-11-06T05:57:57.888Z"
 }

@@ -8,6 +8,11 @@ export const CARDS = [
     { name: "sli", selector: '#top-companies section[data-company="sli"]', live: '#top-companies section[data-company="sli"].is-live' },
     { name: "otimicar", selector: '#top-companies section[data-company="otimicar"]', live: '#top-companies section[data-company="otimicar"].is-live' },
     { name: "thrifty", selector: "#values section.value-thrifty", live: "#values section.value-thrifty" },
+    { name: "macquarie", selector: '#top-companies section[data-company="macquarie"]', live: '#top-companies section[data-company="macquarie"].is-live' },
+    { name: "rokt", selector: '#top-companies section[data-company="rokt"]', live: '#top-companies section[data-company="rokt"]' },
+    { name: "ideia", selector: '#top-companies section[data-company="ideia"]', live: '#top-companies section[data-company="ideia"].is-live' },
+    { name: "useful", selector: "#values section.useful", live: "#values section.useful" },
+    { name: "reliable", selector: "#values section.value-reliable", live: "#values section.value-reliable" },
 ];
 export const SIZE_NAMES = ["phone"];
 
@@ -22,7 +27,7 @@ const darkness = ({ companyEdge, companyNext, valueEdge }) => () => `
     }`;
 
 export const VARIANTS = [
-    { id: "today", label: "Today: 96% and 80% on the companies, 60% on Thrifty", css: () => "" },
+    { id: "today", label: "The page as it is (46% and 32% on the companies, 15% on the value cards, since 2026-11-06)", css: () => "" },
     { id: "tuned", label: "Tuned: 46% and 32% on the companies, 15% on Thrifty", css: darkness({ companyEdge: 0.46, companyNext: 0.32, valueEdge: 0.15 }) },
     { id: "none", label: "None: no darkness on the right", css: darkness({ companyEdge: 0, companyNext: 0, valueEdge: 0 }) },
 ];
