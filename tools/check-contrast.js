@@ -34,7 +34,11 @@ const RESULTS = join(SITE_ROOT, `lab/${labName}/results.json`);
 const SIZES = {
     desktop: { width: 1440, height: 900 },
     phone: { width: 393, height: 852 },
+    wide: { width: 1920, height: 1080 },
+    tablet: { width: 820, height: 1180 },
 };
+/** Labs measure these sizes unless they choose their own (SIZE_NAMES). */
+const DEFAULT_SIZE_NAMES = ["desktop", "phone"];
 /** Photograph the card this many times, this far apart, as the lights move. */
 const MOMENTS = 3;
 const MOMENT_MILLISECONDS = 2000;
@@ -172,6 +176,8 @@ async function measure(browser, origin, variant, size, { selector: cardSelector,
         passes: lines.every(line => line.contrast >= line.required),
         failingLines: lines.filter(line => line.contrast < line.required).length,
         lines: lines.length,
+        /** Every line: its worst contrast over the moments, and what it needs. */
+        byLine: lines.map(line => ({ text: line.text, contrast: Number(line.contrast.toFixed(DECIMALS)), required: line.required })),
         sceneKept: Number((kept.reduce((total, share) => total + share, 0) / kept.length).toFixed(DECIMALS)),
     };
 }
@@ -195,7 +201,7 @@ const browser = await chromium.launch({ args: BROWSER_ARGS });
 const results = await lastResults();
 results.measuredAt = new Date().toISOString();
 try {
-    const sizes = Object.entries(SIZES).filter(([name]) => !lab.SIZE_NAMES || lab.SIZE_NAMES.includes(name));
+    const sizes = Object.entries(SIZES).filter(([name]) => (lab.SIZE_NAMES ?? DEFAULT_SIZE_NAMES).includes(name));
     for (const variant of toMeasure) {
         results.variants[variant.id] = {};
         for (const card of CARDS) {
