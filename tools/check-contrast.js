@@ -1,7 +1,8 @@
 // Measures how readable a card's text is over its live scene, and how much of the scene still
 // shows, for each variant in a contrast lab. A lab's variants.js names its card (CARD, and LIVE:
 // what shows its live scene has started) or several cards (CARDS: [{ name, selector, live }]),
-// optionally the sizes that matter (SIZE_NAMES, such as ["phone"]), and the variants. It opens the
+// optionally the sizes that matter (SIZE_NAMES, such as ["phone"]) and the colour scheme to view
+// the page in (COLOR_SCHEME, "light" or "dark", dark by default), and the variants. It opens the
 // real page in headless Chrome at desktop and phone sizes, and at a few moments (the scenes move):
 //
 //   - text contrast: the page is photographed with its text hidden (shadows and layers stay), and
@@ -140,7 +141,7 @@ const analyse = (page, measurement) => page.evaluate(async ({ withLayer, without
 
 /** One card in one variant at one size: the worst line of text over every moment, and the share of the scene kept. */
 async function measure(browser, origin, variant, size, { selector: cardSelector, live: liveSelector }) {
-    const page = await browser.newPage({ viewport: size, deviceScaleFactor: 1 });
+    const page = await browser.newPage({ viewport: size, deviceScaleFactor: 1, colorScheme: lab.COLOR_SCHEME ?? "dark" });
     await page.goto(`${origin}/index.html`);
     // A comment for the variant with no CSS: an empty style is refused.
     const variantStyle = await page.addStyleTag({ content: variant.css(cardSelector) || `/* ${variant.id} */` });

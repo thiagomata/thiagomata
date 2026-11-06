@@ -39,7 +39,15 @@ const AXES = { baseline: 520, left: 810, right: 1510, top: 160 };
 const CURVE = { left: AXES.left, top: 190, width: AXES.right - AXES.left, height: AXES.baseline - 190 };
 /** Kept around the chart on every card. */
 const MARGIN = 60;
-const COLOURS = { stroke: "#91d3b8", from: "#10171c", to: "#202c36" };
+/**
+ * The chart's colours, as CSS: each can be set by a CSS variable on the card (light mode does, in
+ * style.css), falling back to the static picture's dark look.
+ */
+const COLOURS = {
+    stroke: "var(--probability-stroke, #91d3b8)",
+    from: "var(--probability-from, #10171c)",
+    to: "var(--probability-to, #202c36)",
+};
 const STROKE_WIDTH = 3;
 const OPACITY = 0.5;
 /** Each bar takes this share of its slot; the rest is the gap between bars. */
@@ -63,14 +71,14 @@ function svgElement(name, attributes = {}) {
 function chart(form) {
     const svg = svgElement("svg", { class: "probability-chart", "aria-hidden": "true" });
     const gradient = svgElement("linearGradient", { id: "probability-background" });
-    gradient.append(svgElement("stop", { "stop-color": COLOURS.from }), svgElement("stop", { offset: 1, "stop-color": COLOURS.to }));
+    gradient.append(svgElement("stop", { style: `stop-color: ${COLOURS.from}` }), svgElement("stop", { offset: 1, style: `stop-color: ${COLOURS.to}` }));
     const defs = svgElement("defs");
     defs.append(gradient);
     const background = svgElement("rect", {
         x: -BACKGROUND_REACH, y: -BACKGROUND_REACH, width: DESIGN.width + 2 * BACKGROUND_REACH, height: DESIGN.height + 2 * BACKGROUND_REACH,
         fill: "url(#probability-background)",
     });
-    const lines = svgElement("g", { fill: "none", stroke: COLOURS.stroke, "stroke-width": STROKE_WIDTH, opacity: OPACITY });
+    const lines = svgElement("g", { fill: "none", style: `stroke: ${COLOURS.stroke}`, "stroke-width": STROKE_WIDTH, opacity: OPACITY });
     lines.append(svgElement("path", { d: `M${AXES.left - 20} ${AXES.baseline}H${AXES.right} M${AXES.left} ${AXES.baseline}V${AXES.top}` }));
     const curve = form === "curve" ? lines.appendChild(svgElement("path")) : null;
     const barGroup = svgElement("g", { opacity: BAR_OPACITY });

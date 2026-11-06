@@ -56,6 +56,7 @@ const VERSIONS = {
     "./img/people-night.svg": "2a961aa4",
     "./img/people4.svg": "c7fea7d5",
     "./img/project-parallax.svg": "04b22df4",
+    "./img/project-primes-light.svg": "a49396f7",
     "./img/project-primes.svg": "86458081",
     "./img/project-probability.svg": "540ab036",
     "./img/rokt-animated.svg": "0be97863",
