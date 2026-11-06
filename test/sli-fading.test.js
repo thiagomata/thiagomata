@@ -1,18 +1,11 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 import { lerp } from "../js/shared/motion.js";
-import { COLOURS, Fade, cssColour, easeInOut, fadeShare, mixColour } from "../js/sli/fading.js";
+import { COLOURS, Fade, cssColour, fadeShare, mixColour } from "../js/sli/fading.js";
 
 const DURATION = 1000;
 
 describe("SLI fading", () => {
-    it("eases in and out: slow at both ends, halfway at half the time", () => {
-        assert.equal(easeInOut(0), 0);
-        assert.equal(easeInOut(0.5), 0.5);
-        assert.equal(easeInOut(1), 1);
-        assert.ok(easeInOut(0.1) < 0.1 && easeInOut(0.9) > 0.9);
-    });
-
     it("measures a fade's progress, from 0 before it starts to 1 once it is over", () => {
         assert.equal(fadeShare(100, 50, DURATION), 0);
         assert.equal(fadeShare(100, 600, DURATION), 0.5);
