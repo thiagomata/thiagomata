@@ -10,7 +10,9 @@
     <style>
         /* Tune the Elegant card's northern lights layer by hand: how strong it is, where it starts
            to fade and where it is gone (each at least 460px and 640px from the left, so a phone
-           card stays covered). Both cards follow the sliders live; the CSS to use is shown below them. */
+           card stays covered). Both cards follow the sliders live; the CSS to use is shown below them.
+           "Dark" swaps the light layer and black text for white text on the same colours made deep
+           (each mixed 70% with the scene's navy, rgb(2, 20, 34)), for the site's dark design. */
         body { background: #0b0d10; color: #e9ecef; }
         .controls {
             position: sticky;
@@ -30,10 +32,24 @@
         .controls code { flex-basis: 100%; font-size: 13px; color: #c9ced4; }
         .narrow { width: 393px; max-width: 100%; }
         #values section.value-elegant::after {
-            mask-image: linear-gradient(90deg,
-                rgba(0, 0, 0, var(--strength)) 0,
-                rgba(0, 0, 0, var(--strength)) max(var(--hold), 460px),
-                transparent max(var(--clear), 640px));
+            /* Across: solid, then fading out. Down: the strength at the top, middle and bottom. They multiply. */
+            mask-image:
+                linear-gradient(90deg, #000 0, #000 max(var(--hold), 460px), transparent max(var(--clear), 640px)),
+                linear-gradient(rgba(0, 0, 0, var(--top)), rgba(0, 0, 0, var(--middle)) var(--middle-at), rgba(0, 0, 0, var(--bottom)));
+            mask-composite: intersect;
+        }
+        #values.dark section.value-elegant::after {
+            background: linear-gradient(rgb(41, 82, 56), rgb(24, 60, 59) 50%, rgb(20, 52, 91));
+        }
+        #values.dark section.value-elegant,
+        #values.dark section.value-elegant :is(h3, h4, p, span, li, i) {
+            color: #fff;
+        }
+        /* A dark shadow around each letter: a tight one for the edges and a soft halo around it. */
+        #values section.value-elegant :is(h3, h4, p, span, li, i) {
+            text-shadow:
+                0 1px calc(var(--shadow-size) / 3) rgba(0, 0, 0, var(--shadow-strength)),
+                0 0 var(--shadow-size) rgba(0, 0, 0, calc(var(--shadow-strength) * 0.7));
         }
     </style>
     <script type="importmap">
@@ -47,32 +63,58 @@
 </head>
 <body>
     <div class="controls">
-        <label>Strength <input type="range" id="strength" min="0" max="100" value="80" /> <output for="strength"></output></label>
-        <label>Starts to fade at <input type="range" id="hold" min="0" max="100" value="28" /> <output for="hold"></output></label>
-        <label>Gone by <input type="range" id="clear" min="0" max="100" value="45" /> <output for="clear"></output></label>
+        <label><input type="checkbox" id="dark" checked style="width: auto" /> Dark: white text on deep colours</label>
+        <label>Top <input type="range" id="top" min="0" max="100" value="44" /> <output for="top"></output></label>
+        <label>Middle <input type="range" id="middle" min="0" max="100" value="73" /> <output for="middle"></output></label>
+        <label>Bottom <input type="range" id="bottom" min="0" max="100" value="64" /> <output for="bottom"></output></label>
+        <label>Middle at <input type="range" id="middle-at" min="0" max="100" value="50" /> <output for="middle-at"></output></label>
+        <label>Starts to fade at <input type="range" id="hold" min="0" max="100" value="17" /> <output for="hold"></output></label>
+        <label>Gone by <input type="range" id="clear" min="0" max="100" value="53" /> <output for="clear"></output></label>
+        <label>Text shadow <input type="range" id="shadow-strength" min="0" max="100" value="0" /> <output for="shadow-strength"></output></label>
+        <label>Shadow size <input type="range" id="shadow-size" min="0" max="30" value="8" /> <output for="shadow-size"></output></label>
         <code id="css"></code>
+        <code id="shadow-css"></code>
     </div>
     <article id="values"></article>
 
     <script type="module">
         import { realCard, showWindmills } from "./lab.js";
 
-        const sliders = ["strength", "hold", "clear"].map(id => document.getElementById(id));
-        const [strength, hold, clear] = sliders;
+        const sliders = ["top", "middle", "bottom", "middle-at", "hold", "clear"].map(id => document.getElementById(id));
+        const [top, middle, bottom, middleAt, hold, clear] = sliders;
+        const share = slider => slider.value / 100;
+        const shadowStrength = document.getElementById("shadow-strength");
+        const shadowSize = document.getElementById("shadow-size");
+        /** Moves the text's shadow to its sliders, and shows its CSS. */
+        const applyShadow = () => {
+            article.style.setProperty("--shadow-strength", share(shadowStrength));
+            article.style.setProperty("--shadow-size", `${shadowSize.value}px`);
+            shadowStrength.nextElementSibling.value = `${shadowStrength.value}%`;
+            shadowSize.nextElementSibling.value = `${shadowSize.value}px`;
+            document.getElementById("shadow-css").textContent = `text-shadow: 0 1px ${(shadowSize.value / 3).toFixed(1)}px rgba(0, 0, 0, ${share(shadowStrength)}), `
+                + `0 0 ${shadowSize.value}px rgba(0, 0, 0, ${(share(shadowStrength) * 0.7).toFixed(2)});`;
+        };
+        for (const slider of [shadowStrength, shadowSize]) slider.addEventListener("input", applyShadow);
         const article = document.querySelector("#values");
+        const dark = document.getElementById("dark");
+        const showTheme = () => article.classList.toggle("dark", dark.checked);
+        dark.addEventListener("change", showTheme);
+        showTheme();
 
         /** Moves the layer to the sliders, keeping the fade after its start, and shows its CSS. */
         const apply = changed => {
             if (Number(hold.value) > Number(clear.value)) (changed === clear ? hold : clear).value = changed.value;
-            article.style.setProperty("--strength", strength.value / 100);
-            article.style.setProperty("--hold", `${hold.value}%`);
-            article.style.setProperty("--clear", `${clear.value}%`);
+            for (const [name, slider] of [["--top", top], ["--middle", middle], ["--bottom", bottom]]) article.style.setProperty(name, share(slider));
+            for (const [name, slider] of [["--middle-at", middleAt], ["--hold", hold], ["--clear", clear]]) article.style.setProperty(name, `${slider.value}%`);
             for (const slider of sliders) slider.nextElementSibling.value = `${slider.value}%`;
-            document.getElementById("css").textContent = `mask-image: linear-gradient(90deg, rgba(0, 0, 0, ${strength.value / 100}) 0, `
-                + `rgba(0, 0, 0, ${strength.value / 100}) max(${hold.value}%, 460px), transparent max(${clear.value}%, 640px));`;
+            document.getElementById("css").textContent = `mask-image: `
+                + `linear-gradient(90deg, #000 0, #000 max(${hold.value}%, 460px), transparent max(${clear.value}%, 640px)), `
+                + `linear-gradient(rgba(0, 0, 0, ${share(top)}), rgba(0, 0, 0, ${share(middle)}) ${middleAt.value}%, rgba(0, 0, 0, ${share(bottom)})); `
+                + `mask-composite: intersect;`;
         };
         for (const slider of sliders) slider.addEventListener("input", () => apply(slider));
-        apply(strength);
+        apply(middle);
+        applyShadow();
 
         const template = await realCard();
         const wide = template.cloneNode(true);

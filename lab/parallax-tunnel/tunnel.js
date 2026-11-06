@@ -5,7 +5,7 @@
 //
 // Units follow the tutorial: the window (the card) sits at depth 0, and depth grows towards the
 // viewer. Unlike the tutorial (p5), y points up.
-import { lerp } from "../shared/motion.js";
+import { lerp } from "../../js/shared/motion.js";
 
 /** The window's shorter side in scene units; the longer one follows the card's shape. */
 export const WINDOW_SIDE = 400;

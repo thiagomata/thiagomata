@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Phone card layer tuner</title>
+    <style>
+        /* Tune how dark the right side of the MEC, SLI, OtimiCar and Thrifty cards is on a phone. The
+           real page is shown in a phone-sized frame (so its phone layout applies), with only those
+           cards. Today the company cards fade from 96% black at the right edge (then 80%) into their
+           colour, and the value cards from 60%. Every card's text now has a dark shadow too. */
+        body {
+            margin: 0;
+            background: #0b0d10;
+            color: #e9ecef;
+            font: 15px Roboto, sans-serif;
+        }
+        .controls {
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px 32px;
+            align-items: center;
+            padding: 12px 16px;
+            background: rgba(11, 13, 16, 0.95);
+        }
+        .controls label { display: flex; gap: 10px; align-items: center; }
+        .controls input { width: 160px; }
+        .controls output { min-width: 3.5em; font-weight: bold; color: #fff; }
+        .controls code { flex-basis: 100%; font-size: 13px; color: #c9ced4; }
+        iframe {
+            display: block;
+            width: 393px;
+            max-width: 100%;
+            margin: 16px;
+            border: 0;
+            background: #0b0d10;
+        }
+    </style>
+</head>
+<body>
+    <div class="controls">
+        <label>Companies, right edge <input type="range" id="company-edge" min="0" max="100" value="96" /> <output for="company-edge"></output></label>
+        <label>Companies, next <input type="range" id="company-next" min="0" max="100" value="80" /> <output for="company-next"></output></label>
+        <label>Thrifty, right edge <input type="range" id="value-edge" min="0" max="100" value="60" /> <output for="value-edge"></output></label>
+        <code id="css"></code>
+    </div>
+    <iframe src="../../index.html" title="The page at phone width"></iframe>
+
+    <script type="module">
+        /** The cards to tune; everything else on the page is taken away. */
+        const CARDS = [
+            '#top-companies section[data-company="mec"]',
+            '#top-companies section[data-company="sli"]',
+            '#top-companies section[data-company="otimicar"]',
+            "#values section.value-thrifty",
+        ];
+        const sliders = ["company-edge", "company-next", "value-edge"].map(id => document.getElementById(id));
+        const [companyEdge, companyNext, valueEdge] = sliders;
+        const share = slider => slider.value / 100;
+        const frame = document.querySelector("iframe");
+        let tuning = null;
+
+        /** The cards' layers at the sliders' values (the page's own gradients, with new darkness). */
+        const css = () => `#top-companies section {
+    --squared-darkness: ${share(companyEdge)};
+    --effect-darkness: ${share(companyNext)};
+}
+#values section.value-thrifty {
+    border-image: linear-gradient(269deg, rgba(0, 0, 0, ${share(valueEdge)}), var(--border-gradient-color)) fill 1;
+}`;
+
+        const apply = () => {
+            for (const slider of sliders) slider.nextElementSibling.value = `${slider.value}%`;
+            document.getElementById("css").textContent = css().replace(/\s+/g, " ");
+            if (tuning) tuning.textContent = css();
+        };
+        for (const slider of sliders) slider.addEventListener("input", apply);
+        apply();
+
+        frame.addEventListener("load", () => {
+            const page = frame.contentDocument;
+            const kept = CARDS.map(selector => page.querySelector(selector)).filter(Boolean);
+            const keep = element => kept.some(card => card === element || card.contains(element) || element.contains(card));
+            for (const element of [...page.body.querySelectorAll("*")]) if (!keep(element)) element.remove();
+            tuning = page.createElement("style");
+            page.head.append(tuning);
+            apply();
+            const fit = () => { frame.style.height = `${page.documentElement.scrollHeight}px`; };
+            new ResizeObserver(fit).observe(page.body);
+            fit();
+        });
+    </script>
+</body>
+</html>

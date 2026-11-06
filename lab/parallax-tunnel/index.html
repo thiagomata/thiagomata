@@ -27,7 +27,7 @@
         }
         .wide { width: min(1400px, 100%); }
         .phone { width: 360px; height: 640px; padding: 24px; }
-        .static { background-image: url("../img/parallax-depth.webp"); }
+        .static { background-image: url("./parallax-depth.webp"); }
         /* The card's readability gradient, over the tunnel and under the text. */
         .card::after {
             content: "";
@@ -83,7 +83,7 @@
         </section>
     </div>
     <script type="module">
-        import { start } from "../js/parallax/scene.js";
+        import { start } from "./scene.js";
         for (const card of document.querySelectorAll(".card.live")) start(card);
     </script>
 </body>

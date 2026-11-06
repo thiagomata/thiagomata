@@ -1,0 +1,45 @@
+{
+    "variants": {
+        "today": {
+            "desktop": {
+                "worstContrast": 6.61,
+                "worstText": "To the Cloud",
+                "required": 4.5,
+                "passes": true,
+                "failingLines": 0,
+                "lines": 5,
+                "sceneKept": 0.62
+            },
+            "phone": {
+                "worstContrast": 5.52,
+                "worstText": "To the Cloud",
+                "required": 4.5,
+                "passes": true,
+                "failingLines": 0,
+                "lines": 5,
+                "sceneKept": 0.67
+            }
+        },
+        "tuned": {
+            "desktop": {
+                "worstContrast": 5.27,
+                "worstText": "To the Cloud",
+                "required": 4.5,
+                "passes": true,
+                "failingLines": 0,
+                "lines": 5,
+                "sceneKept": 1.1
+            },
+            "phone": {
+                "worstContrast": 6.12,
+                "worstText": "To the Cloud",
+                "required": 4.5,
+                "passes": true,
+                "failingLines": 0,
+                "lines": 5,
+                "sceneKept": 0.93
+            }
+        }
+    },
+    "measuredAt": "2026-11-06T06:17:41.277Z"
+}

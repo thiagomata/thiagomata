@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>SLI layer tuner</title>
+    <style>
+        /* Tune the SLI card's darkening on wide screens, as the Ideia card's was tuned: a layer in the
+           card's own dark (rgb(33, 30, 30)) strongest behind the text and clear elsewhere, plus the
+           strength of the shade the animation draws over itself (85% today). The real page is shown
+           at full width with only the SLI card. Phones keep their own layer. */
+        body {
+            margin: 0;
+            background: #0b0d10;
+            color: #e9ecef;
+            font: 15px Roboto, sans-serif;
+        }
+        .controls {
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px 32px;
+            align-items: center;
+            padding: 12px 16px;
+            background: rgba(11, 13, 16, 0.95);
+        }
+        .controls label { display: flex; gap: 10px; align-items: center; }
+        .controls input[type="range"] { width: 160px; }
+        .controls output { min-width: 3.5em; font-weight: bold; color: #fff; }
+        .controls code { flex-basis: 100%; font-size: 13px; color: #c9ced4; }
+        iframe { display: block; width: 100%; border: 0; background: #0b0d10; }
+    </style>
+</head>
+<body>
+    <div class="controls">
+        <label>Top <input type="range" id="top" min="0" max="100" value="40" /> <output for="top"></output></label>
+        <label>Middle <input type="range" id="middle" min="0" max="100" value="75" /> <output for="middle"></output></label>
+        <label>Bottom <input type="range" id="bottom" min="0" max="100" value="40" /> <output for="bottom"></output></label>
+        <label>Middle at <input type="range" id="middle-at" min="0" max="100" value="55" /> <output for="middle-at"></output></label>
+        <label>Starts to fade at <input type="range" id="hold" min="0" max="100" value="25" /> <output for="hold"></output></label>
+        <label>Gone by <input type="range" id="clear" min="0" max="100" value="55" /> <output for="clear"></output></label>
+        <label>Animation's own shade <input type="range" id="shade" min="0" max="100" value="85" /> <output for="shade"></output></label>
+        <label><input type="checkbox" id="today" /> Show today's</label>
+        <code id="css"></code>
+    </div>
+    <iframe src="../../index.html" title="The page with only the SLI card"></iframe>
+
+    <script type="module">
+        const CARD = '#top-companies section[data-company="sli"]';
+        const sliders = ["top", "middle", "bottom", "middle-at", "hold", "clear", "shade"].map(id => document.getElementById(id));
+        const [top, middle, bottom, middleAt, hold, clear, shade] = sliders;
+        const today = document.getElementById("today");
+        const share = slider => slider.value / 100;
+        const frame = document.querySelector("iframe");
+        let tuning = null;
+
+        /** The card's layer and the animation's shade at the sliders' values (the card's text reaches about 560px). */
+        const css = () => `${CARD}.is-live::after {
+    border-image: none;
+    background: rgb(33, 30, 30);
+    mask-image:
+        linear-gradient(90deg, #000 0, #000 max(${hold.value}%, 600px), transparent max(${clear.value}%, 760px)),
+        linear-gradient(rgba(0, 0, 0, ${share(top)}), rgba(0, 0, 0, ${share(middle)}) ${middleAt.value}%, rgba(0, 0, 0, ${share(bottom)}));
+    mask-composite: intersect;
+}
+${CARD} .live-bg .shade { fill-opacity: ${share(shade)}; }`;
+
+        /** Moves the layer to the sliders, keeping the fade after its start, and shows its CSS. */
+        const apply = changed => {
+            if (Number(hold.value) > Number(clear.value)) (changed === clear ? hold : clear).value = changed.value;
+            for (const slider of sliders) slider.nextElementSibling.value = `${slider.value}%`;
+            document.getElementById("css").textContent = css().replace(/\s+/g, " ");
+            if (tuning) tuning.textContent = today.checked ? "" : css();
+        };
+        for (const slider of sliders) slider.addEventListener("input", () => apply(slider));
+        today.addEventListener("change", () => apply(null));
+        apply(null);
+
+        frame.addEventListener("load", () => {
+            const page = frame.contentDocument;
+            const card = page.querySelector(CARD);
+            const keep = element => card === element || card.contains(element) || element.contains(card);
+            for (const element of [...page.body.querySelectorAll("*")]) if (!keep(element)) element.remove();
+            tuning = page.createElement("style");
+            page.head.append(tuning);
+            apply(null);
+            const fit = () => { frame.style.height = `${page.documentElement.scrollHeight}px`; };
+            new ResizeObserver(fit).observe(page.body);
+            fit();
+        });
+    </script>
+</body>
+</html>

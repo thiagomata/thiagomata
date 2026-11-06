@@ -24,8 +24,9 @@ const BRIDGE_SHOWN = 1, BRIDGE_HIDDEN = 0;
 // The goo: blur the balls, then turn the soft edge back into a sharp outline (alpha × 20 − 9),
 // so balls close enough to blur into each other become one shape.
 const GOO = { blur: 8, alphaGain: 20, alphaShift: -9 };
-// The same shade as the static image, multiplied over the balls so the text stays readable.
-const SHADE = { top: "#877B7B", bottom: "#211E1E", opacity: 0.85 };
+// A hint of the static image's shade, multiplied over the balls; the card's layer (style.css)
+// darkens only behind the text, so the pattern stays bright elsewhere.
+const SHADE = { top: "#877B7B", bottom: "#211E1E", opacity: 0.05 };
 
 const pickFrom = choices => choices[Math.floor(Math.random() * choices.length)];
 

@@ -1,24 +1,24 @@
 {
-    "measuredAt": "2026-11-05T21:52:18.931Z",
+    "measuredAt": "2026-11-06T05:42:10.215Z",
     "variants": {
         "today": {
             "desktop": {
-                "worstContrast": 7.24,
-                "worstText": "Traceability",
+                "worstContrast": 5.9,
+                "worstText": "Albert Einstein",
                 "required": 4.5,
                 "passes": true,
                 "failingLines": 0,
                 "lines": 9,
-                "sceneKept": 0.71
+                "sceneKept": 0.77
             },
             "phone": {
-                "worstContrast": 7.25,
-                "worstText": "Traceability",
+                "worstContrast": 5.48,
+                "worstText": "Cleanliness",
                 "required": 4.5,
                 "passes": true,
                 "failingLines": 0,
                 "lines": 9,
-                "sceneKept": 0.47
+                "sceneKept": 0.43
             }
         },
         "black": {
@@ -319,6 +319,46 @@
                 "failingLines": 0,
                 "lines": 9,
                 "sceneKept": 0.48
+            }
+        },
+        "dark-aurora-tuned": {
+            "desktop": {
+                "worstContrast": 6.9,
+                "worstText": "Everything should be made as simple as possible, but not simpler.",
+                "required": 4.5,
+                "passes": true,
+                "failingLines": 0,
+                "lines": 9,
+                "sceneKept": 0.78
+            },
+            "phone": {
+                "worstContrast": 6.5,
+                "worstText": "Cleanliness",
+                "required": 4.5,
+                "passes": true,
+                "failingLines": 0,
+                "lines": 9,
+                "sceneKept": 0.44
+            }
+        },
+        "dark-shadow": {
+            "desktop": {
+                "worstContrast": 4.77,
+                "worstText": "Straightforward but thorough",
+                "required": 3,
+                "passes": true,
+                "failingLines": 0,
+                "lines": 9,
+                "sceneKept": 0.77
+            },
+            "phone": {
+                "worstContrast": 6.87,
+                "worstText": "Cleanliness",
+                "required": 4.5,
+                "passes": true,
+                "failingLines": 0,
+                "lines": 9,
+                "sceneKept": 0.44
             }
         }
     }

@@ -1,0 +1,79 @@
+{
+    "variants": {
+        "today": {
+            "desktop": {
+                "worstContrast": 16.33,
+                "worstText": "A 3D experiment with webcam head tracking: the scene shifts as you move your head, giving real depth. It separates scene behaviour from rendering, with repeatable transformations and hands-on tutorials.",
+                "required": 4.5,
+                "passes": true,
+                "failingLines": 0,
+                "lines": 5,
+                "byLine": [
+                    {
+                        "text": "Parallax Engine",
+                        "contrast": 15.4,
+                        "required": 3
+                    },
+                    {
+                        "text": "Interactive graphics with testable scene logic",
+                        "contrast": 13.81,
+                        "required": 3
+                    },
+                    {
+                        "text": "A 3D experiment with webcam head tracking: the scene shifts as you move your head, giving real depth. It separates scene behaviour from rendering, with repeatable transformations and hands-on tutorials.",
+                        "contrast": 16.33,
+                        "required": 4.5
+                    },
+                    {
+                        "text": "Try the demo",
+                        "contrast": 18.67,
+                        "required": 4.5
+                    },
+                    {
+                        "text": "Explore the code",
+                        "contrast": 18.53,
+                        "required": 4.5
+                    }
+                ],
+                "sceneKept": 0.74
+            },
+            "phone": {
+                "worstContrast": 12.58,
+                "worstText": "A 3D experiment with webcam head tracking: the scene shifts as you move your head, giving real depth. It separates scene behaviour from rendering, with repeatable transformations and hands-on tutorials.",
+                "required": 4.5,
+                "passes": true,
+                "failingLines": 0,
+                "lines": 5,
+                "byLine": [
+                    {
+                        "text": "Parallax Engine",
+                        "contrast": 10.46,
+                        "required": 3
+                    },
+                    {
+                        "text": "Interactive graphics with testable scene logic",
+                        "contrast": 9.03,
+                        "required": 3
+                    },
+                    {
+                        "text": "A 3D experiment with webcam head tracking: the scene shifts as you move your head, giving real depth. It separates scene behaviour from rendering, with repeatable transformations and hands-on tutorials.",
+                        "contrast": 12.58,
+                        "required": 4.5
+                    },
+                    {
+                        "text": "Try the demo",
+                        "contrast": 17.9,
+                        "required": 4.5
+                    },
+                    {
+                        "text": "Explore the code",
+                        "contrast": 17.67,
+                        "required": 4.5
+                    }
+                ],
+                "sceneKept": 0.65
+            }
+        }
+    },
+    "measuredAt": "2026-11-06T06:51:14.482Z"
+}

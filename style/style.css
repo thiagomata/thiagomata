@@ -1201,14 +1201,15 @@ p {
     flex-direction: column;
     align-items: flex-start;
 }
-/* Real Tutorial 9 scene; the overlay keeps the copy readable over debug markers. */
+/* A still of the card's village scene (js/parallax/scene.js), shown until the scene is live and
+   for good without WebGL; the overlay keeps the copy readable over it. */
 #projects [data-project="parallax"] {
     background-image:
         linear-gradient(90deg, rgba(13, 15, 18, .94), rgba(13, 15, 18, .68) 42%, rgba(13, 15, 18, .08)),
-        url("../img/parallax-depth.webp?v=fd9b9225");
+        url("../img/parallax-village.webp?v=afc55e74");
     background-position: center;
 }
-/* The live tunnel (js/parallax/scene.js) replaces the picture; the readability gradient moves to a
+/* The live village (js/parallax/scene.js) replaces the picture; the readability gradient moves to a
    layer above the tunnel and below the text. */
 #projects [data-project="parallax"].parallax-live {
     --readability: linear-gradient(90deg, rgba(13, 15, 18, .94), rgba(13, 15, 18, .68) 42%, rgba(13, 15, 18, .08));
@@ -1225,7 +1226,7 @@ p {
     background: var(--readability);
     pointer-events: none;
 }
-#projects [data-project="parallax"] .parallax-tunnel {
+#projects [data-project="parallax"] .parallax-scene {
     position: absolute;
     inset: 0;
     width: 100%;
@@ -1272,7 +1273,7 @@ p {
     #projects [data-project="parallax"] {
         background-image:
             linear-gradient(90deg, rgba(13, 15, 18, .90), rgba(13, 15, 18, .45)),
-            url("../img/parallax-depth.webp?v=fd9b9225");
+            url("../img/parallax-village.webp?v=afc55e74");
         background-position: center;
     }
     #projects [data-project="parallax"].parallax-live {
@@ -1299,28 +1300,18 @@ p {
     }
 }
 
-/* The Elegant card's text is black on a light layer across its left, instead of white on a dark
-   one: its scene is light (the northern lights and the glowing horizon), and a dark layer hid most
-   of it. The layer takes the northern lights' colours (green, teal, blue), mixed about 45% with
-   white: clearly coloured, yet light enough for black text. It holds at 77% until past the text
-   (the further of 19% and 460px: the text reaches at most 440px), then fades out by the further of
-   57% and 640px, before the windmills; a phone card is narrower than 460px, so it stays covered.
-   Measured with `npm run contrast`: 7.2:1 at worst on desktop and phone (4.5:1 needed). The same
-   layer serves the static picture and the live scene (style/windmills.css). Tuned in
-   lab/elegant-contrast/tuner.html. */
+/* The Elegant card's white text sits on a dark layer in the northern lights' colours made deep
+   (green, teal, blue, each mixed 70% with the scene's navy), matching the site's dark design.
+   Across, it is solid until past the text (the further of 17% and 460px: the text reaches at most
+   440px, and a phone card stays covered) and gone by the further of 53% and 640px, before the
+   windmills. Down, it is 44% at the top, 73% at the middle and 64% at the bottom, over the values
+   list on the dark grass. The two shapes multiply. Measured with `npm run contrast`: 6.9:1 at worst
+   on desktop, 6.5:1 on a phone (4.5:1 needed). The same layer serves the static picture and the
+   live scene (style/windmills.css). Tuned in lab/elegant-contrast/tuner.html. */
 #values section.value-elegant {
-    --aurora-green: rgb(187, 240, 174);
-    --aurora-teal: rgb(157, 199, 204);
-    --aurora-blue: rgb(149, 185, 238);
-    --layer-strength: rgba(0, 0, 0, 0.77);
-    --layer-fade: linear-gradient(90deg, var(--layer-strength) 0, var(--layer-strength) max(19%, 460px), transparent max(57%, 640px));
     position: relative;
     isolation: isolate;
     border-image: none;
-    color: #000;
-}
-#values section.value-elegant :is(h3, h4, p, span, li, i) {
-    color: #000;
 }
 #values section.value-elegant::after {
     content: "";
@@ -1328,8 +1319,11 @@ p {
     inset: 0;
     z-index: -1;
     pointer-events: none;
-    background: linear-gradient(var(--aurora-green), var(--aurora-teal) 50%, var(--aurora-blue));
-    mask-image: var(--layer-fade);
+    background: linear-gradient(rgb(41, 82, 56), rgb(24, 60, 59) 50%, rgb(20, 52, 91));
+    mask-image:
+        linear-gradient(90deg, #000 0, #000 max(17%, 460px), transparent max(53%, 640px)),
+        linear-gradient(rgba(0, 0, 0, 0.44), rgba(0, 0, 0, 0.73) 50%, rgba(0, 0, 0, 0.64));
+    mask-composite: intersect;
 }
 
 /* The Ideia card's layer over its live street: the card's deep blue, strongest across the middle
@@ -1342,5 +1336,44 @@ p {
     mask-image:
         linear-gradient(90deg, #000 0, #000 max(0%, 680px), transparent max(75%, 860px)),
         linear-gradient(rgba(0, 0, 0, 0.22), rgba(0, 0, 0, 0.85) 61%, rgba(0, 0, 0, 0.21));
+    mask-composite: intersect;
+}
+
+/* Every card's text has a dark shadow: a tight one for the letters' edges and a soft halo around
+   them, so white text stays readable wherever the scene behind it is bright. Text shadows are
+   inherited, so this covers all of a card's text. Tuned in lab/elegant-contrast/tuner.html: on the
+   Elegant card it lifts the worst line from 5.5:1 to 6.9:1 on a phone, and hides none of the scene. */
+:is(#top-companies section, #values section, #projects .project-banner) {
+    text-shadow: 0 1px 5px rgba(0, 0, 0, 0.87), 0 0 15px rgba(0, 0, 0, 0.61);
+}
+
+/* On a phone the cards' text runs across their whole width, so their readability layer darkens
+   the right side too. With every card's text shadowed, it needs far less than it had (96% black at
+   the company cards' right edge, 60% on the value cards). Tuned in lab/cards-contrast/tuner.html
+   and measured with `npm run contrast -- --lab cards-contrast`: every line still passes, and the
+   pictures show through. Wider screens keep their own, lighter values. */
+@media not all and (min-width: 43em) {
+    #top-companies section {
+        --squared-darkness: 0.46;
+        --effect-darkness: 0.32;
+    }
+}
+@media not all and (min-width: 53em) {
+    #values section {
+        border-image: linear-gradient(269deg, rgba(0, 0, 0, 0.15), var(--border-gradient-color)) fill 1;
+    }
+}
+
+/* The SLI card's layer over its live blobs, at every screen size: the card's own dark, 90% at the
+   top (behind the logo, the same lavender as the blobs), 62% at 62% down, 55% at the bottom (behind
+   the button), fading out across the whole width. The animation's own shade is nearly gone
+   (js/sli-blobs.js), so the pattern is bright. Tuned in lab/sli-contrast/tuner.html; measured at
+   5.3:1 at worst on desktop and 6.1:1 on a phone. */
+#top-companies section[data-company="sli"].is-live::after {
+    border-image: none;
+    background: rgb(33, 30, 30);
+    mask-image:
+        linear-gradient(90deg, #000 0, #000 max(0%, 600px), transparent max(100%, 760px)),
+        linear-gradient(rgba(0, 0, 0, 0.9), rgba(0, 0, 0, 0.62) 62%, rgba(0, 0, 0, 0.55));
     mask-composite: intersect;
 }

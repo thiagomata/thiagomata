@@ -1,0 +1,231 @@
+{
+    "variants": {
+        "today": {
+            "desktop": {
+                "worstContrast": 14.48,
+                "worstText": "Impact forecasting",
+                "required": 4.5,
+                "passes": true,
+                "failingLines": 0,
+                "lines": 9,
+                "byLine": [
+                    {
+                        "text": "Useful",
+                        "contrast": 12.66,
+                        "required": 3
+                    },
+                    {
+                        "text": "Influential and meaningful",
+                        "contrast": 11.23,
+                        "required": 3
+                    },
+                    {
+                        "text": "The largest source of waste in the startup is building a product that no one will find\n                            useful.",
+                        "contrast": 17.09,
+                        "required": 4.5
+                    },
+                    {
+                        "text": "Eric Ries",
+                        "contrast": 14.64,
+                        "required": 4.5
+                    },
+                    {
+                        "text": "Market Suitability",
+                        "contrast": 14.61,
+                        "required": 4.5
+                    },
+                    {
+                        "text": "Data-Driven Decision",
+                        "contrast": 14.51,
+                        "required": 4.5
+                    },
+                    {
+                        "text": "Impact forecasting",
+                        "contrast": 14.48,
+                        "required": 4.5
+                    },
+                    {
+                        "text": "Risk Management",
+                        "contrast": 14.51,
+                        "required": 4.5
+                    },
+                    {
+                        "text": "Prototyping and Hypothesis Testing",
+                        "contrast": 14.6,
+                        "required": 4.5
+                    }
+                ],
+                "sceneKept": 0.8
+            },
+            "phone": {
+                "worstContrast": 8.77,
+                "worstText": "Prototyping and Hypothesis Testing",
+                "required": 4.5,
+                "passes": true,
+                "failingLines": 0,
+                "lines": 9,
+                "byLine": [
+                    {
+                        "text": "Useful",
+                        "contrast": 7.04,
+                        "required": 3
+                    },
+                    {
+                        "text": "Influential and meaningful",
+                        "contrast": 7.69,
+                        "required": 3
+                    },
+                    {
+                        "text": "The largest source of waste in the startup is building a product that no one will find\n                            useful.",
+                        "contrast": 10.81,
+                        "required": 4.5
+                    },
+                    {
+                        "text": "Eric Ries",
+                        "contrast": 11.1,
+                        "required": 4.5
+                    },
+                    {
+                        "text": "Market Suitability",
+                        "contrast": 11.13,
+                        "required": 4.5
+                    },
+                    {
+                        "text": "Data-Driven Decision",
+                        "contrast": 11.43,
+                        "required": 4.5
+                    },
+                    {
+                        "text": "Impact forecasting",
+                        "contrast": 10.63,
+                        "required": 4.5
+                    },
+                    {
+                        "text": "Risk Management",
+                        "contrast": 9.24,
+                        "required": 4.5
+                    },
+                    {
+                        "text": "Prototyping and Hypothesis Testing",
+                        "contrast": 8.77,
+                        "required": 4.5
+                    }
+                ],
+                "sceneKept": 0.59
+            },
+            "wide": {
+                "worstContrast": 14.38,
+                "worstText": "Impact forecasting",
+                "required": 4.5,
+                "passes": true,
+                "failingLines": 0,
+                "lines": 9,
+                "byLine": [
+                    {
+                        "text": "Useful",
+                        "contrast": 14.37,
+                        "required": 3
+                    },
+                    {
+                        "text": "Influential and meaningful",
+                        "contrast": 14.1,
+                        "required": 3
+                    },
+                    {
+                        "text": "The largest source of waste in the startup is building a product that no one will find\n                            useful.",
+                        "contrast": 17.3,
+                        "required": 4.5
+                    },
+                    {
+                        "text": "Eric Ries",
+                        "contrast": 14.52,
+                        "required": 4.5
+                    },
+                    {
+                        "text": "Market Suitability",
+                        "contrast": 14.51,
+                        "required": 4.5
+                    },
+                    {
+                        "text": "Data-Driven Decision",
+                        "contrast": 14.48,
+                        "required": 4.5
+                    },
+                    {
+                        "text": "Impact forecasting",
+                        "contrast": 14.38,
+                        "required": 4.5
+                    },
+                    {
+                        "text": "Risk Management",
+                        "contrast": 14.48,
+                        "required": 4.5
+                    },
+                    {
+                        "text": "Prototyping and Hypothesis Testing",
+                        "contrast": 14.51,
+                        "required": 4.5
+                    }
+                ],
+                "sceneKept": 0.78
+            },
+            "tablet": {
+                "worstContrast": 10.95,
+                "worstText": "Prototyping and Hypothesis Testing",
+                "required": 4.5,
+                "passes": true,
+                "failingLines": 0,
+                "lines": 9,
+                "byLine": [
+                    {
+                        "text": "Useful",
+                        "contrast": 11.84,
+                        "required": 3
+                    },
+                    {
+                        "text": "Influential and meaningful",
+                        "contrast": 7.61,
+                        "required": 3
+                    },
+                    {
+                        "text": "The largest source of waste in the startup is building a product that no one will find\n                            useful.",
+                        "contrast": 11.51,
+                        "required": 4.5
+                    },
+                    {
+                        "text": "Eric Ries",
+                        "contrast": 13.46,
+                        "required": 4.5
+                    },
+                    {
+                        "text": "Market Suitability",
+                        "contrast": 13.63,
+                        "required": 4.5
+                    },
+                    {
+                        "text": "Data-Driven Decision",
+                        "contrast": 13.33,
+                        "required": 4.5
+                    },
+                    {
+                        "text": "Impact forecasting",
+                        "contrast": 13.92,
+                        "required": 4.5
+                    },
+                    {
+                        "text": "Risk Management",
+                        "contrast": 13.78,
+                        "required": 4.5
+                    },
+                    {
+                        "text": "Prototyping and Hypothesis Testing",
+                        "contrast": 10.95,
+                        "required": 4.5
+                    }
+                ],
+                "sceneKept": 0.56
+            }
+        }
+    },
+    "measuredAt": "2026-11-06T06:23:06.661Z"
+}

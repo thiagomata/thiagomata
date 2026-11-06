@@ -95,6 +95,25 @@ const lightLayer = (card, colours, strength = 1, shape = null, mask = null) => l
 export const CARD = "#values section.value-elegant";
 export const LIVE = `${CARD}.windmills-live`;
 
+/** The northern lights' colours made deep (each mixed 70% with the scene's navy), for white text. */
+const DEEP_AURORA = ["rgb(41, 82, 56)", "rgb(24, 60, 59) 50%", "rgb(20, 52, 91)"];
+
+/** A layer tuned in tuner.html: across, solid until `hold` and gone by `clear`; down, `top`, `middle` (at `middleAt`) and `bottom`. */
+const tunedLayer = (card, colours, { hold, clear, top, middle, middleAt, bottom }) => layer(card, "linear-gradient(transparent, transparent)") + `
+    ${card}::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        z-index: -1;
+        pointer-events: none;
+        background: linear-gradient(${colours.join(", ")});
+        mask-image:
+            linear-gradient(90deg, #000 0, #000 max(${hold}, 460px), transparent max(${clear}, 640px)),
+            linear-gradient(rgba(0, 0, 0, ${top}), rgba(0, 0, 0, ${middle}) ${middleAt}, rgba(0, 0, 0, ${bottom}));
+        mask-composite: intersect;
+    }
+    ${card} { position: relative; isolation: isolate; }`;
+
 export const VARIANTS = [
     {
         id: "today",
@@ -134,6 +153,19 @@ export const VARIANTS = [
         id: "black-light-aurora-cover",
         label: "Black text on the northern lights layer: 80% until past the text (28% or 460px), clear by 45% or 640px",
         css: card => lightLayer(card, LIGHT_COLOURS.aurora.colours, 1, null, COVER_THE_TEXT),
+    },
+    {
+        id: "dark-shadow",
+        label: "The card's dark layer, with a text shadow: 87%, 15px",
+        css: card => `${card} ${TEXT} {
+            text-shadow: 0 1px 5px rgba(0, 0, 0, 0.87), 0 0 15px rgba(0, 0, 0, 0.61);
+        }`,
+    },
+    {
+        id: "dark-aurora-tuned",
+        label: "Dark: white text on the deep northern lights, 44% top, 73% middle (at 50%), 64% bottom; fading from 17% to 53%",
+        css: card => tunedLayer(card, DEEP_AURORA, { hold: "17%", clear: "53%", top: 0.44, middle: 0.73, middleAt: "50%", bottom: 0.64 })
+            + `${card} ${TEXT} { color: #fff !important; }`,
     },
     {
         id: "black-light-aurora-tuned",
