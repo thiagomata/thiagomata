@@ -1,7 +1,7 @@
 // How the SLI card's balls change (drawn by js/sli-blobs.js): each colour change and each bridge
 // growing or shrinking fades smoothly over a set time. The script redraws the fades at most 30
 // times a second, instead of CSS transitions running at the screen's full rate.
-import { clamp, lerp } from "../shared/motion.js";
+import { clamp, easeInOut, lerp } from "../shared/motion.js";
 
 /** The balls' colours, as [red, green, blue]. */
 export const COLOURS = {
@@ -12,9 +12,6 @@ export const COLOURS = {
 
 /** How long a colour change and a bridge's growing or shrinking take. */
 export const FADE_MILLISECONDS = { colour: 1800, size: 2200 };
-
-/** Starts and ends slowly, like CSS's ease-in-out (0 to 1 for a share 0 to 1 of the time). */
-export const easeInOut = share => share * share * (3 - 2 * share);
 
 /** How far through a fade that started at `startedAt` and lasts `duration` it is at `now`, from 0 to 1. */
 export const fadeShare = (startedAt, now, duration) => clamp((now - startedAt) / duration, 0, 1);
