@@ -1,5 +1,5 @@
 {
-    "measuredAt": "2026-11-05T21:52:18.931Z",
+    "measuredAt": "2026-11-06T05:35:50.176Z",
     "variants": {
         "today": {
             "desktop": {
@@ -319,6 +319,26 @@
                 "failingLines": 0,
                 "lines": 9,
                 "sceneKept": 0.48
+            }
+        },
+        "dark-aurora-tuned": {
+            "desktop": {
+                "worstContrast": 6.9,
+                "worstText": "Everything should be made as simple as possible, but not simpler.",
+                "required": 4.5,
+                "passes": true,
+                "failingLines": 0,
+                "lines": 9,
+                "sceneKept": 0.78
+            },
+            "phone": {
+                "worstContrast": 6.5,
+                "worstText": "Cleanliness",
+                "required": 4.5,
+                "passes": true,
+                "failingLines": 0,
+                "lines": 9,
+                "sceneKept": 0.44
             }
         }
     }
