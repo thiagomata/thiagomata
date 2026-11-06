@@ -1,18 +1,12 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 import { lerp } from "../js/shared/motion.js";
-import { COLOURS, Fade, cssColour, easeInOut, fadeShare, mixColour } from "../js/sli/fading.js";
+import { cssColour, fromHex, mixColour } from "../js/shared/colour.js";
+import { COLOURS, Fade, fadeShare } from "../js/sli/fading.js";
 
 const DURATION = 1000;
 
 describe("SLI fading", () => {
-    it("eases in and out: slow at both ends, halfway at half the time", () => {
-        assert.equal(easeInOut(0), 0);
-        assert.equal(easeInOut(0.5), 0.5);
-        assert.equal(easeInOut(1), 1);
-        assert.ok(easeInOut(0.1) < 0.1 && easeInOut(0.9) > 0.9);
-    });
-
     it("measures a fade's progress, from 0 before it starts to 1 once it is over", () => {
         assert.equal(fadeShare(100, 50, DURATION), 0);
         assert.equal(fadeShare(100, 600, DURATION), 0.5);
@@ -24,6 +18,7 @@ describe("SLI fading", () => {
         assert.deepEqual(mixColour(COLOURS.grey, COLOURS.white, 1), COLOURS.white);
         assert.deepEqual(mixColour([0, 0, 0], [255, 100, 11], 0.5), [128, 50, 6]);
         assert.equal(cssColour([1, 2, 3]), "rgb(1, 2, 3)");
+        assert.deepEqual(fromHex("#91d3b8"), [0x91, 0xd3, 0xb8]);
     });
 
     it("fades towards a new target and settles there", () => {
