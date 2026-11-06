@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Probability layer tuner</title>
+    <style>
+        /* Tune the Probability card's layer, as the Ideia card's was tuned: the card's own dark, across
+           solid until past the text and then fading out, down strongest where the text is (its CSS is
+           in style/style.css). The real page is shown at phone width and at full width, with only the
+           Probability card, its chart made live (js/probability/scene.js), as a curve or as bars. */
+        body {
+            margin: 0;
+            background: #0b0d10;
+            color: #e9ecef;
+            font: 15px Roboto, sans-serif;
+        }
+        .controls {
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px 32px;
+            align-items: center;
+            padding: 12px 16px;
+            background: rgba(11, 13, 16, 0.95);
+        }
+        .controls label { display: flex; gap: 10px; align-items: center; }
+        .controls input[type="range"] { width: 150px; }
+        .controls output { min-width: 3.5em; font-weight: bold; color: #fff; }
+        .controls code { flex-basis: 100%; font-size: 13px; color: #c9ced4; }
+        .frames { display: flex; flex-wrap: wrap; gap: 16px; padding: 16px; align-items: flex-start; }
+        iframe { border: 0; background: #0b0d10; }
+        .phone { width: 393px; }
+        .wide { flex: 1; min-width: 900px; }
+    </style>
+</head>
+<body>
+    <div class="controls">
+        <label>Top <input type="range" id="top" min="0" max="100" value="50" /> <output for="top"></output></label>
+        <label>Middle <input type="range" id="middle" min="0" max="100" value="80" /> <output for="middle"></output></label>
+        <label>Bottom <input type="range" id="bottom" min="0" max="100" value="50" /> <output for="bottom"></output></label>
+        <label>Middle at <input type="range" id="middle-at" min="0" max="100" value="55" /> <output for="middle-at"></output></label>
+        <label>Starts to fade at <input type="range" id="hold" min="0" max="100" value="0" /> <output for="hold"></output></label>
+        <label>Gone by <input type="range" id="clear" min="0" max="100" value="45" /> <output for="clear"></output></label>
+        <label><input type="checkbox" id="bars" /> Bars instead of the curve</label>
+        <code id="css"></code>
+    </div>
+    <div class="frames">
+        <iframe class="phone" src="../../index.html" title="The page at phone width"></iframe>
+        <iframe class="wide" src="../../index.html" title="The page at full width"></iframe>
+    </div>
+
+    <script type="module">
+        const CARD = '#projects [data-project="probability"]';
+        /** The layer's pixel minimums (style/style.css): the text reaches about 560px. */
+        const HOLD_PIXELS = 600, CLEAR_PIXELS = 760;
+        const sliders = ["top", "middle", "bottom", "middle-at", "hold", "clear"].map(id => document.getElementById(id));
+        const [top, middle, bottom, middleAt, hold, clear] = sliders;
+        const bars = document.getElementById("bars");
+        const share = slider => slider.value / 100;
+        const cards = [];
+
+        /** The layer's settings, as the card's CSS variables. */
+        const settings = () => ({
+            "--layer-top": share(top),
+            "--layer-middle": share(middle),
+            "--layer-bottom": share(bottom),
+            "--layer-middle-at": `${middleAt.value}%`,
+            "--layer-hold": `max(${hold.value}%, ${HOLD_PIXELS}px)`,
+            "--layer-clear": `max(${clear.value}%, ${CLEAR_PIXELS}px)`,
+        });
+
+        /** Moves the layer to the sliders, keeping the fade after its start, and shows its CSS. */
+        const apply = changed => {
+            if (Number(hold.value) > Number(clear.value)) (changed === clear ? hold : clear).value = changed.value;
+            for (const slider of sliders) slider.nextElementSibling.value = `${slider.value}%`;
+            for (const card of cards) for (const [name, value] of Object.entries(settings())) card.style.setProperty(name, value);
+            document.getElementById("css").textContent = Object.entries(settings()).map(([name, value]) => `${name}: ${value};`).join(" ");
+        };
+        for (const slider of sliders) slider.addEventListener("input", () => apply(slider));
+
+        /** Leaves only the Probability card in a frame's page, makes its chart live, and sizes the frame to it. */
+        const showCard = frame => {
+            const page = frame.contentDocument;
+            const card = page.querySelector(CARD);
+            const keep = element => card === element || card.contains(element) || element.contains(card);
+            for (const element of [...page.body.querySelectorAll("*")]) if (!keep(element)) element.remove();
+            cards.push(card);
+            const startChart = form => {
+                card.querySelector(".probability-chart")?.remove();
+                frame.contentWindow.startProbability(card, { form });
+            };
+            const script = page.createElement("script");
+            script.type = "module";
+            script.textContent = `import { start } from "./js/probability/scene.js"; window.startProbability = start; window.dispatchEvent(new Event("probability-ready"));`;
+            frame.contentWindow.addEventListener("probability-ready", () => {
+                startChart(bars.checked ? "bars" : "curve");
+                bars.addEventListener("change", () => startChart(bars.checked ? "bars" : "curve"));
+            }, { once: true });
+            page.body.append(script);
+            apply(null);
+            const fit = () => { frame.style.height = `${page.documentElement.scrollHeight}px`; };
+            new ResizeObserver(fit).observe(page.body);
+            fit();
+        };
+        for (const frame of document.querySelectorAll("iframe")) frame.addEventListener("load", () => showCard(frame));
+        apply(null);
+    </script>
+</body>
+</html>
