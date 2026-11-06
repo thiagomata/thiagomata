@@ -1,7 +1,8 @@
 // Measures how readable a card's text is over its live scene, and how much of the scene still
-// shows, for each variant in a contrast lab (lab/<name>/variants.js, which names the card, how to
-// tell its live scene has started, and the variants). It opens the real page in headless Chrome at
-// desktop and phone sizes, and at a few moments (the scenes move):
+// shows, for each variant in a contrast lab. A lab's variants.js names its card (CARD, and LIVE:
+// what shows its live scene has started) or several cards (CARDS: [{ name, selector, live }]),
+// optionally the sizes that matter (SIZE_NAMES, such as ["phone"]), and the variants. It opens the
+// real page in headless Chrome at desktop and phone sizes, and at a few moments (the scenes move):
 //
 //   - text contrast: the page is photographed with its text hidden (shadows and layers stay), and
 //     each line of text is compared with the pixels behind it (tools/contrast.js);
@@ -25,7 +26,10 @@ const LAB_OPTION = "--lab";
 const labOption = process.argv.indexOf(LAB_OPTION);
 const labName = labOption === -1 ? DEFAULT_LAB : process.argv[labOption + 1];
 const chosen = process.argv.slice(2).filter((_, index) => labOption === -1 || (index !== labOption - 2 && index !== labOption - 1));
-const { CARD, LIVE, VARIANTS } = await import(`../lab/${labName}/variants.js`);
+const lab = await import(`../lab/${labName}/variants.js`);
+const { VARIANTS } = lab;
+/** The lab's cards; a lab of one card names it as CARD and LIVE. */
+const CARDS = lab.CARDS ?? [{ name: null, selector: lab.CARD, live: lab.LIVE }];
 const RESULTS = join(SITE_ROOT, `lab/${labName}/results.json`);
 const SIZES = {
     desktop: { width: 1440, height: 900 },
@@ -68,7 +72,7 @@ function serveSite() {
 }
 
 /** Each line of the card's text: its boxes on screen, its colour, and the ratio it needs. */
-const readText = page => page.evaluate(([selector, seenPixels]) => {
+const readText = (page, cardSelector) => page.evaluate(([selector, seenPixels]) => {
     const lines = [];
     const walker = document.createTreeWalker(document.querySelector(selector), NodeFilter.SHOW_TEXT);
     while (walker.nextNode()) {
@@ -86,15 +90,15 @@ const readText = page => page.evaluate(([selector, seenPixels]) => {
     }
     const { left, top, width, height } = document.querySelector(selector).getBoundingClientRect();
     return { lines, card: { left, top, width, height } };
-}, [CARD, SEEN_PIXELS]);
+}, [cardSelector, SEEN_PIXELS]);
 
 /** Photographs the page with the card's text hidden; `withLayer` false also takes the variant and the layer away. */
-async function photograph(page, variantStyle, withLayer) {
+async function photograph(page, card, variantStyle, withLayer) {
     // Through the text's fill, which no variant sets, so a variant's own colour can't show it again.
-    const hidden = await page.addStyleTag({ content: `${CARD} * { -webkit-text-fill-color: transparent !important; }` });
+    const hidden = await page.addStyleTag({ content: `${card} * { -webkit-text-fill-color: transparent !important; }` });
     const noLayer = withLayer ? null : await page.addStyleTag({
         // Every kind of layer: a border-image, or a background on the ::after.
-        content: `${CARD}, ${CARD}::after { border-image: none !important; } ${CARD}::after { background: none !important; }`,
+        content: `${card}, ${card}::after { border-image: none !important; } ${card}::after { background: none !important; }`,
     });
     if (!withLayer) await variantStyle.evaluate(style => { style.disabled = true; });
     const shot = (await page.screenshot()).toString("base64");
@@ -130,25 +134,25 @@ const analyse = (page, measurement) => page.evaluate(async ({ withLayer, without
     };
 }, measurement);
 
-/** One variant at one size: the worst line of text over every moment, and the share of the scene kept. */
-async function measure(browser, origin, variant, size) {
+/** One card in one variant at one size: the worst line of text over every moment, and the share of the scene kept. */
+async function measure(browser, origin, variant, size, { selector: cardSelector, live: liveSelector }) {
     const page = await browser.newPage({ viewport: size, deviceScaleFactor: 1 });
     await page.goto(`${origin}/index.html`);
     // A comment for the variant with no CSS: an empty style is refused.
-    const variantStyle = await page.addStyleTag({ content: variant.css(CARD) || `/* ${variant.id} */` });
+    const variantStyle = await page.addStyleTag({ content: variant.css(cardSelector) || `/* ${variant.id} */` });
     await page.evaluate(selector => {
         document.documentElement.style.scrollBehavior = "auto";
         document.querySelector(selector).scrollIntoView({ block: "center" });
-    }, CARD);
-    await page.waitForSelector(LIVE, { timeout: LIVE_TIMEOUT_MILLISECONDS });
+    }, cardSelector);
+    await page.waitForSelector(liveSelector, { timeout: LIVE_TIMEOUT_MILLISECONDS });
     await page.waitForTimeout(SETTLE_MILLISECONDS);
 
     const worst = new Map(), kept = [];
     for (let moment = 0; moment < MOMENTS; moment++) {
         if (moment) await page.waitForTimeout(MOMENT_MILLISECONDS);
-        const { lines, card } = await readText(page);
-        const withLayer = await photograph(page, variantStyle, true);
-        const withoutLayer = await photograph(page, variantStyle, false);
+        const { lines, card } = await readText(page, cardSelector);
+        const withLayer = await photograph(page, cardSelector, variantStyle, true);
+        const withoutLayer = await photograph(page, cardSelector, variantStyle, false);
         const result = await analyse(page, { withLayer, withoutLayer, lines, card, margin: TEXT_MARGIN, step: PIXEL_STEP });
         kept.push(result.sceneKept);
         for (const line of result.lines) {
@@ -191,13 +195,19 @@ const browser = await chromium.launch({ args: BROWSER_ARGS });
 const results = await lastResults();
 results.measuredAt = new Date().toISOString();
 try {
+    const sizes = Object.entries(SIZES).filter(([name]) => !lab.SIZE_NAMES || lab.SIZE_NAMES.includes(name));
     for (const variant of toMeasure) {
         results.variants[variant.id] = {};
-        for (const [name, size] of Object.entries(SIZES)) {
-            const result = await measure(browser, origin, variant, size);
-            results.variants[variant.id][name] = result;
-            console.log(`${variant.id.padEnd(8)} ${name.padEnd(8)} worst ${result.worstContrast}:1 (needs ${result.required}:1, `
-                + `"${result.worstText.slice(0, 30)}"), ${result.failingLines}/${result.lines} lines fail, scene kept ${Math.round(result.sceneKept * 100)}%`);
+        for (const card of CARDS) {
+            // A lab of one card keeps its results by size; a lab of several, by card and then size.
+            const byCard = card.name ? (results.variants[variant.id][card.name] = {}) : results.variants[variant.id];
+            for (const [name, size] of sizes) {
+                const result = await measure(browser, origin, variant, size, card);
+                byCard[name] = result;
+                console.log(`${variant.id.padEnd(8)} ${(card.name ?? "").padEnd(card.name ? 10 : 0)}${name.padEnd(8)} worst ${result.worstContrast}:1 `
+                    + `(needs ${result.required}:1, "${result.worstText.slice(0, 30)}"), ${result.failingLines}/${result.lines} lines fail, `
+                    + `scene kept ${Math.round(result.sceneKept * 100)}%`);
+            }
         }
     }
 } finally {

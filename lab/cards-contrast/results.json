@@ -1,0 +1,143 @@
+{
+    "variants": {
+        "today": {
+            "mec": {
+                "phone": {
+                    "worstContrast": 9.74,
+                    "worstText": "While Working for the government, I analysed, specified, modelled and developed systems for the federal\n                    government to interact with students, schools and universities.",
+                    "required": 4.5,
+                    "passes": true,
+                    "failingLines": 0,
+                    "lines": 6,
+                    "sceneKept": 0.47
+                }
+            },
+            "sli": {
+                "phone": {
+                    "worstContrast": 10.02,
+                    "worstText": "1.5 years",
+                    "required": 4.5,
+                    "passes": true,
+                    "failingLines": 0,
+                    "lines": 5,
+                    "sceneKept": 0.85
+                }
+            },
+            "otimicar": {
+                "phone": {
+                    "worstContrast": 7.62,
+                    "worstText": "Co-Founder",
+                    "required": 4.5,
+                    "passes": true,
+                    "failingLines": 0,
+                    "lines": 6,
+                    "sceneKept": 0.47
+                }
+            },
+            "thrifty": {
+                "phone": {
+                    "worstContrast": 14.88,
+                    "worstText": "Benjamin Franklin",
+                    "required": 4.5,
+                    "passes": true,
+                    "failingLines": 0,
+                    "lines": 9,
+                    "sceneKept": 0.46
+                }
+            }
+        },
+        "tuned": {
+            "mec": {
+                "phone": {
+                    "worstContrast": 4.25,
+                    "worstText": "Brazilian Ministry of Education",
+                    "required": 3,
+                    "passes": true,
+                    "failingLines": 0,
+                    "lines": 6,
+                    "sceneKept": 0.69
+                }
+            },
+            "sli": {
+                "phone": {
+                    "worstContrast": 8.76,
+                    "worstText": "Senior Data Engineer",
+                    "required": 4.5,
+                    "passes": true,
+                    "failingLines": 0,
+                    "lines": 5,
+                    "sceneKept": 0.84
+                }
+            },
+            "otimicar": {
+                "phone": {
+                    "worstContrast": 7.52,
+                    "worstText": "Co-Founder",
+                    "required": 4.5,
+                    "passes": true,
+                    "failingLines": 0,
+                    "lines": 6,
+                    "sceneKept": 0.72
+                }
+            },
+            "thrifty": {
+                "phone": {
+                    "worstContrast": 10.25,
+                    "worstText": "A penny saved is a penny earned.",
+                    "required": 4.5,
+                    "passes": true,
+                    "failingLines": 0,
+                    "lines": 9,
+                    "sceneKept": 0.77
+                }
+            }
+        },
+        "none": {
+            "mec": {
+                "phone": {
+                    "worstContrast": 3.97,
+                    "worstText": "While Working for the government, I analysed, specified, modelled and developed systems for the federal\n                    government to interact with students, schools and universities.",
+                    "required": 4.5,
+                    "passes": false,
+                    "failingLines": 2,
+                    "lines": 6,
+                    "sceneKept": 0.87
+                }
+            },
+            "sli": {
+                "phone": {
+                    "worstContrast": 7.69,
+                    "worstText": "Senior Data Engineer",
+                    "required": 4.5,
+                    "passes": true,
+                    "failingLines": 0,
+                    "lines": 5,
+                    "sceneKept": 0.87
+                }
+            },
+            "otimicar": {
+                "phone": {
+                    "worstContrast": 6.04,
+                    "worstText": "Developed the server that receives data from the car app\n                    and generates insights and recommendations for the car owner.\n                    It also allows the driver to share the data with car stores and mechanics.",
+                    "required": 4.5,
+                    "passes": true,
+                    "failingLines": 0,
+                    "lines": 6,
+                    "sceneKept": 0.94
+                }
+            },
+            "thrifty": {
+                "phone": {
+                    "worstContrast": 8.73,
+                    "worstText": "A penny saved is a penny earned.",
+                    "required": 4.5,
+                    "passes": true,
+                    "failingLines": 0,
+                    "lines": 9,
+                    "sceneKept": 0.88
+                }
+            }
+        }
+    },
+    "measuredAt": "2026-11-06T05:52:56.696Z"
+}
