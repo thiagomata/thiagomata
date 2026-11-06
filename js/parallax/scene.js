@@ -1,146 +1,98 @@
-// Draws the Parallax card's tunnel (tunnel.js) in three.js, seen through the card as a window: as
-// the page scrolls, the eye passes the window from above to below and the near targets slide past
-// the far frames. It draws at most 30 frames a second, only while the card is on screen and the eye
-// is moving; with reduced motion, it shows one still frame from the middle.
+// Draws the Parallax card's village (village.js) in three.js. As the page scrolls, the eye rises and
+// sinks past the painted layers; the camera always stays inside the painted part of the scene,
+// whatever the card's shape. It draws at most 30 frames a second, only while the card is on screen
+// and the eye is moving; with reduced motion, it shows one still frame from the middle.
 import * as THREE from "three";
-import { mergeGeometries } from "three/addons/utils/BufferGeometryUtils.js";
 import { MILLISECONDS_PER_SECOND, isTimeToDraw, pixelRatio } from "../shared/frame-rate.js";
 import { scrollShare } from "../shared/motion.js";
-import {
-    COLOURS, CUBES, EYE_DISTANCE, TARGET, TARGET_POSITIONS, TARGET_RINGS, TUNNEL,
-    easeTowards, eyeAt, frameGrey, windowFrustum, windowSize,
-} from "./tunnel.js";
+import { versioned } from "../shared/picture-versions.js";
+import { EYE, LAYERS, SKY, WATER, easeTowards, eyeHeightAt, framing } from "./village.js";
 
-/** The camera sees from just in front of the eye to past the end of the tunnel. */
-const NEAR = 1;
-const FAR = EYE_DISTANCE + TUNNEL.frames * TUNNEL.spacing * 2;
-const CIRCLE_SEGMENTS = 32;
-const STICK_SEGMENTS = 8;
-/** Each ring of a target sits this far in front of the one around it, so they never flicker. */
-const RING_GAP = 0.2;
+/** The site's root, so the pictures are found from the page and from the labs alike. */
+const SITE_ROOT = new URL("../../", import.meta.url);
+/** Transparent pixels below this alpha are cut out, so layers never hide what is behind them. */
+const ALPHA_CUTOFF = 0.5;
+/** The eye is still once this close to where it is heading: stop drawing. */
+const STILL_DISTANCE = 0.05;
 /** After a pause, carry on from where the eye was instead of jumping. */
 const MAX_STEP_SECONDS = 0.1;
-/** The eye is still once it is this close to where it is heading, in scene units: stop drawing. */
-const STILL_DISTANCE = 0.05;
-/** With reduced motion, the eye stays level with the middle of the window. */
+/** With reduced motion, the eye stays at rest, level with the middle of the scroll. */
 const LEVEL = 0.5;
+const toRadians = THREE.MathUtils.degToRad;
 
-const flatMaterial = colour => new THREE.MeshBasicMaterial({ color: colour });
+/** A point of the village (y down) in three.js's world (y up). */
+const fromVillage = ([across, down, depth]) => new THREE.Vector3(across, -down, depth);
 
-/** One frame of the tunnel: four bars around the window's edge, `depth` away. */
-function frameGeometry(width, height, depth) {
-    const bar = (barWidth, barHeight, centreX, centreY) => new THREE.PlaneGeometry(barWidth, barHeight).translate(centreX, centreY, -depth);
-    const { barWidth } = TUNNEL;
-    return mergeGeometries([
-        bar(width, barWidth, 0, (height - barWidth) / 2),
-        bar(width, barWidth, 0, -(height - barWidth) / 2),
-        bar(barWidth, height, -(width - barWidth) / 2, 0),
-        bar(barWidth, height, (width - barWidth) / 2, 0),
-    ]);
+/** A layer's picture: its versioned address, from the site's root. */
+const pictureAddress = picture => new URL(versioned(`./img/parallax-village/${picture}.webp`), SITE_ROOT).href;
+
+function layerMesh(loader, { picture, width, height, at, mirrored = false, tint = "#ffffff" }) {
+    const texture = loader.load(pictureAddress(picture));
+    texture.colorSpace = THREE.SRGBColorSpace;
+    const material = new THREE.MeshBasicMaterial({ map: texture, color: tint, alphaTest: ALPHA_CUTOFF, side: THREE.DoubleSide });
+    const mesh = new THREE.Mesh(new THREE.PlaneGeometry(width, height), material);
+    mesh.position.copy(fromVillage(at));
+    if (mirrored) mesh.scale.x = -1;
+    return mesh;
 }
 
-/** The tunnel's frames, the size of the window, each one further away and darker. */
-function tunnel(width, height) {
-    const group = new THREE.Group();
-    for (let index = 0; index < TUNNEL.frames; index++) {
-        const grey = frameGrey(index);
-        group.add(new THREE.Mesh(frameGeometry(width, height, index * TUNNEL.spacing), flatMaterial(new THREE.Color(grey, grey, grey))));
-    }
-    return group;
+function water() {
+    const floor = new THREE.Mesh(new THREE.PlaneGeometry(WATER.size, WATER.size), new THREE.MeshBasicMaterial({ color: WATER.colour }));
+    floor.rotation.x = -Math.PI / 2;
+    floor.position.copy(fromVillage(WATER.at));
+    return floor;
 }
 
-/** Every target's rings and sticks, merged into one mesh per colour. */
-function targets() {
-    const parts = { white: [], red: [], stick: [] };
-    for (const [targetX, targetY, depth] of TARGET_POSITIONS) {
-        TARGET_RINGS.forEach(([share, colour], index) => {
-            parts[colour].push(new THREE.CircleGeometry(TARGET.radius * share, CIRCLE_SEGMENTS).translate(targetX, targetY, depth + index * RING_GAP));
-        });
-        parts.stick.push(new THREE.CylinderGeometry(TARGET.stickRadius, TARGET.stickRadius, TARGET.stickLength, STICK_SEGMENTS)
-            .rotateX(Math.PI / 2)
-            .translate(targetX, targetY, depth - TARGET.stickLength / 2));
-    }
-    const group = new THREE.Group();
-    for (const [colour, geometries] of Object.entries(parts)) {
-        group.add(new THREE.Mesh(mergeGeometries(geometries), flatMaterial(COLOURS[colour])));
-    }
-    return group;
-}
-
-/** The coloured cubes on the floor, with white edges. */
-function cubes() {
-    const group = new THREE.Group();
-    const edges = new THREE.LineBasicMaterial({ color: COLOURS.white });
-    for (const { position, size, colour } of CUBES) {
-        const box = new THREE.BoxGeometry(size, size, size);
-        const cube = new THREE.Mesh(box, flatMaterial(COLOURS[colour]));
-        cube.add(new THREE.LineSegments(new THREE.EdgesGeometry(box), edges));
-        cube.position.set(...position);
-        group.add(cube);
-    }
-    return group;
-}
-
-/** Frees a group's geometries and materials (the tunnel is rebuilt when the card changes shape). */
-function dispose(group) {
-    group.traverse(part => {
-        part.geometry?.dispose();
-        part.material?.dispose();
-    });
-}
-
-/**
- * Draws the tunnel on a canvas inside `container` (positioned, any shape), with the eye following
- * the page's scroll. Throws if WebGL is unavailable.
- */
+/** Draws the village on a canvas inside `container`, moving with the page's scroll. Throws without WebGL. */
 export function start(container) {
     const canvas = document.createElement("canvas");
-    canvas.className = "parallax-tunnel";
+    canvas.className = "parallax-scene";
     canvas.setAttribute("aria-hidden", "true");
     const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
     renderer.setPixelRatio(pixelRatio());
-    renderer.setClearColor(COLOURS.background);
+    renderer.setClearColor(SKY);
     container.append(canvas);
 
     const scene = new THREE.Scene();
-    scene.add(targets(), cubes());
-    let frames = null, windowWidth = 1, windowHeight = 1;
-    const camera = new THREE.PerspectiveCamera();
+    const manager = new THREE.LoadingManager();
+    const loader = new THREE.TextureLoader(manager);
+    scene.add(water(), ...LAYERS.map(layer => layerMesh(loader, layer)));
+    const camera = new THREE.PerspectiveCamera(EYE.fieldOfViewDegrees, 1, EYE.near, EYE.far);
+    const [eyeAcross, , eyeDepth] = EYE.at;
+
     const scrolled = () => {
         const box = container.getBoundingClientRect();
         return scrollShare(box.top, box.height, window.innerHeight);
     };
-    const eye = eyeAt(scrolled());
+    let eyeHeight = eyeHeightAt(scrolled());
+    let view = framing(1);
 
     const draw = () => {
-        camera.position.set(eye[0], eye[1], EYE_DISTANCE);
-        const { left, right, top, bottom } = windowFrustum([eye[0], eye[1], EYE_DISTANCE], windowWidth, windowHeight, NEAR);
-        camera.projectionMatrix.makePerspective(left, right, top, bottom, NEAR, FAR);
-        camera.projectionMatrixInverse.copy(camera.projectionMatrix).invert();
+        camera.position.copy(fromVillage([eyeAcross, eyeHeight, eyeDepth]));
+        camera.rotation.set(toRadians(view.tilt), -toRadians(view.pan), 0, "YXZ");
         renderer.render(scene, camera);
     };
     const resize = () => {
         const { clientWidth: widthPixels, clientHeight: heightPixels } = container;
         if (!widthPixels || !heightPixels) return;
         renderer.setSize(widthPixels, heightPixels, false);
-        [windowWidth, windowHeight] = windowSize(widthPixels / heightPixels);
-        if (frames) {
-            scene.remove(frames);
-            dispose(frames);
-        }
-        frames = tunnel(windowWidth, windowHeight);
-        scene.add(frames);
+        camera.aspect = widthPixels / heightPixels;
+        view = framing(camera.aspect);
+        camera.fov = view.fieldOfView;
+        camera.updateProjectionMatrix();
         draw();
     };
+    manager.onLoad = draw;        // the pictures arrive after the first frame
+
     /** Eases the eye towards where the scroll puts it; false once it is there (nothing to draw). */
     const moveEye = stepSeconds => {
-        const target = eyeAt(scrolled());
-        if (target.every((value, axis) => Math.abs(value - eye[axis]) < STILL_DISTANCE)) return false;
-        target.forEach((value, axis) => { eye[axis] = easeTowards(eye[axis], value, stepSeconds); });
+        const target = eyeHeightAt(scrolled());
+        if (Math.abs(target - eyeHeight) < STILL_DISTANCE) return false;
+        eyeHeight = easeTowards(eyeHeight, target, stepSeconds);
         return true;
     };
     const drawStill = () => {
-        eye.splice(0, eye.length, ...eyeAt(LEVEL));
+        eyeHeight = eyeHeightAt(LEVEL);
         draw();
     };
 

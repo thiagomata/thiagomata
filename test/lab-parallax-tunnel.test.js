@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 import {
     CUBES, EYE_DISTANCE, EYE_REACH, TARGET, TARGET_POSITIONS, TUNNEL, WINDOW_SIDE, easeTowards, eyeAt, frameGrey, windowFrustum, windowSize,
-} from "../js/parallax/tunnel.js";
+} from "../lab/parallax-tunnel/tunnel.js";
 
 const closeTo = (actual, expected, message) => assert.ok(Math.abs(actual - expected) < 1e-9, message ?? `${actual} ≠ ${expected}`);
 const NEAR = 1;

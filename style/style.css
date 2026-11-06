@@ -1201,14 +1201,15 @@ p {
     flex-direction: column;
     align-items: flex-start;
 }
-/* Real Tutorial 9 scene; the overlay keeps the copy readable over debug markers. */
+/* A still of the card's village scene (js/parallax/scene.js), shown until the scene is live and
+   for good without WebGL; the overlay keeps the copy readable over it. */
 #projects [data-project="parallax"] {
     background-image:
         linear-gradient(90deg, rgba(13, 15, 18, .94), rgba(13, 15, 18, .68) 42%, rgba(13, 15, 18, .08)),
-        url("../img/parallax-depth.webp?v=fd9b9225");
+        url("../img/parallax-village.webp?v=afc55e74");
     background-position: center;
 }
-/* The live tunnel (js/parallax/scene.js) replaces the picture; the readability gradient moves to a
+/* The live village (js/parallax/scene.js) replaces the picture; the readability gradient moves to a
    layer above the tunnel and below the text. */
 #projects [data-project="parallax"].parallax-live {
     --readability: linear-gradient(90deg, rgba(13, 15, 18, .94), rgba(13, 15, 18, .68) 42%, rgba(13, 15, 18, .08));
@@ -1225,7 +1226,7 @@ p {
     background: var(--readability);
     pointer-events: none;
 }
-#projects [data-project="parallax"] .parallax-tunnel {
+#projects [data-project="parallax"] .parallax-scene {
     position: absolute;
     inset: 0;
     width: 100%;
@@ -1272,7 +1273,7 @@ p {
     #projects [data-project="parallax"] {
         background-image:
             linear-gradient(90deg, rgba(13, 15, 18, .90), rgba(13, 15, 18, .45)),
-            url("../img/parallax-depth.webp?v=fd9b9225");
+            url("../img/parallax-village.webp?v=afc55e74");
         background-position: center;
     }
     #projects [data-project="parallax"].parallax-live {
