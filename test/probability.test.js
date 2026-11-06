@@ -1,11 +1,11 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
-import { curvePoints, fitView, mixCurves, quantile, smooth, smoothPath, toPeak } from "../js/probability/curve.js";
+import { curvePoints, fitView, mixCurves, smooth, smoothPath, toPeak } from "../js/probability/curve.js";
 import { ANSWERS, PROBABILITIES } from "../js/probability/survey.js";
 
 const closeTo = (actual, expected, tolerance = 1e-9) => assert.ok(Math.abs(actual - expected) < tolerance, `${actual} ≠ ${expected}`);
 const DESIGN = { width: 1600, height: 670 };
-const CHART = { left: 790, top: 120, width: 720, height: 400 };
+const CHART = { left: 790, top: 150, width: 720, height: 370 };
 const MARGIN = 60;
 /** From a phone (0.5:1) to a very wide screen (4.5:1). */
 const CARD_SHAPES = [0.5, 0.54, 0.8, 1.2, 2.1, 1600 / 670, 2.8, 3.5, 4.5];
@@ -38,27 +38,26 @@ describe("Perceptions of Probability: the curve", () => {
         assert.deepEqual(mixCurves([0, 1], [1, 0], 0.25), [0.25, 0.75]);
     });
 
-    it("finds the median and quartiles, moving smoothly between probabilities", () => {
-        const flat = [1, 1, 1, 1, 1];
-        const probabilities = [0, 25, 50, 75, 100];
-        closeTo(quantile(probabilities, flat, 0.5), 50);
-        closeTo(quantile(probabilities, flat, 0.25), 25);
-        // People read "About Even" as about even, and "Almost Certainly" as very likely.
-        closeTo(quantile(PROBABILITIES, ANSWERS["About Even"], 0.5), 50, 2.5);
-        assert.ok(quantile(PROBABILITIES, ANSWERS["Almost Certainly"], 0.5) > 85);
-        assert.ok(quantile(PROBABILITIES, ANSWERS["Almost No Chance"], 0.5) < 10);
-    });
-
     it("places the curve in its box, peaks at the top", () => {
         const box = { left: 100, top: 50, width: 200, height: 100 };
         assert.deepEqual(curvePoints([0, 1, 0.5], box), [[100, 150], [200, 50], [300, 100]]);
     });
 
     it("draws a smooth path through every point", () => {
-        const path = smoothPath([[0, 10], [10, 0], [20, 10]]);
+        const path = smoothPath([[0, 10], [10, 0], [20, 10]], { left: 0, top: 0, width: 20, height: 10 });
         assert.match(path, /^M0\.0 10\.0 C/);
         assert.match(path, / 10\.0 0\.0 C/);
         assert.match(path, / 20\.0 10\.0$/);
+    });
+
+    it("never dips below the baseline or above the peak, beside a run of zeros", () => {
+        const box = { left: 0, top: 0, width: 200, height: 100 };
+        // A rise right after a flat zero stretch is where Catmull-Rom overshoots below the baseline.
+        const path = smoothPath(curvePoints([0, 0, 0, 1, 0.2, 0, 0], box), box);
+        const numbers = path.match(/-?\d+(\.\d+)?/g).map(Number);
+        const downs = numbers.filter((_, index) => index % 2 === 1);
+        assert.ok(Math.max(...downs) <= box.top + box.height, "below the baseline");
+        assert.ok(Math.min(...downs) >= box.top, "above the peak");
     });
 });
 

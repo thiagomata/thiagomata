@@ -1,6 +1,6 @@
 // The maths of the "Perceptions of Probability" card's curve (drawn by scene.js): each phrase's
 // survey answers (survey.js), smoothed and scaled to one height, mixed from one phrase to the next,
-// their median and quartiles, the curve's path, and how the chart fits a card of any shape.
+// the curve's path, and how the chart fits a card of any shape.
 import { clamp, lerp } from "../shared/motion.js";
 
 /** The answers are spiky (46 people); a small binomial blur turns them into a curve. */
@@ -25,41 +25,28 @@ export function toPeak(values) {
 /** The curve `share` of the way from `first` to `second`, point by point. */
 export const mixCurves = (first, second, share) => first.map((value, index) => lerp(value, second[index], share));
 
-/**
- * The probability (in the units of `probabilities`) below which `share` of the answers fall: 0.5
- * gives the median, 0.25 and 0.75 the quartiles. The answers are read as spread evenly between
- * neighbouring probabilities, so the result moves smoothly as the curve does.
- */
-export function quantile(probabilities, values, share) {
-    const segments = values.slice(1).map((value, index) => (values[index] + value) / 2);
-    const total = segments.reduce((sum, mass) => sum + mass, 0);
-    let below = 0;
-    for (let index = 0; index < segments.length; index++) {
-        const mass = segments[index];
-        if (mass > 0 && below + mass >= share * total) {
-            return lerp(probabilities[index], probabilities[index + 1], (share * total - below) / mass);
-        }
-        below += mass;
-    }
-    return probabilities.at(-1);
-}
-
 /** Where `values` (0 to 1) sit in `box` ({ left, top, width, height }, y down), evenly spread across it. */
 export const curvePoints = (values, box) => values.map((value, index) => [
     box.left + box.width * index / (values.length - 1),
     box.top + box.height * (1 - value),
 ]);
 
-/** A smooth SVG path through `points` (Catmull-Rom, as cubic Béziers), rounded to `decimals`. */
-export function smoothPath(points, decimals = 1) {
+/**
+ * A smooth SVG path through `points` (Catmull-Rom, as cubic Béziers), rounded to `decimals`. Each
+ * Bézier's handles are kept inside `box` ({ left, top, width, height }): a Bézier never strays
+ * outside its points and handles, so the curve can't overshoot the box (dipping below the baseline
+ * beside a run of zeros, as Catmull-Rom otherwise does).
+ */
+export function smoothPath(points, box, decimals = 1) {
+    const inside = ([across, down]) => [clamp(across, box.left, box.left + box.width), clamp(down, box.top, box.top + box.height)];
     const at = index => points[clamp(index, 0, points.length - 1)];
     const number = value => value.toFixed(decimals);
     const SMOOTHNESS = 6;       // Catmull-Rom's handles reach a sixth of the way to the next points
     let path = `M${number(points[0][0])} ${number(points[0][1])}`;
     for (let index = 0; index < points.length - 1; index++) {
         const [before, from, to, after] = [at(index - 1), at(index), at(index + 1), at(index + 2)];
-        const first = [from[0] + (to[0] - before[0]) / SMOOTHNESS, from[1] + (to[1] - before[1]) / SMOOTHNESS];
-        const second = [to[0] - (after[0] - from[0]) / SMOOTHNESS, to[1] - (after[1] - from[1]) / SMOOTHNESS];
+        const first = inside([from[0] + (to[0] - before[0]) / SMOOTHNESS, from[1] + (to[1] - before[1]) / SMOOTHNESS]);
+        const second = inside([to[0] - (after[0] - from[0]) / SMOOTHNESS, to[1] - (after[1] - from[1]) / SMOOTHNESS]);
         path += ` C${number(first[0])} ${number(first[1])} ${number(second[0])} ${number(second[1])} ${number(to[0])} ${number(to[1])}`;
     }
     return path;
