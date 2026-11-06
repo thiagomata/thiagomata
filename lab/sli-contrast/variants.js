@@ -4,8 +4,8 @@
 /** The card, and what shows its live scene has started (for tools/check-contrast.js). */
 export const CARD = '#top-companies section[data-company="sli"]';
 export const LIVE = `${CARD}.is-live`;
-/** Only wide screens: phones keep their own layer. */
-export const SIZE_NAMES = ["desktop"];
+/** Wide screens and phones: the same layer works on both. */
+export const SIZE_NAMES = ["desktop", "phone"];
 
 /**
  * The card's layer in its own dark, as tuned in tuner.html: across, solid until `hold` and gone by
@@ -23,10 +23,10 @@ const tunedLayer = ({ hold, clear, top, middle, middleAt, bottom, shade }) => ca
     ${card} .live-bg .shade { fill-opacity: ${shade}; }`;
 
 export const VARIANTS = [
-    { id: "today", label: "Today: the card's own layer, the animation's shade at 85%", css: () => "" },
+    { id: "today", label: "The page as it is (the tuned layer, since 2026-11-06)", css: () => "" },
     {
         id: "tuned",
-        label: "Tuned: 90% top, 62% middle (at 62%), 40% bottom; fading from 0% to 100%; the animation's shade at 5%",
-        css: tunedLayer({ hold: "0%", clear: "100%", top: 0.9, middle: 0.62, middleAt: "62%", bottom: 0.4, shade: 0.05 }),
+        label: "Tuned: 90% top, 62% middle (at 62%), 55% bottom; fading from 0% to 100%; the animation's shade at 5%",
+        css: tunedLayer({ hold: "0%", clear: "100%", top: 0.9, middle: 0.62, middleAt: "62%", bottom: 0.55, shade: 0.05 }),
     },
 ];
