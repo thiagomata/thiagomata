@@ -1265,6 +1265,8 @@ p {
 #projects .project-links a:focus-visible { outline: 2px solid white; outline-offset: 5px; }
 @media (max-width: 43em) {
     #projects .project-banner { padding: 24px; background-position: 25% center; }
+    /* The primes' grid sits on the right half of its picture (about 820 to 1390 of 1600): centre it. */
+    #projects [data-project="primes"] { background-position: 75% center; }
     #projects .project-links { width: 100%; }
     #projects .project-links a { width: 100%; }
 }
