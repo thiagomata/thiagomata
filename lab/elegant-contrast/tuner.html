@@ -45,6 +45,12 @@
         #values.dark section.value-elegant :is(h3, h4, p, span, li, i) {
             color: #fff;
         }
+        /* A dark shadow around each letter: a tight one for the edges and a soft halo around it. */
+        #values section.value-elegant :is(h3, h4, p, span, li, i) {
+            text-shadow:
+                0 1px calc(var(--shadow-size) / 3) rgba(0, 0, 0, var(--shadow-strength)),
+                0 0 var(--shadow-size) rgba(0, 0, 0, calc(var(--shadow-strength) * 0.7));
+        }
     </style>
     <script type="importmap">
         {
@@ -58,13 +64,16 @@
 <body>
     <div class="controls">
         <label><input type="checkbox" id="dark" checked style="width: auto" /> Dark: white text on deep colours</label>
-        <label>Top <input type="range" id="top" min="0" max="100" value="77" /> <output for="top"></output></label>
-        <label>Middle <input type="range" id="middle" min="0" max="100" value="77" /> <output for="middle"></output></label>
-        <label>Bottom <input type="range" id="bottom" min="0" max="100" value="77" /> <output for="bottom"></output></label>
+        <label>Top <input type="range" id="top" min="0" max="100" value="44" /> <output for="top"></output></label>
+        <label>Middle <input type="range" id="middle" min="0" max="100" value="73" /> <output for="middle"></output></label>
+        <label>Bottom <input type="range" id="bottom" min="0" max="100" value="64" /> <output for="bottom"></output></label>
         <label>Middle at <input type="range" id="middle-at" min="0" max="100" value="50" /> <output for="middle-at"></output></label>
-        <label>Starts to fade at <input type="range" id="hold" min="0" max="100" value="19" /> <output for="hold"></output></label>
-        <label>Gone by <input type="range" id="clear" min="0" max="100" value="57" /> <output for="clear"></output></label>
+        <label>Starts to fade at <input type="range" id="hold" min="0" max="100" value="17" /> <output for="hold"></output></label>
+        <label>Gone by <input type="range" id="clear" min="0" max="100" value="53" /> <output for="clear"></output></label>
+        <label>Text shadow <input type="range" id="shadow-strength" min="0" max="100" value="0" /> <output for="shadow-strength"></output></label>
+        <label>Shadow size <input type="range" id="shadow-size" min="0" max="30" value="8" /> <output for="shadow-size"></output></label>
         <code id="css"></code>
+        <code id="shadow-css"></code>
     </div>
     <article id="values"></article>
 
@@ -74,6 +83,18 @@
         const sliders = ["top", "middle", "bottom", "middle-at", "hold", "clear"].map(id => document.getElementById(id));
         const [top, middle, bottom, middleAt, hold, clear] = sliders;
         const share = slider => slider.value / 100;
+        const shadowStrength = document.getElementById("shadow-strength");
+        const shadowSize = document.getElementById("shadow-size");
+        /** Moves the text's shadow to its sliders, and shows its CSS. */
+        const applyShadow = () => {
+            article.style.setProperty("--shadow-strength", share(shadowStrength));
+            article.style.setProperty("--shadow-size", `${shadowSize.value}px`);
+            shadowStrength.nextElementSibling.value = `${shadowStrength.value}%`;
+            shadowSize.nextElementSibling.value = `${shadowSize.value}px`;
+            document.getElementById("shadow-css").textContent = `text-shadow: 0 1px ${(shadowSize.value / 3).toFixed(1)}px rgba(0, 0, 0, ${share(shadowStrength)}), `
+                + `0 0 ${shadowSize.value}px rgba(0, 0, 0, ${(share(shadowStrength) * 0.7).toFixed(2)});`;
+        };
+        for (const slider of [shadowStrength, shadowSize]) slider.addEventListener("input", applyShadow);
         const article = document.querySelector("#values");
         const dark = document.getElementById("dark");
         const showTheme = () => article.classList.toggle("dark", dark.checked);
@@ -93,6 +114,7 @@
         };
         for (const slider of sliders) slider.addEventListener("input", () => apply(slider));
         apply(middle);
+        applyShadow();
 
         const template = await realCard();
         const wide = template.cloneNode(true);
