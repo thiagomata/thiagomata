@@ -1377,7 +1377,7 @@ p {
     inset: 0;
     z-index: -1;
     pointer-events: none;
-    background: rgb(16, 23, 28);
+    background: var(--probability-layer, rgb(16, 23, 28));
     mask-image:
         linear-gradient(90deg, #000 0, #000 var(--layer-hold), transparent var(--layer-clear)),
         linear-gradient(rgba(0, 0, 0, var(--layer-top)), rgba(0, 0, 0, var(--layer-middle)) var(--layer-middle-at), rgba(0, 0, 0, var(--layer-bottom)));
@@ -1421,4 +1421,67 @@ p {
         linear-gradient(90deg, #000 0, #000 max(0%, 600px), transparent max(100%, 760px)),
         linear-gradient(rgba(0, 0, 0, 0.9), rgba(0, 0, 0, 0.62) 62%, rgba(0, 0, 0, 0.55));
     mask-composite: intersect;
+}
+
+/* Light mode, following the visitor's system; dark mode is the page as it always was. The page
+   turns light: its background and text are the two colours `body` swaps above, back to light paper
+   and dark ink. The picture cards stay dark panels, with their own tuned layers: inside them the
+   two colours are swapped back. The cards with plain backgrounds (Perceptions of Probability, Prime
+   Numbers, More About Me) turn light with the page. */
+@media (prefers-color-scheme: light) {
+    body {
+        --ink: rgb(28, 32, 38);
+        --paper: rgb(244, 245, 247);
+        --dark-80: var(--ink);
+        --light-80: var(--paper);
+    }
+    p {
+        color: var(--dark-80);
+    }
+    :is(#top-companies section, #values section, #projects .project-banner, #cv .checkout) {
+        --dark-80: var(--gray-2);
+        --light-80: var(--gray-11);
+        color: #e9ecef;
+    }
+
+    /* The light cards: dark text, no dark shadow, on light versions of their backgrounds. */
+    :is(#projects [data-project="probability"], #projects [data-project="primes"], #cv .checkout) {
+        --dark-80: var(--ink);
+        --light-80: var(--paper);
+        color: var(--ink);
+        text-shadow: none;
+    }
+    #projects [data-project="probability"] {
+        --probability-from: rgb(240, 245, 244);
+        --probability-to: rgb(225, 234, 232);
+        --probability-stroke: rgb(46, 120, 96);
+        --probability-layer: rgb(244, 245, 247);
+    }
+    #projects [data-project="probability"]:not(.probability-live) {
+        background-image: linear-gradient(90deg, rgb(240, 245, 244), rgb(225, 234, 232));
+    }
+    #projects [data-project="primes"] {
+        background-image: url("../img/project-primes-light.svg?v=a49396f7");
+    }
+    #cv .checkout {
+        border-image: linear-gradient(270deg, rgb(214, 226, 234), rgb(234, 239, 243), rgb(247, 248, 250)) fill 1;
+    }
+    #cv .checkout a:not(.see-more a),
+    .internal-link {
+        color: var(--ink);
+    }
+    /* Their buttons turn light too: ink text and border on a light background. */
+    :is(#projects [data-project="probability"], #projects [data-project="primes"]) .project-links a,
+    #cv .checkout .see-more a {
+        color: var(--ink);
+        border-color: rgba(28, 32, 38, 0.5);
+        background: rgba(255, 255, 255, 0.55);
+    }
+}
+@media (prefers-color-scheme: light) and (max-width: 43em) {
+    #projects [data-project="primes"] {
+        background-image:
+            linear-gradient(90deg, rgba(244, 245, 247, 0.55), rgba(244, 245, 247, 0.3)),
+            url("../img/project-primes-light.svg?v=a49396f7");
+    }
 }

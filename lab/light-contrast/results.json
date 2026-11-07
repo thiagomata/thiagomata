@@ -1,0 +1,339 @@
+{
+    "variants": {
+        "today": {
+            "probability": {
+                "desktop": {
+                    "worstContrast": 14.73,
+                    "worstText": "An interactive tool for discussing uncertainty, with survey-based distributions, a model of Sherman Kent’s probability scale, and estimation cards.",
+                    "required": 4.5,
+                    "passes": true,
+                    "failingLines": 0,
+                    "lines": 7,
+                    "byLine": [
+                        {
+                            "text": "Perceptions of Probability",
+                            "contrast": 14.54,
+                            "required": 3
+                        },
+                        {
+                            "text": "Making uncertainty easier to discuss",
+                            "contrast": 14.63,
+                            "required": 3
+                        },
+                        {
+                            "text": "An interactive tool for discussing uncertainty, with survey-based distributions, a model of Sherman Kent’s probability scale, and estimation cards.",
+                            "contrast": 14.73,
+                            "required": 4.5
+                        },
+                        {
+                            "text": "Try the calculator",
+                            "contrast": 15.52,
+                            "required": 4.5
+                        },
+                        {
+                            "text": "Survey cards",
+                            "contrast": 15.52,
+                            "required": 4.5
+                        },
+                        {
+                            "text": "Kent model cards",
+                            "contrast": 15.52,
+                            "required": 4.5
+                        },
+                        {
+                            "text": "Explore the code",
+                            "contrast": 15.34,
+                            "required": 4.5
+                        }
+                    ],
+                    "sceneKept": 0.84
+                },
+                "phone": {
+                    "worstContrast": 13.86,
+                    "worstText": "An interactive tool for discussing uncertainty, with survey-based distributions, a model of Sherman Kent’s probability scale, and estimation cards.",
+                    "required": 4.5,
+                    "passes": true,
+                    "failingLines": 0,
+                    "lines": 7,
+                    "byLine": [
+                        {
+                            "text": "Perceptions of Probability",
+                            "contrast": 14.51,
+                            "required": 3
+                        },
+                        {
+                            "text": "Making uncertainty easier to discuss",
+                            "contrast": 14.63,
+                            "required": 3
+                        },
+                        {
+                            "text": "An interactive tool for discussing uncertainty, with survey-based distributions, a model of Sherman Kent’s probability scale, and estimation cards.",
+                            "contrast": 13.86,
+                            "required": 4.5
+                        },
+                        {
+                            "text": "Try the calculator",
+                            "contrast": 15.64,
+                            "required": 4.5
+                        },
+                        {
+                            "text": "Survey cards",
+                            "contrast": 15.61,
+                            "required": 4.5
+                        },
+                        {
+                            "text": "Kent model cards",
+                            "contrast": 15.61,
+                            "required": 4.5
+                        },
+                        {
+                            "text": "Explore the code",
+                            "contrast": 15.52,
+                            "required": 4.5
+                        }
+                    ],
+                    "sceneKept": 0.91
+                }
+            },
+            "primes": {
+                "desktop": {
+                    "worstContrast": 13.92,
+                    "worstText": "Research in Scala and Stainless, distinguishing verified properties from open questions.",
+                    "required": 4.5,
+                    "passes": true,
+                    "failingLines": 0,
+                    "lines": 7,
+                    "byLine": [
+                        {
+                            "text": "Prime Numbers",
+                            "contrast": 14.07,
+                            "required": 3
+                        },
+                        {
+                            "text": "Exploring mathematics through formal verification",
+                            "contrast": 13.93,
+                            "required": 3
+                        },
+                        {
+                            "text": "Research in Scala and Stainless, distinguishing verified properties from open questions.",
+                            "contrast": 13.92,
+                            "required": 4.5
+                        },
+                        {
+                            "text": "Division & Modulo · Article",
+                            "contrast": 15.27,
+                            "required": 4.5
+                        },
+                        {
+                            "text": "Sieve Sequences · Article",
+                            "contrast": 15.24,
+                            "required": 4.5
+                        },
+                        {
+                            "text": "Gap Dynamics · Article",
+                            "contrast": 15.11,
+                            "required": 4.5
+                        },
+                        {
+                            "text": "Explore the code",
+                            "contrast": 15.08,
+                            "required": 4.5
+                        }
+                    ],
+                    "sceneKept": 1
+                },
+                "phone": {
+                    "worstContrast": 13.91,
+                    "worstText": "Research in Scala and Stainless, distinguishing verified properties from open questions.",
+                    "required": 4.5,
+                    "passes": true,
+                    "failingLines": 0,
+                    "lines": 7,
+                    "byLine": [
+                        {
+                            "text": "Prime Numbers",
+                            "contrast": 13.95,
+                            "required": 3
+                        },
+                        {
+                            "text": "Exploring mathematics through formal verification",
+                            "contrast": 13.95,
+                            "required": 3
+                        },
+                        {
+                            "text": "Research in Scala and Stainless, distinguishing verified properties from open questions.",
+                            "contrast": 13.91,
+                            "required": 4.5
+                        },
+                        {
+                            "text": "Division & Modulo · Article",
+                            "contrast": 15.23,
+                            "required": 4.5
+                        },
+                        {
+                            "text": "Sieve Sequences · Article",
+                            "contrast": 15.23,
+                            "required": 4.5
+                        },
+                        {
+                            "text": "Gap Dynamics · Article",
+                            "contrast": 15.24,
+                            "required": 4.5
+                        },
+                        {
+                            "text": "Explore the code",
+                            "contrast": 15.27,
+                            "required": 4.5
+                        }
+                    ],
+                    "sceneKept": 1
+                }
+            },
+            "cv": {
+                "desktop": {
+                    "worstContrast": 13.73,
+                    "worstText": "thiago.henrique.mata@gmail.com",
+                    "required": 4.5,
+                    "passes": true,
+                    "failingLines": 0,
+                    "lines": 12,
+                    "byLine": [
+                        {
+                            "text": "More About Me",
+                            "contrast": 14.53,
+                            "required": 3
+                        },
+                        {
+                            "text": "Explore my professional journey, skills, and achievements in detail.",
+                            "contrast": 14.28,
+                            "required": 3
+                        },
+                        {
+                            "text": "You can also reach me on",
+                            "contrast": 14.97,
+                            "required": 4.5
+                        },
+                        {
+                            "text": "Linkedin",
+                            "contrast": 14.84,
+                            "required": 4.5
+                        },
+                        {
+                            "text": ",",
+                            "contrast": 14.57,
+                            "required": 4.5
+                        },
+                        {
+                            "text": "Twitter",
+                            "contrast": 14.71,
+                            "required": 4.5
+                        },
+                        {
+                            "text": "GitHub",
+                            "contrast": 14.66,
+                            "required": 4.5
+                        },
+                        {
+                            "text": "StackOverflow",
+                            "contrast": 14.44,
+                            "required": 4.5
+                        },
+                        {
+                            "text": ",\n                    or by email at",
+                            "contrast": 14.28,
+                            "required": 4.5
+                        },
+                        {
+                            "text": "thiago.henrique.mata@gmail.com",
+                            "contrast": 13.73,
+                            "required": 4.5
+                        },
+                        {
+                            "text": "One Page CV",
+                            "contrast": 15.69,
+                            "required": 4.5
+                        },
+                        {
+                            "text": "Detailed CV",
+                            "contrast": 15.49,
+                            "required": 4.5
+                        }
+                    ],
+                    "sceneKept": 4.01
+                },
+                "phone": {
+                    "worstContrast": 13.03,
+                    "worstText": ",",
+                    "required": 4.5,
+                    "passes": true,
+                    "failingLines": 0,
+                    "lines": 12,
+                    "byLine": [
+                        {
+                            "text": "More About Me",
+                            "contrast": 13.88,
+                            "required": 3
+                        },
+                        {
+                            "text": "Explore my professional journey, skills, and achievements in detail.",
+                            "contrast": 13.41,
+                            "required": 3
+                        },
+                        {
+                            "text": "You can also reach me on",
+                            "contrast": 13.85,
+                            "required": 4.5
+                        },
+                        {
+                            "text": "Linkedin",
+                            "contrast": 13.17,
+                            "required": 4.5
+                        },
+                        {
+                            "text": ",",
+                            "contrast": 13.03,
+                            "required": 4.5
+                        },
+                        {
+                            "text": "Twitter",
+                            "contrast": 14.82,
+                            "required": 4.5
+                        },
+                        {
+                            "text": "GitHub",
+                            "contrast": 14.4,
+                            "required": 4.5
+                        },
+                        {
+                            "text": "StackOverflow",
+                            "contrast": 13.47,
+                            "required": 4.5
+                        },
+                        {
+                            "text": ",\n                    or by email at",
+                            "contrast": 13.05,
+                            "required": 4.5
+                        },
+                        {
+                            "text": "thiago.henrique.mata@gmail.com",
+                            "contrast": 13.43,
+                            "required": 4.5
+                        },
+                        {
+                            "text": "One Page CV",
+                            "contrast": 15.2,
+                            "required": 4.5
+                        },
+                        {
+                            "text": "Detailed CV",
+                            "contrast": 15.11,
+                            "required": 4.5
+                        }
+                    ],
+                    "sceneKept": 0.74
+                }
+            }
+        }
+    },
+    "measuredAt": "2026-11-07T00:34:17.355Z"
+}
