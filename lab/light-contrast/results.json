@@ -3,8 +3,8 @@
         "today": {
             "probability": {
                 "desktop": {
-                    "worstContrast": 10.04,
-                    "worstText": "Try the calculator",
+                    "worstContrast": 14.73,
+                    "worstText": "An interactive tool for discussing uncertainty, with survey-based distributions, a model of Sherman Kent’s probability scale, and estimation cards.",
                     "required": 4.5,
                     "passes": true,
                     "failingLines": 0,
@@ -27,30 +27,30 @@
                         },
                         {
                             "text": "Try the calculator",
-                            "contrast": 10.04,
+                            "contrast": 15.52,
                             "required": 4.5
                         },
                         {
                             "text": "Survey cards",
-                            "contrast": 10.04,
+                            "contrast": 15.52,
                             "required": 4.5
                         },
                         {
                             "text": "Kent model cards",
-                            "contrast": 10.04,
+                            "contrast": 15.52,
                             "required": 4.5
                         },
                         {
                             "text": "Explore the code",
-                            "contrast": 10.07,
+                            "contrast": 15.34,
                             "required": 4.5
                         }
                     ],
-                    "sceneKept": 0.83
+                    "sceneKept": 0.84
                 },
                 "phone": {
-                    "worstContrast": 10.04,
-                    "worstText": "Try the calculator",
+                    "worstContrast": 13.86,
+                    "worstText": "An interactive tool for discussing uncertainty, with survey-based distributions, a model of Sherman Kent’s probability scale, and estimation cards.",
                     "required": 4.5,
                     "passes": true,
                     "failingLines": 0,
@@ -73,32 +73,32 @@
                         },
                         {
                             "text": "Try the calculator",
-                            "contrast": 10.04,
+                            "contrast": 15.64,
                             "required": 4.5
                         },
                         {
                             "text": "Survey cards",
-                            "contrast": 10.04,
+                            "contrast": 15.61,
                             "required": 4.5
                         },
                         {
                             "text": "Kent model cards",
-                            "contrast": 10.04,
+                            "contrast": 15.61,
                             "required": 4.5
                         },
                         {
                             "text": "Explore the code",
-                            "contrast": 10.04,
+                            "contrast": 15.52,
                             "required": 4.5
                         }
                     ],
-                    "sceneKept": 0.9
+                    "sceneKept": 0.91
                 }
             },
             "primes": {
                 "desktop": {
-                    "worstContrast": 10.18,
-                    "worstText": "Division & Modulo · Article",
+                    "worstContrast": 13.92,
+                    "worstText": "Research in Scala and Stainless, distinguishing verified properties from open questions.",
                     "required": 4.5,
                     "passes": true,
                     "failingLines": 0,
@@ -121,30 +121,30 @@
                         },
                         {
                             "text": "Division & Modulo · Article",
-                            "contrast": 10.18,
+                            "contrast": 15.27,
                             "required": 4.5
                         },
                         {
                             "text": "Sieve Sequences · Article",
-                            "contrast": 10.18,
+                            "contrast": 15.24,
                             "required": 4.5
                         },
                         {
                             "text": "Gap Dynamics · Article",
-                            "contrast": 10.21,
+                            "contrast": 15.11,
                             "required": 4.5
                         },
                         {
                             "text": "Explore the code",
-                            "contrast": 10.33,
+                            "contrast": 15.08,
                             "required": 4.5
                         }
                     ],
                     "sceneKept": 1
                 },
                 "phone": {
-                    "worstContrast": 10.18,
-                    "worstText": "Division & Modulo · Article",
+                    "worstContrast": 13.91,
+                    "worstText": "Research in Scala and Stainless, distinguishing verified properties from open questions.",
                     "required": 4.5,
                     "passes": true,
                     "failingLines": 0,
@@ -167,22 +167,22 @@
                         },
                         {
                             "text": "Division & Modulo · Article",
-                            "contrast": 10.18,
+                            "contrast": 15.23,
                             "required": 4.5
                         },
                         {
                             "text": "Sieve Sequences · Article",
-                            "contrast": 10.18,
+                            "contrast": 15.23,
                             "required": 4.5
                         },
                         {
                             "text": "Gap Dynamics · Article",
-                            "contrast": 10.18,
+                            "contrast": 15.24,
                             "required": 4.5
                         },
                         {
                             "text": "Explore the code",
-                            "contrast": 10.18,
+                            "contrast": 15.27,
                             "required": 4.5
                         }
                     ],
@@ -335,5 +335,5 @@
             }
         }
     },
-    "measuredAt": "2026-11-06T23:49:08.910Z"
+    "measuredAt": "2026-11-07T00:34:17.355Z"
 }

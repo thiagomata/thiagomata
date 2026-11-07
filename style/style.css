@@ -1470,6 +1470,8 @@ p {
     .internal-link {
         color: var(--ink);
     }
+    /* Their buttons turn light too: ink text and border on a light background. */
+    :is(#projects [data-project="probability"], #projects [data-project="primes"]) .project-links a,
     #cv .checkout .see-more a {
         color: var(--ink);
         border-color: rgba(28, 32, 38, 0.5);
