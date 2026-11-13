@@ -26,6 +26,7 @@ const VERSIONS = {
     "./img/macquarie-horizontal.svg": "d79b3125",
     "./img/macquarie.svg": "e5064d89",
     "./img/mec.svg": "bf64ca76",
+    "./img/og-card.png": "90572c93",
     "./img/otimicar-with-text.svg": "100c07b5",
     "./img/otimicar.svg": "652bc618",
     "./img/otimicar/arch-panel.svg": "ada7ef9e",

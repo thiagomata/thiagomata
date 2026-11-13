@@ -8,7 +8,7 @@
 | Position: | Senior Data Engineer                                |
 | Summary:  | We developed new AI products and migrated the existing ones to the cloud. In this new infrastructure, I implemented many of the improvements proposed by the AI team. |
 
-##  SLI-Systems
+##  SLI Systems
 
 <div style="background-color: black; display: flex; justify-content: center; align-items: center; height: 100px;">
 <img src="../img/sli.svg" style="height:90px;"/>
@@ -16,9 +16,9 @@
 
 ---
 
-SLI-Systems is a technology company that specializes in helping e-commerce companies improve their search and navigation experience. Founded in 2001, it has offices in New Zealand, Australia, the United States, the United Kingdom, and Japan. SLI-Systems has over 1,000 customers worldwide, including Staples, Office Depot, and Harry & David.
+SLI Systems is a technology company that specializes in helping e-commerce companies improve their search and navigation experience. Founded in 2001, it has offices in New Zealand, Australia, the United States, the United Kingdom, and Japan. SLI Systems has over 1,000 customers worldwide, including Staples, Office Depot, and Harry & David.
 
-I worked at SLI-Systems as a Senior Data Engineer for one and a half years. My work consisted of developing new AI products by translating the models from the Data Scientist to SQL and Spark Streaming and migrating the existing products to the cloud.
+I worked at SLI Systems as a Senior Data Engineer for one year and eight months. My work consisted of developing new AI products by translating the models from the Data Scientist to SQL and Spark Streaming and migrating the existing products to the cloud.
 
 ## To the Cloud
 
@@ -38,4 +38,4 @@ One of the company's main goals was migrating the services to the Google Cloud. 
 - Google BigQuery
 - Google Spanner
 - Google Pub/Sub
-- ElasticSearch
+- Elasticsearch

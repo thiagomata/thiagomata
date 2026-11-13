@@ -33,7 +33,7 @@ The Bot Detection project monitors all the public requests to the company's plat
 
 ## Technologies
 
-- GoLang
+- Go
 - Istio
 - Envoy Proxy
 - WASM
