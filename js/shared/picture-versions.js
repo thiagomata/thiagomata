@@ -16,6 +16,7 @@ const VERSIONS = {
     "./img/coin-girl.svg": "f597b31c",
     "./img/conversion.svg": "2b4fa80d",
     "./img/engine.jpg": "ef2c293b",
+    "./img/favicon.svg": "00b3af8c",
     "./img/ideia-white.svg": "3093e7ba",
     "./img/ideia.svg": "396c1335",
     "./img/identity.svg": "971acc77",
