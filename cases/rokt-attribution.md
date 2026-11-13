@@ -24,7 +24,7 @@ I worked at Rokt as a Senior Software Engineer for five years. My work involved 
 
 | &nbsp; | &nbsp; |
 |--------|--------|
-| Properly attributing the campaign events to the desired outcome is a complex task that requires comparing many events and applying different attribution rules per campaign to ensure consistency and explainability. Properly measuring how successful a campaign is is crucial for clients to understand the return on investment. It is also important to guide the machine learning models in better predicting and optimizing the campaigns. | <img width="1000px" src="../img/conversion.svg"> |
+| Properly attributing the campaign events to the desired outcome is a complex task that requires comparing many events and applying different attribution rules per campaign to ensure consistency and explainability. Measuring a campaign's success properly is crucial for clients to understand the return on investment. It is also important to guide the machine learning models in better predicting and optimizing the campaigns. | <img width="1000px" src="../img/conversion.svg"> |
 
 ## Impact
 

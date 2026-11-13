@@ -64,7 +64,7 @@ prepared the company for its merger with Pinion.
 
 - [Alexandria](./cases/ideia-alexandria.md)
 
-### OtimiCar · Co-Founder · 2013–2014
+### Otimicar · Co-Founder · 2013–2014
 
 <div style="background-color: black; display: flex; justify-content: center; align-items: center; height: 100px;">
 <img src="./img/otimicar-with-text.svg"  style="height:90px;"/>
