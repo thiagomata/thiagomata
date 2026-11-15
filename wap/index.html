@@ -1,0 +1,1295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WAP Phone - thiagomata.com edition</title>
+<style>
+  :root {
+    --lcd: #9cb23a;
+    --lcd-dark: #7e922e;
+    --pixel: #1c2410;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    min-height: 100vh;
+    padding: 12px 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(160deg, #2a2d33, #15171b);
+    font-family: "Courier New", monospace;
+  }
+  .phone {
+    background: linear-gradient(100deg, #2b2f36 0%, #474c55 45%, #2b2f36 100%);
+    border-radius: 60px 60px 46px 46px / 40px 40px 34px 34px;
+    padding: 18px 18px 0;
+    box-shadow: 0 24px 60px rgba(0,0,0,.6), inset 0 1px 0 rgba(255,255,255,.12),
+                inset 0 -2px 6px rgba(0,0,0,.5);
+  }
+  .earpiece {
+    width: 64px; height: 7px;
+    margin: 0 auto 14px;
+    border-radius: 4px;
+    background: repeating-linear-gradient(90deg, #111 0 4px, #2a2d33 4px 7px);
+    box-shadow: inset 0 1px 2px rgba(0,0,0,.8);
+  }
+  .screen-frame {
+    background: #0e0f10;
+    border-radius: 8px;
+    padding: 10px;
+    box-shadow: inset 0 2px 8px rgba(0,0,0,.9);
+  }
+  .screen {
+    width: 300px;
+    height: 340px;
+    background: var(--lcd);
+    border-radius: 3px;
+    box-shadow: inset 0 0 22px rgba(0,0,0,.25);
+    color: var(--pixel);
+    /* LCD pixels were chunky: one or two dots per stroke, never hairlines */
+    font-weight: bold;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    overflow: hidden;
+  }
+  /* Backlight timeout: with the green LEDs off the panel is a dull
+     reflective grey-green; any key press lights it again. */
+  .screen, .cardtitle { transition: background-color .6s, color .6s; }
+  .screen.unlit { --lcd: #8e9a82; box-shadow: inset 0 0 30px rgba(0,0,0,.35); }
+  /* faint LCD pixel grid */
+  .screen::after {
+    content: "";
+    position: absolute; inset: 0;
+    background-image:
+      repeating-linear-gradient(0deg, rgba(0,0,0,.06) 0 1px, transparent 1px 2px),
+      repeating-linear-gradient(90deg, rgba(0,0,0,.06) 0 1px, transparent 1px 2px);
+    pointer-events: none;
+  }
+  .statusbar {
+    font-size: 10px;
+    padding: 3px 8px;
+    display: flex;
+    justify-content: space-between;
+    border-bottom: 1px solid rgba(28,36,16,.35);
+    flex-shrink: 0;
+  }
+  .cardtitle {
+    background: var(--pixel);
+    color: var(--lcd);
+    font-size: 11px;
+    padding: 3px 8px;
+    flex-shrink: 0;
+    white-space: nowrap;
+    overflow: hidden;
+  }
+  .content {
+    flex: 1;
+    overflow: auto;
+    padding: 8px 10px;
+    font-size: 13px;
+    line-height: 1.5;
+    scrollbar-width: none;
+  }
+  .content::-webkit-scrollbar { display: none; }
+  .content a {
+    color: var(--pixel);
+    text-decoration: underline;
+    cursor: pointer;
+    display: inline;
+  }
+  .softkeys {
+    display: flex;
+    justify-content: space-between;
+    flex-shrink: 0;
+    padding: 4px 8px 2px;
+    font-size: 11px;
+    border-top: 1px solid rgba(28,36,16,.35);
+  }
+  .sk {
+    background: none; border: 0; padding: 0;
+    font: inherit; color: inherit;
+    cursor: pointer;
+    text-decoration: underline;
+    user-select: none;
+  }
+  .sk.dim { visibility: hidden; }
+  /* Navi roller between two soft keys, as on the 7110 */
+  .navi {
+    display: grid;
+    grid-template-columns: 1fr 74px 1fr;
+    align-items: center;
+    gap: 10px;
+    margin-top: 14px;
+  }
+  .key {
+    background: linear-gradient(180deg, #5a5f68, #33363c);
+    border: none;
+    color: #e2e4e8;
+    font-family: Arial, sans-serif;
+    font-size: 12px;
+    cursor: pointer;
+    box-shadow: 0 3px 0 #111215, inset 0 1px 0 rgba(255,255,255,.15);
+    user-select: none;
+  }
+  .key:active { transform: translateY(2px); box-shadow: 0 1px 0 #111215; }
+  .softkey { height: 26px; border-radius: 13px 13px 13px 13px / 13px 13px 13px 13px; }
+  .softkey::after {
+    content: ""; display: block; width: 26px; height: 3px; margin: 0 auto;
+    border-radius: 2px; background: #c9ccd2;
+  }
+  .roller {
+    height: 46px;
+    border-radius: 12px;
+    cursor: ns-resize;
+    background:
+      linear-gradient(180deg, rgba(0,0,0,.55), transparent 30%, transparent 70%, rgba(0,0,0,.55)),
+      repeating-linear-gradient(180deg, #8a8f98 0 2px, #4b4f56 2px 5px);
+    background-position: 0 0, 0 var(--roll, 0px);
+    box-shadow: inset 0 0 0 2px #1a1c20, 0 2px 0 #111215;
+  }
+  .callkeys {
+    display: flex;
+    justify-content: space-between;
+    margin: 12px 4px 0;
+  }
+  .call { width: 64px; height: 24px; border-radius: 12px; font-size: 15px; line-height: 24px; }
+  .call.green { color: #6fd36f; }
+  .call.red { color: #ef6a5c; }
+  /* 12-key pad, with the slide cover pulled down below it */
+  .keypad {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px 14px;
+    padding: 14px 14px 4px;
+  }
+  .num {
+    -webkit-touch-callout: none;
+    touch-action: manipulation;
+    height: 30px;
+    border-radius: 15px;
+    font-size: 15px;
+    line-height: 1;
+  }
+  .num small { display: block; font-size: 7px; letter-spacing: 1px; color: #a9adb5; }
+  .cover {
+    margin: 14px -18px 0;
+    height: 64px;
+    border-radius: 0 0 46px 46px / 0 0 34px 34px;
+    background: linear-gradient(100deg, #23262c 0%, #3c4048 45%, #23262c 100%);
+    border-top: 2px solid #15171a;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .cover::before {
+    content: ""; width: 70px; height: 8px;
+    background: repeating-linear-gradient(90deg, #111 0 2px, transparent 2px 5px);
+    border-radius: 2px;
+  }
+  /* Dialled number, typed over the bottom of the card */
+  .dialer {
+    position: absolute; left: 0; right: 0; bottom: 22px;
+    padding: 2px 10px;
+    background: var(--lcd);
+    border-top: 1px solid rgba(28,36,16,.35);
+    font-size: 26px;
+    text-align: right;
+    letter-spacing: 2px;
+    z-index: 2;
+  }
+  .dialer.long { font-size: 18px; letter-spacing: 1px; padding-top: 8px; }
+  /* Call screen: covers the card during a call */
+  .call-screen {
+    position: absolute; left: 0; right: 0; top: 19px; bottom: 22px;
+    padding: 14px 12px;
+    background: var(--lcd);
+    font-size: 15px;
+    line-height: 1.5;
+    white-space: pre-wrap;
+    overflow-y: auto;
+    scrollbar-width: none;
+    z-index: 3;
+  }
+  .call-screen.dark { background: var(--pixel); color: var(--lcd); }
+  .call-screen.term { font-size: 12px; line-height: 1.4; padding: 8px; }
+  .call-screen .cursor { animation: blink 1s steps(1) infinite; }
+  .call-screen canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
+  .call-screen a { color: inherit; cursor: pointer; text-decoration: underline; }
+  .meter i { font-style: normal; }
+  .meter i.off { opacity: .2; }
+  .screen.flash { filter: invert(1); }
+  #signal.blink { animation: blink .15s steps(1) 4; }
+  @keyframes blink { 50% { visibility: hidden; } }
+  .caption {
+    color: #a3a7ae;
+    font-family: Arial, sans-serif;
+    font-size: 12px;
+    line-height: 1.5;
+    margin: 0 16px 14px;
+    text-align: center;
+  }
+  .caption a { color: #d4d7dc; }
+  .sr-only {
+    position: absolute; width: 1px; height: 1px; overflow: hidden;
+    clip: rect(0 0 0 0); white-space: nowrap;
+  }
+</style>
+</head>
+<body>
+<p class="caption">A playful, simplified version of Thiago Mata's CV, as a WAP site on a 1999 phone.<br>
+  The full, modern site is at <a href="/">thiagomata.com</a>. Read with the keys, or dial: some numbers answer.</p>
+<div class="phone">
+  <div class="earpiece"></div>
+  <div class="screen-frame">
+    <div class="screen">
+      <div class="statusbar"><span id="signal" class="meter"></span><span id="scrollhint" style="visibility:hidden">&#9664;&#9654;</span><span><span id="clock">1999</span> <span id="battery" class="meter"></span></span></div>
+      <div class="cardtitle" id="cardtitle" role="heading" aria-level="1" aria-live="polite">Loading...</div>
+      <div class="content" id="content"></div>
+      <div class="dialer" id="dialer" hidden></div>
+      <div class="call-screen" id="callscreen" hidden></div>
+      <div class="softkeys">
+        <button type="button" class="sk" id="sk-left">&lt; Back</button>
+        <button type="button" class="sk" id="sk-right">Next &gt;</button>
+      </div>
+    </div>
+  </div>
+  <div class="navi">
+    <button class="key softkey" id="hw-left" title="Left soft key"></button>
+    <div class="roller" id="roller" title="Navi roller: scroll, or click top/bottom"></div>
+    <button class="key softkey" id="hw-right" title="Right soft key"></button>
+  </div>
+  <div class="callkeys">
+    <button class="key call green" title="Call" aria-label="Call" id="key-call">&#9990;</button>
+    <button class="key call red" title="End" aria-label="End" id="key-end">&#9990;</button>
+  </div>
+  <div class="keypad" id="keypad"></div>
+  <div class="cover" aria-hidden="true"></div>
+</div>
+<div class="sr-only" id="announce" aria-live="polite"></div>
+
+<!-- Every spoken line, per caller: the eSpeak NG voice that renders it
+     to voice/<caller>-<n>.mp3 (npm run wap:voices), the browser
+     voice used when that file is missing, and how to pronounce names
+     (subtitles keep the real spelling). -->
+<script type="application/json" id="voice-lines">
+{
+  "thiago": {
+    "espeak": "en-gb+m1 -s 150 -p 45",
+    "browser": {
+      "voices": [
+        "MALE"
+      ],
+      "pitch": 1,
+      "rate": 0.9
+    },
+    "pronounce": {
+      "Thiago": "Cheeahgo"
+    },
+    "lines": [
+      "You've reached Thiago Mata. Your call has been logged, monitored, and will be handled gracefully. Leave a message after the tone."
+    ]
+  },
+  "morpheus": {
+    "espeak": "en-us+m3 -s 120 -p 15",
+    "browser": {
+      "voices": [
+        "Ralph",
+        "MALE"
+      ],
+      "pitch": 0.7,
+      "rate": 0.8
+    },
+    "lines": [
+      "Knock, knock.",
+      "Follow the white rabbit.",
+      "Don't think you are. Know you are.",
+      "What is the Matrix? Control."
+    ]
+  },
+  "glados": {
+    "espeak": "en-us+anikaRobot -s 145 -p 60",
+    "browser": {
+      "voices": [
+        "FEMALE"
+      ],
+      "pitch": 0.8,
+      "rate": 0.9
+    },
+    "lines": [
+      "The cake is a lie.",
+      "Speedy thing goes in, speedy thing comes out.",
+      "Now you're thinking with portals.",
+      "Are you still there?",
+      "Thank you for assisting us here at Aperture Science."
+    ]
+  },
+  "rick": {
+    "espeak": "en-gb-x-rp+m4 -s 155 -p 50",
+    "browser": {
+      "voices": [
+        "MALE"
+      ],
+      "pitch": 1,
+      "rate": 0.9
+    },
+    "lines": [
+      "Rollers here, just checking in. We're not going anywhere.",
+      "Rollers here. We'd never leave you on hold... well, just this once.",
+      "You've been Rickrolled. Over a 1999 phone line, no less.",
+      "Rollers here. We can't talk right now, we hope you'll understand.",
+      "Sorry, still can't talk. Please don't give up.",
+      "Rollers here. You found us on a 1999 keypad. Respect.",
+      "You called us, so technically you rickrolled yourself. That's a first."
+    ]
+  },
+  "mary": {
+    "espeak": "en-us+f3 -s 150 -p 65",
+    "browser": {
+      "voices": [
+        "FEMALE"
+      ],
+      "pitch": 1.2,
+      "rate": 1
+    },
+    "lines": [
+      "Hi, it's Mary. I can't pick up right now, I'm out looking for my little lamb.",
+      "Mary here. My lamb wandered off again. Fleece white as snow, you can't miss it. Call me if you see it.",
+      "Sorry, Mary can't come to the phone. The lamb followed me to school again, and now I can't find it."
+    ]
+  },
+  "beethoven": {
+    "espeak": "en-gb+m2 -s 130 -p 30",
+    "browser": {
+      "voices": [
+        "MALE"
+      ],
+      "pitch": 0.8,
+      "rate": 0.85
+    },
+    "lines": [
+      "Beethoven here. Joy, beautiful spark of the gods! Also, I'm not home. Leave a message.",
+      "Ludwig here. Thank you for the joy. I wrote a whole symphony about it. Leave a message.",
+      "Beethoven here. If this is Elise, I'm sorry. If it's not Elise, who is this?"
+    ]
+  },
+  "brotherjohn": {
+    "espeak": "en-gb+m1 -s 115 -p 40",
+    "browser": {
+      "voices": [
+        "MALE"
+      ],
+      "pitch": 0.9,
+      "rate": 0.75
+    },
+    "lines": [
+      "Brother John here. Yes, I'm still sleeping. Ringing the bells louder won't help.",
+      "You've reached Brother John. I heard the morning bells. I chose to ignore them."
+    ]
+  },
+  "santa": {
+    "espeak": "en-gb+m3 -s 140 -p 30",
+    "browser": {
+      "voices": [
+        "MALE"
+      ],
+      "pitch": 0.7,
+      "rate": 0.85
+    },
+    "lines": [
+      "Ho ho hold, please. Santa's workshop is at peak season. Your call has been added to the list. We'll check it twice.",
+      "Santa's workshop. All our elves are busy wrapping. Please stay on the nice list while you wait."
+    ]
+  },
+  "star": {
+    "espeak": "en-us+f4 -s 140 -p 75",
+    "browser": {
+      "voices": [
+        "FEMALE"
+      ],
+      "pitch": 1.3,
+      "rate": 0.95
+    },
+    "lines": [
+      "Hi, it's the little star. Stop wondering what I am. Mostly hydrogen.",
+      "This is the little star. This message left me four years ago. I may not be here anymore."
+    ]
+  },
+  "birthday": {
+    "espeak": "en-us+f2 -s 150 -p 55",
+    "browser": {
+      "voices": [
+        "FEMALE"
+      ],
+      "pitch": 1.1,
+      "rate": 1
+    },
+    "lines": [
+      "It's not my birthday. But thanks for calling."
+    ]
+  },
+  "plumber": {
+    "espeak": "en-us+m3 -s 170 -p 70",
+    "browser": {
+      "voices": [
+        "MALE"
+      ],
+      "pitch": 1.3,
+      "rate": 1.1
+    },
+    "lines": [
+      "Thanks for calling! But your plumber is in another castle.",
+      "Plumbing, how can I help? Pipes, mushrooms, the occasional turtle. Leave a message.",
+      "We're out. Probably down a green pipe. Leave a message."
+    ]
+  },
+  "unknown": {
+    "espeak": "en-us+whisper -s 130",
+    "browser": {
+      "pitch": 0.8,
+      "rate": 0.9
+    },
+    "lines": [
+      "You found the phone. Now find the theorem."
+    ]
+  },
+  "operator": {
+    "espeak": "en-gb+f2 -s 140",
+    "browser": {
+      "pitch": 1,
+      "rate": 0.9
+    },
+    "lines": [
+      "The number you have dialled does not exist."
+    ]
+  },
+  "deepthought": {
+    "espeak": "en-us+m7 -s 110 -p 10",
+    "browser": {
+      "pitch": 0.6,
+      "rate": 0.8
+    },
+    "lines": [
+      "Deep Thought is busy. Please hold for seven and a half million years.",
+      "Your call is important to us."
+    ]
+  }
+}
+</script>
+<script type="module">
+import { KEYS, keyFor, dtmf as dtmfTones, sections, cardPath as pathIn, SECRETS, SPEED_DIAL, LONG_PRESS_MS,
+  SUPPORT, telHref, pronounce as respell } from './phone.js?v=6b81b948';
+
+const content = document.getElementById('content');
+const cardTitle = document.getElementById('cardtitle');
+const skLeft = document.getElementById('sk-left');
+const skRight = document.getElementById('sk-right');
+
+let deck = null;          // parsed <wml> element
+let deckDate = null;      // the deck's Last-Modified: the "firmware" date
+let cards = Object.create(null);   // id -> card element
+let current = null;
+let rightAction = null;   // {type:'go',href} | {type:'url',href}
+
+fetch('/index.wml?v=5e06d558')
+  .then(r => {
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    const modified = r.headers.get('last-modified');
+    if (modified) deckDate = new Date(modified);
+    return r.text();
+  })
+  .then(xml => {
+    const doc = new DOMParser().parseFromString(xml, 'text/xml');
+    if (doc.querySelector('parsererror')) {
+      content.textContent = 'Deck failed to parse: ' + doc.querySelector('parsererror').textContent.slice(0, 120);
+      return;
+    }
+    deck = doc.documentElement;
+    for (const c of deck.querySelectorAll('card')) cards[c.getAttribute('id')] = c;
+    buildParents();
+    const id = cardFromHash() || 'home';
+    depth = (history.state && history.state.depth) || 0;
+    history.replaceState({ depth }, '', '#' + cardPath(id));
+    show(id, { push: false });
+  })
+  .catch(e => {
+    cardTitle.textContent = 'No signal';
+    content.textContent = 'The WAP deck did not load (' + e.message + '). The full site is at thiagomata.com.';
+  });
+
+// Back is the browser's own history: each card visited is an entry, and
+// depth counts how many of them lead back into the phone.
+let depth = 0;
+function show(id, { push = true } = {}) {
+  const card = cards[id];
+  if (!card) return;
+  current = id;
+  const hash = '#' + cardPath(id);
+  if (push && location.hash !== hash) history.pushState({ depth: ++depth }, '', hash);
+  cardTitle.textContent = card.getAttribute('title') || id;
+  const hadFocus = content.contains(document.activeElement);
+  content.innerHTML = '';
+  renderParagraphs(card, content);
+  // keyboard users stay on the card they opened
+  if (hadFocus) (content.querySelector('a') || skRight).focus();
+  fitFont();
+  content.scrollTop = 0;
+
+  // Left soft key: template <do type="prev">
+  skLeft.classList.toggle('dim', depth === 0);
+
+  // Right soft key: this card's <do type="accept">
+  const accept = card.querySelector('do[type=accept] go');
+  if (accept) {
+    skRight.textContent = (card.querySelector('do[type=accept]').getAttribute('label') || 'OK') + ' >';
+    const href = accept.getAttribute('href');
+    rightAction = { type: href.startsWith('#') ? 'go' : 'url', href };
+  } else {
+    skRight.textContent = 'Home >';
+    rightAction = { type: 'go', href: '#home' };
+  }
+}
+
+// Period-correct typography: one fixed device font, never scaled -
+// WAP phones had fixed bitmap fonts. Art wider than the screen is
+// scrolled horizontally (the arrow keys / drag), like wide tables on
+// a real WAP browser. The status bar shows << >> when a card scrolls.
+// A phone's screen is bigger than the 7110's, so there the letters are too.
+const DEVICE_FONT = matchMedia('(pointer: coarse)').matches ? 15 : 13;
+function fitFont() {
+  content.style.fontSize = DEVICE_FONT + 'px';
+  updateScrollHint();
+}
+function updateScrollHint() {
+  const hint = document.getElementById('scrollhint');
+  const wide = content.scrollWidth > content.clientWidth + 1;
+  hint.style.visibility = wide ? 'visible' : 'hidden';
+}
+content.addEventListener('scroll', updateScrollHint);
+function scrollContent(dx, dy) {
+  const target = callScreen && !callScreen.hidden ? callScreen : content;
+  target.scrollBy({ left: dx, top: dy, behavior: 'smooth' });
+}
+
+// Render the card's <p> blocks: text nodes, <br/>, <a>, <b>/<i>/<strong>/<em>
+function renderParagraphs(card, container) {
+  for (const p of card.querySelectorAll('p')) {
+    const div = document.createElement('div');
+    if (p.getAttribute('mode') === 'nowrap') div.style.whiteSpace = 'nowrap';
+    walk(p, div);
+    container.appendChild(div);
+  }
+}
+function walk(node, into) {
+  for (const child of node.childNodes) {
+    // text; in WML $ starts a variable, and $$ is a plain $
+    if (child.nodeType === 3) { into.appendChild(document.createTextNode(child.nodeValue.replaceAll('$$', '$'))); }
+    else if (child.nodeType === 1) {
+      const tag = child.tagName;
+      if (tag === 'br') { into.appendChild(document.createElement('br')); }
+      else if (tag === 'a') {
+        const a = document.createElement('a');
+        walk(child, a);
+        const href = child.getAttribute('href') || '';
+        a.href = href;
+        if (href.startsWith('#')) a.onclick = e => { e.preventDefault(); show(href.slice(1)); };
+        else { a.target = '_blank'; a.rel = 'noopener'; }
+        into.appendChild(a);
+      }
+      else if (tag === 'b' || tag === 'strong') {
+        const b = document.createElement('b'); walk(child, b); into.appendChild(b);
+      }
+      else if (tag === 'i' || tag === 'em') {
+        const i = document.createElement('i'); walk(child, i); into.appendChild(i);
+      }
+      else { walk(child, into); }
+    }
+  }
+}
+
+skLeft.onclick = () => {
+  if (onCall()) return hangUp();
+  if (dialed) return dial(null);
+  if (depth > 0) history.back();
+};
+skRight.onclick = () => {
+  if (!rightAction) return;
+  if (rightAction.type === 'go') show(rightAction.href.slice(1));
+  else window.open(rightAction.href, '_blank');
+};
+function goHome() { show('home'); }
+
+// Navi roller: the wheel scrolls the card; clicking its top or bottom
+// half steps up or down. The ridges turn with the content.
+const roller = document.getElementById('roller');
+let roll = 0;
+function rollBy(dy) {
+  scrollContent(0, dy);
+  roll += dy > 0 ? -3 : 3;
+  roller.style.setProperty('--roll', roll + 'px');
+}
+roller.addEventListener('wheel', e => {
+  e.preventDefault();
+  if (Math.abs(e.deltaX) > Math.abs(e.deltaY)) scrollContent(e.deltaX > 0 ? 60 : -60, 0);
+  else rollBy(e.deltaY > 0 ? 60 : -60);
+}, { passive: false });
+roller.addEventListener('click', e => {
+  const r = roller.getBoundingClientRect();
+  rollBy(e.clientY - r.top < r.height / 2 ? -90 : 90);
+});
+
+// Keypad: digits, * and # dial a number (green calls it, red clears it).
+const keypad = document.getElementById('keypad');
+for (const [k, sub] of KEYS) {
+  const b = document.createElement('button');
+  b.className = 'key num';
+  b.innerHTML = k + '<small>' + (sub || '&#160;') + '</small>';
+  // The tone sounds while the key is held; held long, it speed-dials.
+  // A mouse dials as the key goes down. A finger dials as it lifts, so
+  // a scroll that starts on a key (the browser cancels the touch) dials
+  // nothing.
+  let held = null, touched = false;
+  const release = () => { clearTimeout(held); held = null; toneUp(); };
+  b.addEventListener('pointerdown', e => {
+    if (e.button !== 0) return;
+    toneDown(k);
+    touched = e.pointerType !== 'mouse';
+    if (!touched) pressKey(k);
+    held = setTimeout(() => {
+      held = null; touched = false; toneUp();
+      speedDial(k);
+    }, LONG_PRESS_MS);
+  });
+  b.addEventListener('pointerup', () => {
+    if (touched && held) pressKey(k);
+    touched = false;
+    release();
+  });
+  for (const ev of ['pointerleave', 'pointercancel']) {
+    b.addEventListener(ev, () => { touched = false; release(); });
+  }
+  b.addEventListener('contextmenu', e => e.preventDefault());   // a long touch is not a right click
+  b.onclick = e => {                                             // Enter or Space on a focused key
+    if (e.detail !== 0) return;
+    toneDown(k);
+    pressKey(k);
+    setTimeout(toneUp, 120);
+  };
+  keypad.appendChild(b);
+}
+// Hold a key: call whoever is stored on it (phone.js), by name.
+function speedDial(k) {
+  if (!SPEED_DIAL[k]) return;
+  const [name, number] = SPEED_DIAL[k];
+  dialed = number;
+  call(name);
+}
+function pressKey(k) {
+  if (onCall()) hangUp();        // a key ends the call or closes the info screen
+  dial(k);
+}
+
+document.getElementById('hw-left').onclick = () => skLeft.onclick();
+document.getElementById('hw-right').onclick = () => skRight.onclick();
+document.getElementById('key-call').onclick = () => call();
+document.getElementById('key-end').onclick = () => endKey();
+
+// Clicking a phone key must not leave it focused, or Enter on the
+// keyboard would press it again on top of its own job.
+document.querySelector('.phone').addEventListener('mousedown', e => {
+  if (e.target.closest('.key')) e.preventDefault();
+});
+
+
+// Computer keyboard: arrows scroll, Enter/Backspace are the soft keys,
+// digits and * # are the keypad, Escape goes home.
+const KONAMI = 'ArrowUp ArrowUp ArrowDown ArrowDown ArrowLeft ArrowRight ArrowLeft ArrowRight b a';
+let konami = [];
+document.addEventListener('keydown', e => {
+  if (e.metaKey || e.ctrlKey || e.altKey) return;
+  konami = [...konami, e.key.length === 1 ? e.key.toLowerCase() : e.key].slice(-10);
+  if (konami.join(' ') === KONAMI) { e.preventDefault(); konami = []; return godMode(); }
+  // Enter and Space on a focused link or button are that control's own.
+  if ((e.key === 'Enter' || e.key === ' ') && e.target.closest && e.target.closest('a, button')) return;
+  const moves = { ArrowUp: [0, -90], ArrowDown: [0, 90], ArrowLeft: [-80, 0], ArrowRight: [80, 0] };
+  if (moves[e.key]) { e.preventDefault(); if (e.key.endsWith('Up') || e.key.endsWith('Down')) rollBy(moves[e.key][1]); else scrollContent(...moves[e.key]); }
+  else if (e.key === 'Enter') dialed ? call() : skRight.onclick();
+  else if (e.key === 'Backspace') { e.preventDefault(); skLeft.onclick(); }
+  else if (e.key === 'Escape') endKey();
+  // digits, * and #, and letters on their keypad digit: MATRIX = 628749.
+  // A key held down repeats: that is a long press, never more digits.
+  else if (keyFor(e.key)) {
+    const k = keyFor(e.key);
+    if (!e.repeat) { toneDown(k); pressKey(k); keyHeld = { k, at: performance.now() }; }
+    else if (keyHeld && keyHeld.k === k && performance.now() - keyHeld.at >= LONG_PRESS_MS) {
+      keyHeld = null;
+      toneUp();
+      speedDial(k);
+    }
+  }
+});
+let keyHeld = null;
+document.addEventListener('keyup', () => { keyHeld = null; toneUp(); });
+addEventListener('blur', () => { keyHeld = null; toneUp(); });   // never a tone stuck on
+
+// ----------------------------------------------------------------------------
+// Calls. Dial on the keypad, green (or Enter) calls, red hangs up. Unknown numbers
+// (or none) reach Thiago's voicemail; a few numbers are secrets. Sound is
+// synthesised: real DTMF key tones, a ring tone and the browser's own
+// text-to-speech, with every spoken line typed on screen as a subtitle.
+const dialer = document.getElementById('dialer');
+const callScreen = document.getElementById('callscreen');
+let dialed = '';
+// One call at a time. Every call runs as a script with its own call
+// object; hanging up aborts it, which stops its timers, sounds, speech
+// and recording at whatever line the script is on.
+let active = null;
+
+function dial(k) {
+  dialed = k === null ? dialed.slice(0, -1) : (dialed + k).slice(-16);
+  dialer.textContent = dialed;
+  dialer.classList.toggle('long', dialed.length > 12);
+  dialer.hidden = !dialed;
+}
+function onCall() { return !callScreen.hidden; }
+function endKey() {
+  if (onCall() || dialed) hangUp();
+  else goHome();
+}
+
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+// One audio context for every sound. iOS only lets a page start sound
+// from a tap, and calls speak seconds after it, so the first tap or key
+// press unlocks the context, the voice player and speech, and every
+// later sound reuses them.
+let audio = null;
+function sharedAudio() {
+  const AudioContext = window.AudioContext || window.webkitAudioContext;
+  if (!AudioContext) return null;
+  audio ||= new AudioContext();
+  if (audio.state === 'suspended') audio.resume().catch(() => {});
+  return audio;
+}
+const voicePlayer = new Audio();
+let unlocked = false;
+function unlockAudio() {
+  sharedAudio();
+  if (unlocked) return;
+  unlocked = true;
+  voicePlayer.muted = true;
+  voicePlayer.src = voiceUrl('thiago', 0);
+  voicePlayer.play().then(() => voicePlayer.pause(), () => {}).finally(() => { voicePlayer.muted = false; });
+  if (window.speechSynthesis) speechSynthesis.speak(new SpeechSynthesisUtterance(''));
+}
+for (const ev of ['pointerdown', 'keydown']) document.addEventListener(ev, unlockAudio, { capture: true });
+// A sound on out, an audio node: the context's speakers, or a call's line.
+function tone(out, freqs, ms, at = 0, gain = 0.06) {
+  if (!out) return;
+  const ctx = out.context;
+  const t = ctx.currentTime + at / 1000;
+  const g = ctx.createGain();
+  g.gain.value = gain;
+  g.connect(out);
+  for (const f of freqs) {
+    const o = ctx.createOscillator();
+    o.frequency.value = f;
+    o.connect(g);
+    o.start(t);
+    o.stop(t + ms / 1000);
+  }
+}
+// Key tones go straight to the speakers, so hanging up never cuts them.
+// A key's tone lasts as long as the key is held (at least MIN_TONE_S, so
+// a quick tap is still heard).
+let keyTone = null;
+const MIN_TONE_S = 0.08;
+function toneDown(k) {
+  toneUp();
+  const ctx = sharedAudio();
+  if (!ctx) return;
+  const g = ctx.createGain();
+  g.gain.value = 0.06;
+  g.connect(ctx.destination);
+  const from = ctx.currentTime;
+  const oscillators = dtmfTones(k).map(f => {
+    const o = ctx.createOscillator();
+    o.frequency.value = f;
+    o.connect(g);
+    o.start();
+    return o;
+  });
+  keyTone = () => oscillators.forEach(o => o.stop(Math.max(ctx.currentTime, from + MIN_TONE_S)));
+}
+function toneUp() {
+  if (keyTone) keyTone();
+  keyTone = null;
+}
+
+// The call object a script gets. Everything that waits goes through
+// c.until, which rejects as soon as the call is hung up.
+function newCall() {
+  const controller = new AbortController();
+  const { signal } = controller;
+  const c = { controller, signal, line: null };
+  c.until = promise => new Promise((resolve, reject) => {
+    if (signal.aborted) return reject(signal.reason);
+    const abort = () => reject(signal.reason);
+    signal.addEventListener('abort', abort, { once: true });
+    promise.then(v => { signal.removeEventListener('abort', abort); resolve(v); },
+                 e => { signal.removeEventListener('abort', abort); reject(e); });
+  });
+  c.wait = ms => c.until(sleep(ms));
+  // The call's sounds go through its own line, cut when it hangs up.
+  c.tone = (...args) => {
+    const ctx = sharedAudio();
+    if (!ctx) return;
+    if (!c.line) { c.line = ctx.createGain(); c.line.connect(ctx.destination); }
+    tone(c.line, ...args);
+  };
+  c.ring = async times => {
+    for (let i = 0; i < times; i++) {
+      c.tone([400, 450], 400);          // Australian double ring
+      c.tone([400, 450], 400, 600);
+      await c.wait(2800);
+    }
+  };
+  c.end = () => { if (active === c) hangUp(); };
+  return c;
+}
+async function startCall(script) {
+  hangUp();
+  const c = newCall();
+  active = c;
+  try {
+    await script(c);
+  } catch (e) {
+    if (c.signal.aborted) return;      // hung up mid-script: expected
+    console.error('Call failed:', e);
+    if (active === c) screenText('Call failed\n\nPlease try again.');
+  }
+}
+function hangUp() {
+  if (active) {
+    active.controller.abort();
+    if (active.line) active.line.disconnect();
+    active = null;
+  }
+  callScreen.hidden = true;
+  callScreen.textContent = '';
+  dialed = ''; dialer.hidden = true;
+  document.getElementById('signal').classList.remove('blink');
+}
+
+// Type a line on the call screen while the phone speaks it.
+// Voices: each caller's lines are recorded as MP3s with eSpeak NG, so
+// everyone hears the same voice. Without the file, the browser speaks
+// it, picking the first installed voice from the caller's list.
+const VOICE = JSON.parse(document.getElementById('voice-lines').textContent);
+const MALE = ['Daniel', 'Google UK English Male', 'Ralph', 'Reed', 'Rocko', 'Eddy',
+              'Microsoft David', 'Microsoft Mark', 'Microsoft Guy', 'Alex', 'Aaron', 'Arthur'];
+const FEMALE = ['Karen', 'Samantha', 'Google UK English Female', 'Google US English',
+                'Microsoft Zira', 'Microsoft Hazel', 'Moira', 'Tessa'];
+// Chrome loads voices lazily: the first getVoices() is often empty, so
+// ask once at startup and let say() wait for the list if it is not in yet.
+const voicesReady = !window.speechSynthesis ? Promise.resolve() :
+  speechSynthesis.getVoices().length ? Promise.resolve() :
+  Promise.race([new Promise(r => speechSynthesis.addEventListener('voiceschanged', r, { once: true })), sleep(1500)]);
+function pickVoice(names) {
+  const all = speechSynthesis.getVoices().filter(v => v.lang.startsWith('en'));
+  const wanted = names.flatMap(n => n === 'MALE' ? MALE : n === 'FEMALE' ? FEMALE : [n]);
+  for (const name of wanted) {
+    const v = all.find(v => v.name === name || v.name.startsWith(name + ' '));
+    if (v) return v;
+  }
+  return names.includes('MALE') ? all.find(v => /\bmale\b/i.test(v.name)) : null;
+}
+// Play the caller's recorded line; resolves when it ends. Rejects when
+// there is no recording, so the browser voice can take over.
+// Each recording's version (voice/manifest.json), so a re-recorded line
+// is never played from a stale cache.
+let voiceVersions = {};
+fetch('./voice/manifest.json?v=e1541235')
+  .then(r => (r.ok ? r.json() : {}))
+  .then(v => { voiceVersions = v; }, () => {});
+function voiceUrl(caller, n) {
+  const name = `${caller}-${n}.mp3`;
+  return 'voice/' + name + (voiceVersions[name] ? '?v=' + voiceVersions[name] : '');
+}
+async function playRecorded(c, caller, text) {
+  const n = VOICE[caller] ? VOICE[caller].lines.indexOf(text) : -1;
+  if (n < 0) throw new Error('no recording');
+  const rec = voicePlayer;
+  rec.muted = false;
+  rec.src = voiceUrl(caller, n);
+  c.signal.addEventListener('abort', () => rec.pause(), { once: true });
+  const ended = new Promise((resolve, reject) => {
+    rec.onended = resolve;
+    rec.onerror = () => reject(new Error('recording failed: ' + rec.src));
+  });
+  await rec.play();
+  return ended;
+}
+const pronounce = (caller, text) => respell((VOICE[caller] || {}).pronounce, text);
+async function speakWithBrowser(c, caller, text) {
+  if (!window.speechSynthesis) return;
+  await c.until(voicesReady);
+  const { voices = [], pitch = 0.8, rate = 0.9 } = (VOICE[caller] || {}).browser || {};
+  const u = new SpeechSynthesisUtterance(pronounce(caller, text));
+  u.rate = rate; u.pitch = pitch; u.lang = 'en-AU';
+  const voice = voices.length && pickVoice(voices);
+  if (voice) { u.voice = voice; u.lang = voice.lang; }
+  const ended = new Promise(r => { u.onend = r; u.onerror = r; });
+  c.signal.addEventListener('abort', () => speechSynthesis.cancel(), { once: true });
+  speechSynthesis.speak(u);
+  return ended;
+}
+// Type a line on the call screen while the caller says it.
+const announcer = document.getElementById('announce');
+function announce(text) { announcer.textContent = text; }
+async function say(c, text, { caller = null, cps = 16 } = {}) {
+  announce(text);
+  const line = document.createElement('div');
+  callScreen.appendChild(line);
+  // The recording, else the browser's voice; never an error, since the
+  // subtitle carries the line either way.
+  const voice = caller
+    ? playRecorded(c, caller, text)
+        .catch(() => (c.signal.aborted ? null : speakWithBrowser(c, caller, text)))
+        .catch(() => null)
+    : null;
+  for (const ch of text) {
+    line.textContent += ch;
+    await c.wait(1000 / cps);
+  }
+  // wait for the voice to finish, but never hang on a voice that stalls
+  await c.until(voice ? Promise.race([voice, sleep(text.length * 120 + 3000)]) : sleep(600));
+}
+function screenText(text, dark = false) {
+  callScreen.className = 'call-screen' + (dark ? ' dark' : '');
+  callScreen.textContent = text;
+  callScreen.hidden = false;
+  if (text.trim()) announce(text);
+}
+
+// A few rings, then the caller answers with one line picked at random.
+function quoteCall(title, caller, { after = null } = {}) {
+  return async c => {
+    await c.ring(3);
+    screenText(title + '\n\n', true);
+    const lines = VOICE[caller].lines;
+    await say(c, lines[Math.floor(Math.random() * lines.length)], { caller });
+    await c.wait(1200);
+    if (after) await after(c);
+    c.end();
+  };
+}
+// Digital rain over the call screen, in the LCD's own two colours, at a
+// slow LCD frame rate. Stops when its time is up or the call ends.
+async function rain(c, ms) {
+  const canvas = document.createElement('canvas');
+  callScreen.scrollTop = 0;
+  callScreen.appendChild(canvas);
+  const w = canvas.width = callScreen.clientWidth;
+  const h = canvas.height = callScreen.clientHeight;
+  const g = canvas.getContext('2d');
+  const style = getComputedStyle(lcd);
+  const ink = style.getPropertyValue('--lcd').trim(), bg = style.getPropertyValue('--pixel').trim();
+  const size = 13, glyphs = 'ｱｲｳｴｵｶｷｸｹｺｻｼｽｾｿﾀﾁﾂﾃﾄ0123456789';
+  const drops = Array.from({ length: Math.ceil(w / size) }, () => -Math.random() * h / size);
+  g.font = `${size}px "Courier New", monospace`;
+  g.fillStyle = bg;
+  g.fillRect(0, 0, w, h);
+  const frame = setInterval(() => {
+    g.globalAlpha = 0.25;              // fade the trail
+    g.fillStyle = bg;
+    g.fillRect(0, 0, w, h);
+    g.globalAlpha = 1;
+    g.fillStyle = ink;
+    drops.forEach((y, i) => {
+      g.fillText(glyphs[Math.floor(Math.random() * glyphs.length)], i * size, y * size);
+      drops[i] = y * size > h && Math.random() > 0.9 ? 0 : y + 1;
+    });
+  }, 70);
+  try {
+    await c.wait(ms);
+  } finally {
+    clearInterval(frame);
+    canvas.remove();
+  }
+}
+// Emergency numbers, and HELP: call real emergency services, a support
+// line for the region of the number dialled (phone.js), a worldwide
+// directory, and how to reach me.
+function linkTo(text, href) {
+  const a = document.createElement('a');
+  a.textContent = text;
+  a.href = href;
+  a.target = '_blank';
+  a.rel = 'noopener';
+  a.onclick = () => setTimeout(hangUp);
+  return a;
+}
+async function emergency(c, number) {
+  const text = t => callScreen.appendChild(document.createTextNode(t));
+  const help = () => {
+    text('For a real emergency, call your local emergency services.\n\nTo talk to someone now:\n');
+    if (SUPPORT[number]) {
+      const [who, line] = SUPPORT[number];
+      text(who + ':\n');
+      callScreen.appendChild(linkTo(line, telHref(line)));
+      text('\nor ');
+    }
+    callScreen.appendChild(linkTo('findahelpline.com', 'https://findahelpline.com'));
+  };
+  const me = () => {
+    const mail = deck && deck.querySelector('a[href^="mailto:"]');
+    text('If you need me, contact me at\n');
+    if (mail) callScreen.appendChild(linkTo(mail.getAttribute('href').slice('mailto:'.length), mail.getAttribute('href')));
+    text('\nor on Twitter / X: ');
+    callScreen.appendChild(linkTo('@thiagomata', 'https://x.com/thiagomata'));
+  };
+  screenText('');
+  // HELP asks for me; an emergency number needs help first
+  if (number === '4357') { me(); text('\n\n'); help(); }
+  else { help(); text('\n\n'); me(); }
+  announce(callScreen.textContent);
+}
+// 777: a terminal that lists every secret (phone.js), as symlinks to
+// their numbers.
+async function terminal(c) {
+  screenText('', true);
+  callScreen.classList.add('term');
+  const prompt = 'thiago@7110:~$ ';
+  const command = document.createElement('div');
+  command.textContent = prompt;
+  callScreen.appendChild(command);
+  await c.wait(600);
+  for (const ch of 'ls -l secrets') {
+    command.textContent += ch;
+    await c.wait(110);
+  }
+  await c.wait(400);
+  const width = Math.max(...SECRETS.map(([name]) => name.length));
+  for (const [name, number] of SECRETS) {
+    await c.wait(60);
+    const line = document.createElement('div');
+    line.textContent = `${name.padEnd(width)} -> ${number}`;
+    callScreen.appendChild(line);
+  }
+  const last = document.createElement('div');
+  last.textContent = prompt;
+  const cursor = document.createElement('span');
+  cursor.className = 'cursor';
+  cursor.textContent = '█';
+  last.appendChild(cursor);
+  callScreen.appendChild(last);
+  announce(callScreen.textContent);
+}
+const CALLS = {
+  // Matrix (1999), whose hero answered a sliding Nokia.
+  '1999': async c => {
+    screenText('', true);
+    await c.wait(1200);
+    await say(c, 'Wake up...', { cps: 6 });
+    await c.wait(800);
+    await say(c, 'Follow the white rabbit.', { caller: 'morpheus' });
+    await c.wait(1200);
+    await rain(c, 3500);
+    c.end();
+    show('research');
+  },
+  // MATRIX on the keypad letters (or typed as letters).
+  '628749': quoteCall('Morpheus', 'morpheus', { after: c => rain(c, 3500) }),
+  // PORTAL on the keypad letters: Aperture Science calling.
+  '767825': quoteCall('Aperture Science\nGLaDOS', 'glados'),
+  // RICK on the keypad letters: a Rickroll, by phone, from the Rollers.
+  '7425': quoteCall('Rollers', 'rick'),
+  // NEVERGONNA and RICKROLL spelled on the letters: you rolled yourself.
+  '6383746662': quoteCall('Rollers', 'rick'),
+  '74257655': quoteCall('Rollers', 'rick'),
+  // ...or the chorus hook itself, played on the keypad tones.
+  '1262##9': quoteCall('Rollers', 'rick'),
+  // Mary Had a Little Lamb, played on the keypad tones while dialling.
+  '3212333': quoteCall('Mary', 'mary'),
+  // More tunes on the keypad tones. The 3rd column rises one step per
+  // row, so 1 2 3 6 9 # play C D E F G A.
+  '336996321123322': quoteCall('Ludwig van\nBeethoven', 'beethoven'),
+  '12311231369369': quoteCall('Brother John', 'brotherjohn'),
+  '33333339123': quoteCall("Santa's\nWorkshop", 'santa'),
+  '1199##9': quoteCall('Little Star', 'star'),
+  '112163': quoteCall('Birthday Line', 'birthday'),
+  // The plumber's theme: E E E C E G.
+  '333139': quoteCall('Plumbing Bros.', 'plumber'),
+  // Real Nokia service codes: *#06# showed the IMEI, *#0000# the
+  // firmware. Both stay on screen until Back or red.
+  '*#06#': async () => {
+    screenText('IMEI:\n0009-0002-7366-939X\n\n(an ORCID, actually)');
+  },
+  '*#0000#': async () => {
+    const version = (deck && deck.textContent.match(/WAP edition ([\d.]+)/) || [])[1] || '?';
+    const d = deckDate;
+    const date = d ? [d.getDate(), d.getMonth() + 1, d.getFullYear() % 100].map(n => String(n).padStart(2, '0')).join('-') : '??-??-??';
+    screenText(`V ${version}\n${date}\nNSE-5\n(c) Thiago Mata`);
+  },
+  '42': async c => {
+    await c.ring(1);
+    screenText('Deep Thought\n\n');
+    await say(c, 'Deep Thought is busy. Please hold for seven and a half million years.', { caller: 'deepthought' });
+    // hold music: an original little beep loop
+    const tune = [659, 784, 880, 784, 659, 587, 523, 587];
+    for (let bar = 0; bar < 2; bar++) {
+      tune.forEach((f, i) => c.tone([f], 160, i * 220, 0.04));
+      await c.wait(tune.length * 220 + 200);
+    }
+    await say(c, 'Your call is important to us.', { caller: 'deepthought' });
+    await c.wait(1000);
+    c.end();
+  },
+  '777': terminal,
+  // 214 + C: a quarter circle back and C (on the 2 key), as in fighting games.
+  '2142': godModeCall,
+  // Emergency numbers, and HELP on the keypad letters: no joke here.
+  ...Object.fromEntries(['000', '911', '112', '999', '190', '192', '193', '4357'].map(n => [n, emergency])),
+  '7110': async c => {
+    await c.ring(1);
+    screenText('Unknown caller\n\n');
+    await say(c, 'You found the phone. Now find the theorem.', { caller: 'unknown' });
+    await c.wait(1000);
+    c.end();
+  },
+  '404': async c => {
+    for (const [f, i] of [[950, 0], [1400, 1], [1800, 2]]) c.tone([f], 330, i * 340, 0.05);
+    await c.wait(1200);
+    await say(c, 'The number you have dialled does not exist.', { caller: 'operator' });
+    await c.wait(800);
+    c.end();
+  },
+  voicemail: async c => {
+    await c.ring(2);
+    screenText('Voicemail\nThiago Mata\n\n');
+    await say(c, VOICE.thiago.lines[0], { caller: 'thiago' });
+    c.tone([1000], 500);
+    await c.wait(700);
+    const mail = deck && deck.querySelector('a[href^="mailto:"]');
+    if (mail) callScreen.appendChild(linkTo('\n> Leave a message', mail.getAttribute('href')));
+  },
+};
+
+// name: who the screen says is being called (speed dial), else the number.
+function call(name) {
+  if (onCall()) return;             // green during a call does nothing
+  const number = dialed;
+  const script = CALLS[number];
+  return startCall(async c => {
+    if (script) document.getElementById('signal').classList.add('blink');
+    screenText('Calling\n' + (name || number || 'Thiago') + '\n\n');
+    await (script || CALLS.voicemail)(c, number);
+  });
+}
+
+// Scale the whole phone to fill the window: same screen, same
+// characters per line, just bigger, so it stays readable on large
+// displays without losing the handset.
+const phone = document.querySelector('.phone');
+// It shrinks to fit the window, but never below MIN_FONT: past that the
+// page scrolls instead, so the letters stay readable. On a phone it fits
+// the width and the page scrolls.
+const MIN_FONT = 14;
+function fitPhone() {
+  phone.style.zoom = 1;
+  const caption = document.querySelector('.caption');
+  const wide = innerWidth / phone.offsetWidth;
+  const tall = innerHeight / (phone.offsetHeight + caption.offsetHeight + 38);
+  const scale = matchMedia('(pointer: coarse)').matches ? wide
+    : Math.min(wide * 0.95, Math.max(Math.min(wide, tall) * 0.95, MIN_FONT / DEVICE_FONT));
+  phone.style.zoom = Math.max(scale, 0.5);
+}
+addEventListener('resize', fitPhone);
+fitPhone();
+
+// Power: the phone starts with two bars of signal and two of battery,
+// and the backlight goes off a while after the last key press. The
+// Konami code, or 2142 (214 + C) and green, turn on god mode: full bars,
+// backlight always on.
+const POWER = { low: { bars: 2, backlightMs: 15000 }, full: { bars: 4, backlightMs: Infinity } };
+let power = 'low';
+function meter(el, lit) {
+  el.innerHTML = [1, 2, 3, 4].map(i => `<i${i > lit ? ' class="off"' : ''}>${el.id === 'signal' ? '▂▄▆█'[i - 1] : '▮'}</i>`).join('');
+}
+function setPower(p) {
+  power = p;
+  meter(document.getElementById('signal'), POWER[p].bars);
+  meter(document.getElementById('battery'), POWER[p].bars);
+  wake();
+}
+async function godModeCall(c) {
+  lcd.classList.add('flash');
+  setTimeout(() => lcd.classList.remove('flash'), 150);
+  setPower('full');
+  screenText('GOD MODE\n\n', true);
+  for (const [f, i] of [[523, 0], [659, 1], [784, 2], [1047, 3]]) c.tone([f], 120, i * 130, 0.05);
+  await say(c, 'Full signal. Full battery. Backlight always on.', { cps: 24 });
+  await c.wait(1500);
+  c.end();
+}
+function godMode() { return startCall(godModeCall); }
+
+// Backlight: on for a while after the last key press, like the 7110.
+// It never goes off before the first one, so a visitor who only reads
+// never sees a dim screen.
+const lcd = document.querySelector('.screen');
+let backlightTimer = null, pressed = false;
+function wake(e) {
+  if (e) pressed = true;
+  lcd.classList.remove('unlit');
+  clearTimeout(backlightTimer);
+  if (pressed && POWER[power].backlightMs < Infinity) {
+    backlightTimer = setTimeout(() => lcd.classList.add('unlit'), POWER[power].backlightMs);
+  }
+}
+for (const ev of ['pointerdown', 'keydown', 'wheel', 'touchstart']) {
+  document.addEventListener(ev, wake, { passive: true });
+}
+setPower('low');
+
+// Deep links: the URL hash mirrors the current card as section/card,
+// e.g. #experience/rokt/identity. A card's section is the first non-home card
+// whose <a> links to it; cards linked only from home are top level.
+// A bare #sli works too.
+let parents = {};                  // card id -> section card id
+function buildParents() {
+  const links = {};
+  for (const [id, card] of Object.entries(cards)) {
+    links[id] = [...card.querySelectorAll('a')].map(a => a.getAttribute('href') || '');
+  }
+  parents = sections(links);
+}
+function cardPath(id) { return pathIn(id, parents); }
+// The card a hash names, if the deck has it (never an Object built-in
+// like #constructor); anything else is home.
+function cardFromHash() {
+  let id;
+  try { id = decodeURIComponent(location.hash.slice(1)).split('/').pop(); } catch { return null; }
+  return Object.hasOwn(cards, id) ? id : null;
+}
+window.addEventListener('popstate', e => {
+  depth = (e.state && e.state.depth) || 0;
+  const id = cardFromHash() || 'home';
+  if (location.hash !== '#' + cardPath(id)) history.replaceState({ depth }, '', '#' + cardPath(id));
+  show(id, { push: false });
+});
+
+// clock, why not
+function tick() {
+  const now = new Date();
+  document.getElementById('clock').textContent =
+    String(now.getHours()).padStart(2, '0') + ':' + String(now.getMinutes()).padStart(2, '0');
+}
+tick();
+setInterval(tick, 10000);
+</script>
+</body>
+</html>

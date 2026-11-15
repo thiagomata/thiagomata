@@ -2,7 +2,8 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { describe, it } from "node:test";
 import {
-    assetVersions, casePages, contentVersion, pictureVersionsModule, stampCasePage, stampPage, stampStyle, styleFiles,
+    assetVersions, casePages, contentVersion, pictureVersionsModule, stampCasePage, stampPage, stampStyle, stampWapPage, styleFiles,
+    wapVersions,
 } from "../tools/version-assets.js";
 
 const PAGE = `<link rel="stylesheet" href="./style/site.css" />
@@ -63,6 +64,18 @@ describe("asset versions", () => {
         assert.equal(versioned("../img/car.svg"), "../img/car.svg");
     });
 
+    it("stamps every file the WAP page loads, wherever the page names it", () => {
+        const versions = new Map([["./phone.js", "1234abcd"], ["/index.wml", "5678ef01"], ["./voice/manifest.json", "9abc2345"]]);
+        const page = `import { KEYS } from './phone.js?v=00000000';
+fetch('/index.wml')
+fetch('./voice/manifest.json?v=00000000')
+<a href="/index.wml">`;
+        assert.equal(stampWapPage(page, versions), `import { KEYS } from './phone.js?v=1234abcd';
+fetch('/index.wml?v=5678ef01')
+fetch('./voice/manifest.json?v=9abc2345')
+<a href="/index.wml?v=5678ef01">`);
+    });
+
     it("is stamped with the current version of every file (run `npm run stamp` after changing one)", () => {
         const versions = assetVersions();
         const pictureVersions = readFileSync(new URL("../js/shared/picture-versions.js", import.meta.url), "utf8");
@@ -77,5 +90,7 @@ describe("asset versions", () => {
             const html = readFileSync(new URL(`../${casePage}`, import.meta.url), "utf8");
             assert.equal(stampCasePage(html, versions), html, `${casePage} is not stamped`);
         }
+        const wap = readFileSync(new URL("../wap/index.html", import.meta.url), "utf8");
+        assert.equal(stampWapPage(wap, wapVersions()), wap, "wap/index.html is not stamped");
     });
 });

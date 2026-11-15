@@ -5,7 +5,8 @@
 //   - the case pages' styles and pictures, in cases/*.html (their paths start with "../");
 //   - the modules other modules import, through the page's import map;
 //   - the pictures scripts name themselves, through js/shared/picture-versions.js, which this
-//     writes (scripts build some of those names, so they cannot be found in the text).
+//     writes (scripts build some of those names, so they cannot be found in the text);
+//   - the WAP phone's files, in wap/index.html: its module, the deck and the voices' manifest.
 // The pictures' versions and the styles come first, so the page gets their stamped versions.
 //
 // Usage: npm run stamp   (test/version-assets.test.js fails until it is run)
@@ -20,6 +21,9 @@ const PICTURE_VERSIONS = "js/shared/picture-versions.js";
 const PICTURES = "./img/";
 const STYLES = "style";
 const CASES = "cases";
+const WAP_PAGE = "wap/index.html";
+/** What the WAP page names, and the file behind each name. */
+const WAP_FILES = { "./phone.js": "wap/phone.js", "/index.wml": "index.wml", "./voice/manifest.json": "wap/voice/manifest.json" };
 /** The folders of the site's own files, and the kinds of file stamped in each. */
 const ASSET_FOLDERS = [["js", [".js"]], [STYLES, [".css"]], ["img", [".svg", ".webp", ".jpg", ".png"]]];
 /** Enough of the hash to tell versions apart. */
@@ -32,6 +36,8 @@ const IMPORT_MAP = /(<script type="importmap">\s*)([\s\S]*?)(\s*<\/script>)/;
 const PAGE_REFERENCE = /(src|href)="(\.\/(?:js|style|img)\/[^"?]+)(?:\?v=[0-9a-f]+)?"/g;
 /** A style or picture in a case page, relative to the cases' folder. */
 const CASE_REFERENCE = /(src|href)="\.\.\/((?:js|style|img)\/[^"?]+)(?:\?v=[0-9a-f]+)?"/g;
+/** A file the WAP page loads from its script, in quotes. */
+const WAP_REFERENCE = /(['"])(\.\/phone\.js|\/index\.wml|\.\/voice\/manifest\.json)(?:\?v=[0-9a-f]+)?\1/g;
 /** A picture in a style, relative to the styles' folder. */
 const STYLE_REFERENCE = /url\("\.\.\/(img\/[^"?]+)(?:\?v=[0-9a-f]+)?"\)/g;
 
@@ -82,6 +88,16 @@ export function stampCasePage(html, versions) {
     return html.replace(CASE_REFERENCE, (_, attribute, path) => `${attribute}="../${stamp(`./${path}`).slice("./".length)}"`);
 }
 
+/** The WAP page's files, by the name the page uses, with their versions. */
+export function wapVersions(root = SITE_ROOT) {
+    return new Map(Object.entries(WAP_FILES).map(([name, file]) => [name, contentVersion(readFileSync(join(root, file)))]));
+}
+
+/** The WAP page with each file its script loads stamped with its version. */
+export function stampWapPage(html, versions) {
+    return html.replace(WAP_REFERENCE, (_, quote, name) => `${quote}${stamper(versions)(name)}${quote}`);
+}
+
 /** The module that gives scripts each picture's version (see PICTURE_VERSIONS). */
 export function pictureVersionsModule(versions) {
     const pictures = [...versions].filter(([path]) => path.startsWith(PICTURES)).sort(([first], [second]) => first.localeCompare(second));
@@ -117,5 +133,7 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
         const path = join(SITE_ROOT, casePage);
         writeFileSync(path, stampCasePage(readFileSync(path, "utf8"), assetVersions()));
     }
-    console.log(`Stamped ${PAGE}, ${casePages().length} case pages and ${styleFiles().length} styles`);
+    const wapPath = join(SITE_ROOT, WAP_PAGE);
+    writeFileSync(wapPath, stampWapPage(readFileSync(wapPath, "utf8"), wapVersions()));
+    console.log(`Stamped ${PAGE}, ${WAP_PAGE}, ${casePages().length} case pages and ${styleFiles().length} styles`);
 }
