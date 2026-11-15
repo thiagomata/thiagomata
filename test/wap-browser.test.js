@@ -103,10 +103,29 @@ describe("wap: the phone in a browser", () => {
         await done(page);
     });
 
-    it("turns on god mode with 214 + C: full signal", async () => {
+    it("opens home, at #home, for an anchor the deck has no card for", async () => {
+        for (const hash of ["#nope", "#constructor", "#experience/toString", "#%E0"]) {
+            const page = await phone(hash);
+            assert.equal(await page.locator("#cardtitle").textContent(), "Thiago Mata", hash);
+            assert.equal(new URL(page.url()).hash, "#home", hash);
+            await done(page);
+        }
         const page = await phone();
+        await page.evaluate(() => { location.hash = "#__proto__"; });
+        await page.waitForFunction(() => location.hash === "#home");
+        assert.equal(await page.locator("#cardtitle").textContent(), "Thiago Mata");
+        await done(page);
+    });
+
+    it("turns on god mode with 214 + C and green, and leaves numbers with 2142 in them alone", async () => {
+        const page = await phone();
+        await page.keyboard.type("0221420000");
+        assert.equal(await dialled(page), "0221420000");
+        assert.ok(await screen(page).isHidden());
+        await page.click("#key-end");
         assert.equal(await page.locator("#signal i:not(.off)").count(), 2);
         await page.keyboard.type("214c");
+        await page.keyboard.press("Enter");
         assert.match(await screen(page).innerText(), /^GOD MODE/);
         assert.equal(await page.locator("#signal i:not(.off)").count(), 4);
         await done(page);

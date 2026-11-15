@@ -480,8 +480,8 @@
 }
 </script>
 <script type="module">
-import { KEYS, keyFor, dtmf as dtmfTones, special, sections, cardPath as pathIn, SECRETS, SPEED_DIAL, LONG_PRESS_MS,
-  SUPPORT, telHref } from './phone.js?v=0f279a5a';
+import { KEYS, keyFor, dtmf as dtmfTones, sections, cardPath as pathIn, SECRETS, SPEED_DIAL, LONG_PRESS_MS,
+  SUPPORT, telHref, pronounce as respell } from './phone.js?v=6b81b948';
 
 const content = document.getElementById('content');
 const cardTitle = document.getElementById('cardtitle');
@@ -490,11 +490,11 @@ const skRight = document.getElementById('sk-right');
 
 let deck = null;          // parsed <wml> element
 let deckDate = null;      // the deck's Last-Modified: the "firmware" date
-let cards = {};           // id -> card element
+let cards = Object.create(null);   // id -> card element
 let current = null;
 let rightAction = null;   // {type:'go',href} | {type:'url',href}
 
-fetch('/index.wml?v=c65d6e48')
+fetch('/index.wml?v=5e06d558')
   .then(r => {
     if (!r.ok) throw new Error('HTTP ' + r.status);
     const modified = r.headers.get('last-modified');
@@ -585,7 +585,8 @@ function renderParagraphs(card, container) {
 }
 function walk(node, into) {
   for (const child of node.childNodes) {
-    if (child.nodeType === 3) { into.appendChild(document.createTextNode(child.nodeValue)); }
+    // text; in WML $ starts a variable, and $$ is a plain $
+    if (child.nodeType === 3) { into.appendChild(document.createTextNode(child.nodeValue.replaceAll('$$', '$'))); }
     else if (child.nodeType === 1) {
       const tag = child.tagName;
       if (tag === 'br') { into.appendChild(document.createElement('br')); }
@@ -686,14 +687,9 @@ function speedDial(k) {
   dialed = number;
   call(name);
 }
-// 214 + C, quickly, is a special move: god mode (see phone.js).
-let inputs = [];
 function pressKey(k) {
   if (onCall()) hangUp();        // a key ends the call or closes the info screen
   dial(k);
-  const move = special(inputs, k, performance.now());
-  inputs = move.inputs;
-  if (move.hit) godMode();
 }
 
 document.getElementById('hw-left').onclick = () => skLeft.onclick();
@@ -936,10 +932,7 @@ async function playRecorded(c, caller, text) {
   await rec.play();
   return ended;
 }
-function pronounce(caller, text) {
-  const words = (VOICE[caller] || {}).pronounce || {};
-  return Object.entries(words).reduce((t, [word, sound]) => t.replaceAll(word, sound), text);
-}
+const pronounce = (caller, text) => respell((VOICE[caller] || {}).pronounce, text);
 async function speakWithBrowser(c, caller, text) {
   if (!window.speechSynthesis) return;
   await c.until(voicesReady);
@@ -1156,6 +1149,8 @@ const CALLS = {
     c.end();
   },
   '777': terminal,
+  // 214 + C: a quarter circle back and C (on the 2 key), as in fighting games.
+  '2142': godModeCall,
   // Emergency numbers, and HELP on the keypad letters: no joke here.
   ...Object.fromEntries(['000', '911', '112', '999', '190', '192', '193', '4357'].map(n => [n, emergency])),
   '7110': async c => {
@@ -1217,7 +1212,8 @@ fitPhone();
 
 // Power: the phone starts with two bars of signal and two of battery,
 // and the backlight goes off a while after the last key press. The
-// Konami code or 214 + C turn on god mode: full bars, backlight always on.
+// Konami code, or 2142 (214 + C) and green, turn on god mode: full bars,
+// backlight always on.
 const POWER = { low: { bars: 2, backlightMs: 15000 }, full: { bars: 4, backlightMs: Infinity } };
 let power = 'low';
 function meter(el, lit) {
@@ -1229,18 +1225,17 @@ function setPower(p) {
   meter(document.getElementById('battery'), POWER[p].bars);
   wake();
 }
-function godMode() {
+async function godModeCall(c) {
   lcd.classList.add('flash');
   setTimeout(() => lcd.classList.remove('flash'), 150);
   setPower('full');
-  return startCall(async c => {
-    screenText('GOD MODE\n\n', true);
-    for (const [f, i] of [[523, 0], [659, 1], [784, 2], [1047, 3]]) c.tone([f], 120, i * 130, 0.05);
-    await say(c, 'Full signal. Full battery. Backlight always on.', { cps: 24 });
-    await c.wait(1500);
-    c.end();
-  });
+  screenText('GOD MODE\n\n', true);
+  for (const [f, i] of [[523, 0], [659, 1], [784, 2], [1047, 3]]) c.tone([f], 120, i * 130, 0.05);
+  await say(c, 'Full signal. Full battery. Backlight always on.', { cps: 24 });
+  await c.wait(1500);
+  c.end();
 }
+function godMode() { return startCall(godModeCall); }
 
 // Backlight: on for a while after the last key press, like the 7110.
 // It never goes off before the first one, so a visitor who only reads
@@ -1273,13 +1268,18 @@ function buildParents() {
   parents = sections(links);
 }
 function cardPath(id) { return pathIn(id, parents); }
+// The card a hash names, if the deck has it (never an Object built-in
+// like #constructor); anything else is home.
 function cardFromHash() {
-  const id = location.hash.slice(1).split('/').pop();
-  return cards[id] ? id : null;
+  let id;
+  try { id = decodeURIComponent(location.hash.slice(1)).split('/').pop(); } catch { return null; }
+  return Object.hasOwn(cards, id) ? id : null;
 }
 window.addEventListener('popstate', e => {
   depth = (e.state && e.state.depth) || 0;
-  show(cardFromHash() || 'home', { push: false });
+  const id = cardFromHash() || 'home';
+  if (location.hash !== '#' + cardPath(id)) history.replaceState({ depth }, '', '#' + cardPath(id));
+  show(id, { push: false });
 });
 
 // clock, why not

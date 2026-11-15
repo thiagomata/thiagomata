@@ -4,7 +4,7 @@
 //
 // writes index.wml at the site root, or at out, as valid WML 1.1 with every #link resolving to a
 // card, then `npm run stamp` so the WAP page loads the new deck. test/wap.test.js fails while
-// index.wml is not what this makes. The logos are plain ASCII art: edit them as they look.
+// index.wml is not what this makes. The logos are text art: edit them as they look.
 //
 // Needs: Node, and its dev dependencies (npm install), for @xmldom/xmldom.
 import { writeFileSync } from "node:fs";
@@ -20,7 +20,8 @@ const card = (id, title, [label, href], art, items) => ({ id, title, label, href
 const link = (text, href) => ({ text, href });
 
 // ----------------------------------------------------------------------------
-// LOGOS - plain ASCII, one line per string; trailing spaces keep the rows aligned.
+// LOGOS - text art (ASCII, and block characters for INEP), one line per string; trailing
+// spaces keep the rows aligned.
 // ----------------------------------------------------------------------------
 
 const ART = {
@@ -60,28 +61,6 @@ const ART = {
         String.raw`░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░      ░▒▓█▓▒░        `,
         String.raw`░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░      ░▒▓█▓▒░        `,
         String.raw`░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░▒▓████████▓▒░▒▓█▓▒░        `,
-    ],
-    useful: [
-        String.raw`  ,-.  ,-.  `,
-        String.raw` /    v    \ `,
-        String.raw`'=|======|='`,
-    ],
-    reliable: [
-        String.raw`  ,---. `,
-        String.raw` /     \ `,
-        String.raw` |-----| `,
-        String.raw` |  #  | `,
-        String.raw` '-----' `,
-    ],
-    elegant: [
-        String.raw` .  *  . `,
-        String.raw`  * + *  `,
-        String.raw` .  *  . `,
-    ],
-    thrifty: [
-        String.raw`  ,----.  `,
-        String.raw` (  $$  ) `,
-        String.raw`  ${"`"}----'  `,
     ],
 };
 
@@ -206,7 +185,7 @@ const CARDS = [
         link("3. Elegant", "#elegant"),
         link("4. Thrifty", "#thrifty"),
     ]),
-    card("useful", "Useful", ["Relia.", "#reliable"], "useful", [
+    card("useful", "Useful", ["Relia.", "#reliable"], null, [
         "",
         "USEFUL",
         "Influential and meaningful",
@@ -215,7 +194,7 @@ const CARDS = [
         "",
         "Market fit, data decisions, impact forecast, risk, prototypes",
     ]),
-    card("reliable", "Reliable", ["Eleg.", "#elegant"], "reliable", [
+    card("reliable", "Reliable", ["Eleg.", "#elegant"], null, [
         "",
         "RELIABLE",
         "Steady and trustworthy",
@@ -224,7 +203,7 @@ const CARDS = [
         "",
         "Verified, resilient, progressive delivery, observability, degradation levels",
     ]),
-    card("elegant", "Elegant", ["Thrift", "#thrifty"], "elegant", [
+    card("elegant", "Elegant", ["Thrift", "#thrifty"], null, [
         "",
         "ELEGANT",
         "Straightforward but thorough",
@@ -233,7 +212,7 @@ const CARDS = [
         "",
         "Simplicity, cleanliness, clarity, alignment, traceability",
     ]),
-    card("thrifty", "Thrifty", ["Contact", "#contact"], "thrifty", [
+    card("thrifty", "Thrifty", ["Contact", "#contact"], null, [
         "",
         "THRIFTY",
         "Budget-conscious and efficient",
@@ -372,7 +351,11 @@ const CASES = [
     ]),
 ];
 
-const escape = text => text.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;");
+// WML text: XML's escapes, and $$ for $, since $ starts a variable in WML.
+const escape = text =>
+    text.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll("$", "$$$$");
+// An attribute value: the same, and its quotes.
+const attribute = value => escape(value).replaceAll('"', "&quot;");
 /** ASCII art as one WML run: spaces become &#160; (WML collapses spaces), rows end in <br/>. */
 const art = lines => lines.map(line => escape(line).replaceAll(" ", "&#160;")).join("<br/>");
 
@@ -380,9 +363,9 @@ const art = lines => lines.map(line => escape(line).replaceAll(" ", "&#160;")).j
  *  breaking mid-row. */
 export function renderCard({ id, title, label, href, art: logo, items }) {
     const lines = [
-        `  <card id="${id}" title="${escape(title)}">`,
-        `    <do type="accept" label="${escape(label)}">`,
-        `      <go href="${href}"/>`,
+        `  <card id="${attribute(id)}" title="${attribute(title)}">`,
+        `    <do type="accept" label="${attribute(label)}">`,
+        `      <go href="${attribute(href)}"/>`,
         "    </do>",
     ];
     if (logo) lines.push('    <p mode="nowrap">', `      ${art(ART[logo])}<br/>`, "    </p>");
@@ -390,7 +373,7 @@ export function renderCard({ id, title, label, href, art: logo, items }) {
     for (const item of items) {
         if (item === "") lines.push("      <br/>");
         else if (typeof item === "string") lines.push(`      ${escape(item)}<br/>`);
-        else lines.push(`      <a href="${item.href}">${escape(item.text)}</a><br/>`);
+        else lines.push(`      <a href="${attribute(item.href)}">${escape(item.text)}</a><br/>`);
     }
     lines.push("    </p>", "  </card>");
     return lines.join("\n");
@@ -403,7 +386,7 @@ export function renderDeck(cards = [...CARDS, ...CASES]) {
 <!--
   index.wml - the thiagomata.com WAP edition.
   GENERATED by tools/wap-deck.js - edit that file, not this one.
-  Logos are ASCII art with &#160; entities, the authentic way
+  Logos are text art with &#160; entities, the authentic way
   to keep art aligned in WML.
 -->
 <wml>

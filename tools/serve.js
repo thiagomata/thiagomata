@@ -24,7 +24,13 @@ const kind = path => { try { return statSync(path); } catch { return null; } };
 export function siteServer(root = SITE_ROOT) {
     return createServer((request, response) => {
         const { pathname } = new URL(request.url, "http://localhost");
-        let file = join(root, normalize(decodeURIComponent(pathname)));
+        let file;
+        try {
+            file = join(root, normalize(decodeURIComponent(pathname)));
+        } catch {
+            response.writeHead(400).end("Bad request");
+            return;
+        }
         if (file !== root.replace(/[\\/]$/, "") && !file.startsWith(root)) {
             response.writeHead(403).end();
             return;
@@ -45,7 +51,7 @@ export function siteServer(root = SITE_ROOT) {
             // modules loaded on demand are cached even through a hard reload; never cache here
             "Cache-Control": "no-store",
         });
-        createReadStream(file).pipe(response);
+        createReadStream(file).on("error", () => response.destroy()).pipe(response);
     });
 }
 

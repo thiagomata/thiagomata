@@ -1,5 +1,5 @@
-// The phone's rules, apart from the page: the keypad, its tones, the
-// special move, where each card sits in the deck, and the secret numbers.
+// The phone's rules, apart from the page: the keypad, its tones, where
+// each card sits in the deck, the secret numbers, and how names are said.
 
 // The 12 keys and the letters printed under them.
 export const KEYS = [["1", ""], ["2", "abc"], ["3", "def"], ["4", "ghi"], ["5", "jkl"], ["6", "mno"],
@@ -24,26 +24,21 @@ export function dtmf(key) {
     return [tone(ROWS), tone(COLUMNS)];
 }
 
-// 214 + C, fighting-game notation for a quarter circle back and the C
-// button: 2 1 4, then 2 (C is on the 2 key), quickly, like a special move.
-export const SPECIAL = "2142";
-export const SPECIAL_MS = 1500;
-// The keys pressed recently enough to still count, and whether they
-// complete the move.
-export function special(inputs, key, now) {
-    const recent = [...inputs.filter(([, at]) => now - at < SPECIAL_MS), [key, now]].slice(-SPECIAL.length);
-    return recent.map(([k]) => k).join("") === SPECIAL ? { inputs: [], hit: true } : { inputs: recent, hit: false };
-}
+// A line with a caller's respellings, for names a voice gets wrong:
+// pronounce({ Thiago: "Cheeahgo" }, "Hi, Thiago") is "Hi, Cheeahgo". The
+// recordings (tools/wap-voices.js) and the browser's voice both use it.
+export const pronounce = (respellings, text) =>
+    Object.entries(respellings || {}).reduce((line, [word, sound]) => line.replaceAll(word, sound), text);
 
 // Where each card sits: its section is the first card, other than home,
 // that links to it. links maps a card id to the hrefs on that card.
 export function sections(links) {
-    const parents = {};
+    const parents = Object.create(null);
     for (const [id, hrefs] of Object.entries(links)) {
         if (id === "home") continue;
         for (const href of hrefs) {
             const target = href.slice(1);
-            if (href.startsWith("#") && target in links && !(target in parents)) parents[target] = id;
+            if (href.startsWith("#") && Object.hasOwn(links, target) && !Object.hasOwn(parents, target)) parents[target] = id;
         }
     }
     return parents;
@@ -78,6 +73,8 @@ export const SUPPORT = {
 export const telHref = number => "tel:" + number.replace(/[^\d+]/g, "");
 
 // Every secret, as 777 lists it. The page has a call for each number.
+// special_214c is fighting-game notation, a quarter circle back and C:
+// 2 1 4, then 2, since C is on the 2 key.
 export const SECRETS = [
     ["matrix", "628749"], ["portal", "767825"], ["rick", "7425"],
     ["never_gonna", "6383746662"], ["rickroll", "74257655"], ["rick_tune", "1262##9"],
@@ -87,5 +84,5 @@ export const SECRETS = [
     ["ode_to_joy", "336996321123322"], ["frere_jacques", "12311231369369"],
     ["jingle_bells", "33333339123"], ["twinkle", "1199##9"], ["birthday", "112163"],
     ["plumber", "333139"],
-    ["god_mode", "↑↑↓↓←→←→BA"], ["special", "214 + C"], ["speed_dial", "hold 1-9"],
+    ["god_mode", "↑↑↓↓←→←→BA"], ["special_214c", "2142"], ["speed_dial", "hold 1-9"],
 ];

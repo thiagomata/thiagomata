@@ -4,7 +4,7 @@ import { describe, it } from "node:test";
 import { checkDeck, renderCard, renderDeck } from "../tools/wap-deck.js";
 import { manifest, recordingKey, spoken, voiceLines } from "../tools/wap-voices.js";
 import {
-    cardPath, dtmf, keyFor, numberFor, SECRETS, sections, special, SPECIAL_MS, SPEED_DIAL, SUPPORT, telHref,
+    cardPath, dtmf, keyFor, numberFor, pronounce, SECRETS, sections, SPEED_DIAL, SUPPORT, telHref,
 } from "../wap/phone.js";
 
 const PAGE = readFileSync(new URL("../wap/index.html", import.meta.url), "utf8");
@@ -12,11 +12,12 @@ const DECK = readFileSync(new URL("../index.wml", import.meta.url), "utf8");
 const VOICE = voiceLines(PAGE);
 const MANIFEST = JSON.parse(readFileSync(new URL("../wap/voice/manifest.json", import.meta.url), "utf8"));
 
-// The deck's cards, each with the hrefs it links to.
+// The deck's cards, each with the hrefs of its links: <a> only, as the page builds its sections,
+// not the soft keys' <go>.
 function deckLinks() {
     const links = {};
     for (const [, id, body] of DECK.matchAll(/<card id="([^"]+)"[^>]*>([\s\S]*?)<\/card>/g)) {
-        links[id] = [...body.matchAll(/href="([^"]+)"/g)].map(([, href]) => href);
+        links[id] = [...body.matchAll(/<a href="([^"]+)"/g)].map(([, href]) => href);
     }
     return links;
 }
@@ -57,29 +58,9 @@ describe("wap: the keypad", () => {
 });
 
 describe("wap: 214 + C", () => {
-    const press = (keys, gap) => {
-        let inputs = [], hits = 0;
-        [...keys].forEach((k, i) => {
-            const move = special(inputs, k, i * gap);
-            inputs = move.inputs;
-            if (move.hit) hits++;
-        });
-        return hits;
-    };
-
-    it("lands when 2 1 4 2 come quickly, even after other keys", () => {
-        assert.equal(press("2142", 100), 1);
-        assert.equal(press("9952142", 100), 1);
-    });
-
-    it("misses when the keys come too slowly or in another order", () => {
-        assert.equal(press("2142", SPECIAL_MS / 2), 0);
-        assert.equal(press("2412", 100), 0);
-    });
-
-    it("needs a fresh input after landing", () => {
-        assert.equal(press("2142142", 100), 1);
-        assert.equal(press("21422142", 100), 2);
+    it("is 2142 on the keypad, C being on the 2 key", () => {
+        assert.equal(numberFor("214c"), "2142");
+        assert.deepEqual(SECRETS.find(([name]) => name === "special_214c"), ["special_214c", "2142"]);
     });
 });
 
@@ -87,7 +68,7 @@ describe("wap: deep links", () => {
     it("puts a card under the first card, other than home, that links to it", () => {
         const links = { home: ["#a", "#b"], a: ["#b", "#c"], b: ["#c"], c: [] };
         const parents = sections(links);
-        assert.deepEqual(parents, { b: "a", c: "a" });
+        assert.deepEqual({ ...parents }, { b: "a", c: "a" });
         assert.equal(cardPath("c", parents), "a/c");
         assert.equal(cardPath("a", parents), "a");
     });
@@ -96,6 +77,19 @@ describe("wap: deep links", () => {
         const parents = sections({ home: ["#a"], a: ["#b"], b: ["#a"] });
         assert.equal(cardPath("b", parents), "a/b");
         assert.equal(cardPath("a", parents), "b/a");
+    });
+
+    it("files the job cards under Experience and the cases under their jobs", () => {
+        const parents = sections(deckLinks());
+        assert.equal(cardPath("sli", parents), "experience/sli");
+        assert.equal(cardPath("identity", parents), "experience/rokt/identity");
+        assert.equal(cardPath("experience", parents), "experience");
+    });
+
+    it("never takes an Object built-in for a card", () => {
+        const parents = sections({ home: ["#a", "#constructor"], a: ["#toString"] });
+        assert.equal(cardPath("constructor", parents), "constructor");
+        assert.equal(Object.keys(parents).length, 0);
     });
 
     it("gives every card in the deck a path that ends at the card", () => {
@@ -120,7 +114,7 @@ describe("wap: deep links", () => {
 });
 
 describe("wap: secret numbers", () => {
-    const dialable = SECRETS.filter(([name]) => !["god_mode", "special", "speed_dial"].includes(name));
+    const dialable = SECRETS.filter(([name]) => !["god_mode", "speed_dial"].includes(name));
 
     it("has a call for every secret 777 lists", () => {
         const { numbers, emergency } = callNumbers();
@@ -184,11 +178,17 @@ describe("wap: the deck", () => {
         assert.throws(() => checkDeck(broken), /Broken link: #b on card a/);
     });
 
-    it("escapes text, and keeps logos aligned with non-breaking spaces", () => {
-        const card = renderCard({ id: "x", title: "R&D", label: "OK", href: "#x", art: "elegant", items: ["1 < 2", ""] });
-        assert.match(card, /title="R&amp;D"/);
-        assert.match(card, /1 &lt; 2<br\/>/);
-        assert.match(card, /<p mode="nowrap">\n {6}&#160;\.&#160;&#160;\*/);
+    it("escapes text and attributes, writes $ as WML's $$, and keeps logos aligned", () => {
+        const card = renderCard({
+            id: "x", title: 'Say "R&D"', label: "OK", href: "#x", art: "rokt",
+            items: ["1 < 2 costs $5M", { text: "Search", href: "https://x.example/?a=1&b=2" }],
+        });
+        assert.match(card, /title="Say &quot;R&amp;D&quot;"/);
+        assert.match(card, /1 &lt; 2 costs \$\$5M<br\/>/);
+        assert.match(card, /<a href="https:\/\/x\.example\/\?a=1&amp;b=2">Search<\/a>/);
+        assert.match(card, /<p mode="nowrap">\n {6}&#160;&#160;____/);
+        const deck = renderDeck([{ id: "x", title: 'Say "R&D"', label: "OK", href: "#x", art: null, items: ["$5", { text: "Q", href: "https://x.example/?a=1&b=2" }] }]);
+        assert.doesNotThrow(() => checkDeck(deck));
     });
 });
 
@@ -210,6 +210,8 @@ describe("wap: voices", () => {
     it("says names the way they are spelled for it, and re-records when the voice or the words change", () => {
         const voice = { espeak: "en+m1", pronounce: { Thiago: "Cheeahgo" }, lines: [] };
         assert.equal(spoken(voice, "Hi, Thiago."), "Hi, Cheeahgo.");
+        assert.equal(spoken(voice, "Hi, Thiago."), pronounce(voice.pronounce, "Hi, Thiago."), "the page says it the same way");
+        assert.equal(pronounce(undefined, "Hi"), "Hi");
         assert.equal(recordingKey(voice, "Hi"), recordingKey(voice, "Hi"));
         assert.notEqual(recordingKey(voice, "Hi"), recordingKey(voice, "Hello"));
         assert.notEqual(recordingKey(voice, "Hi"), recordingKey({ ...voice, espeak: "en+f2" }, "Hi"));

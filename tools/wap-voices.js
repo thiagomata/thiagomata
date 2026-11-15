@@ -18,6 +18,7 @@ import { existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, 
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
+import { pronounce } from "../wap/phone.js";
 
 const PAGE = fileURLToPath(new URL("../wap/index.html", import.meta.url));
 const OUT = fileURLToPath(new URL("../wap/voice/", import.meta.url));
@@ -31,8 +32,7 @@ export function voiceLines(html) {
 }
 
 /** A line as eSpeak should say it: with the caller's respellings ("Thiago" -> "Cheeahgo"). */
-export const spoken = (voice, text) =>
-    Object.entries(voice.pronounce || {}).reduce((line, [word, sound]) => line.replaceAll(word, sound), text);
+export const spoken = (voice, text) => pronounce(voice.pronounce, text);
 
 /** What a recording says, as a short key: it changes when the voice or the words do. */
 export const recordingKey = (voice, text) =>
