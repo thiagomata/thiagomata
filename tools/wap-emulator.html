@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WAP Phone - thiagomata.com edition</title>
+<style>
+  :root {
+    --lcd: #9cb23a;
+    --lcd-dark: #7e922e;
+    --pixel: #1c2410;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(160deg, #2a2d33, #15171b);
+    font-family: "Courier New", monospace;
+  }
+  .phone {
+    background: linear-gradient(175deg, #3d4046, #1d1f23);
+    border-radius: 26px 26px 40px 40px;
+    padding: 22px 18px 26px;
+    box-shadow: 0 24px 60px rgba(0,0,0,.6), inset 0 1px 0 rgba(255,255,255,.08);
+  }
+  .brand {
+    color: #b9bcc2;
+    font-size: 10px;
+    letter-spacing: 3px;
+    text-align: center;
+    margin-bottom: 10px;
+    font-family: Arial, sans-serif;
+  }
+  .screen-frame {
+    background: #0e0f10;
+    border-radius: 8px;
+    padding: 10px;
+    box-shadow: inset 0 2px 8px rgba(0,0,0,.9);
+  }
+  .screen {
+    width: 300px;
+    height: 340px;
+    background: var(--lcd);
+    border-radius: 3px;
+    box-shadow: inset 0 0 22px rgba(0,0,0,.25);
+    color: var(--pixel);
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    overflow: hidden;
+  }
+  /* faint LCD pixel grid */
+  .screen::after {
+    content: "";
+    position: absolute; inset: 0;
+    background-image:
+      repeating-linear-gradient(0deg, rgba(0,0,0,.06) 0 1px, transparent 1px 2px),
+      repeating-linear-gradient(90deg, rgba(0,0,0,.06) 0 1px, transparent 1px 2px);
+    pointer-events: none;
+  }
+  .statusbar {
+    font-size: 10px;
+    padding: 3px 8px;
+    display: flex;
+    justify-content: space-between;
+    border-bottom: 1px solid rgba(28,36,16,.35);
+    flex-shrink: 0;
+  }
+  .cardtitle {
+    background: var(--pixel);
+    color: var(--lcd);
+    font-size: 11px;
+    padding: 3px 8px;
+    flex-shrink: 0;
+    white-space: nowrap;
+    overflow: hidden;
+  }
+  .content {
+    flex: 1;
+    overflow: auto;
+    padding: 8px 10px;
+    font-size: 13px;
+    line-height: 1.5;
+    scrollbar-width: none;
+  }
+  .content::-webkit-scrollbar { display: none; }
+  .content a {
+    color: var(--pixel);
+    text-decoration: underline;
+    cursor: pointer;
+    display: inline;
+  }
+  .softkeys {
+    display: flex;
+    justify-content: space-between;
+    flex-shrink: 0;
+    padding: 4px 8px 2px;
+    font-size: 11px;
+    border-top: 1px solid rgba(28,36,16,.35);
+  }
+  .sk {
+    cursor: pointer;
+    text-decoration: underline;
+    user-select: none;
+  }
+  .sk.dim { visibility: hidden; }
+  .keys {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 6px;
+    margin-top: 16px;
+  }
+  .key {
+    background: linear-gradient(180deg, #4a4e55, #2c2f34);
+    border: none;
+    border-radius: 16px;
+    color: #cfd2d8;
+    font-family: Arial, sans-serif;
+    font-size: 11px;
+    padding: 10px 0;
+    cursor: pointer;
+    box-shadow: 0 3px 0 #101114;
+  }
+  .key:active { transform: translateY(2px); box-shadow: 0 1px 0 #101114; }
+  .note {
+    color: #8b8f96;
+    font-family: Arial, sans-serif;
+    font-size: 11px;
+    margin-top: 14px;
+    text-align: center;
+    max-width: 300px;
+  }
+  .note a { color: #b9bcc2; }
+</style>
+</head>
+<body>
+<div class="phone">
+  <div class="brand">N O K I A &nbsp; 7 1 1 0</div>
+  <div class="screen-frame">
+    <div class="screen">
+      <div class="statusbar"><span id="signal">[][][]--</span><span id="scrollhint" style="visibility:hidden">&#9664;&#9654;</span><span id="clock">1999</span></div>
+      <div class="cardtitle" id="cardtitle">Loading...</div>
+      <div class="content" id="content"></div>
+      <div class="softkeys">
+        <span class="sk" id="sk-left">&lt; Back</span>
+        <span class="sk" id="sk-mid">●</span>
+        <span class="sk" id="sk-right">Next &gt;</span>
+      </div>
+    </div>
+  </div>
+  <div class="keys">
+    <button class="key" onclick="scrollContent(-80,0)">&#9664;</button>
+    <button class="key" onclick="scrollContent(0,-90)">&#9650;</button>
+    <button class="key" onclick="goHome()">&#127968;<br>Menu</button>
+    <button class="key" onclick="scrollContent(0,90)">&#9660;</button>
+    <button class="key" onclick="scrollContent(80,0)">&#9654;</button>
+  </div>
+  <div class="note">A tiny WML emulator — renders <a href="/index.wml" target="_blank">index.wml</a> the way a WAP phone would: one card at a time, one fixed font size, and wide logos scroll sideways like wide tables on a real WAP browser.</div>
+</div>
+
+<script>
+const content = document.getElementById('content');
+const cardTitle = document.getElementById('cardtitle');
+const skLeft = document.getElementById('sk-left');
+const skRight = document.getElementById('sk-right');
+
+let deck = null;          // parsed <wml> element
+let cards = {};           // id -> card element
+let current = null;
+let history = [];         // stack for the Back soft key
+let rightAction = null;   // {type:'go',href} | {type:'url',href}
+
+fetch('/index.wml')
+  .then(r => r.text())
+  .then(xml => {
+    const doc = new DOMParser().parseFromString(xml, 'text/xml');
+    if (doc.querySelector('parsererror')) {
+      content.textContent = 'Deck failed to parse: ' + doc.querySelector('parsererror').textContent.slice(0, 120);
+      return;
+    }
+    deck = doc.documentElement;
+    for (const c of deck.querySelectorAll('card')) cards[c.getAttribute('id')] = c;
+    show('home', true);
+  })
+  .catch(e => { content.textContent = 'Network error: ' + e; });
+
+function show(id, isRoot) {
+  const card = cards[id];
+  if (!card) return;
+  if (current && !isRoot && history[history.length - 1] !== current) history.push(current);
+  current = id;
+  cardTitle.textContent = card.getAttribute('title') || id;
+  content.innerHTML = '';
+  renderParagraphs(card, content);
+  fitFont();
+  content.scrollTop = 0;
+
+  // Left soft key: template <do type="prev">
+  skLeft.classList.toggle('dim', history.length === 0);
+
+  // Right soft key: this card's <do type="accept">
+  const accept = card.querySelector('do[type=accept] go');
+  if (accept) {
+    skRight.textContent = (card.querySelector('do[type=accept]').getAttribute('label') || 'OK') + ' >';
+    const href = accept.getAttribute('href');
+    rightAction = { type: href.startsWith('#') ? 'go' : 'url', href };
+  } else {
+    skRight.textContent = 'Home >';
+    rightAction = { type: 'go', href: '#home' };
+  }
+}
+
+// Period-correct typography: one fixed device font, never scaled -
+// WAP phones had fixed bitmap fonts. Art wider than the screen is
+// scrolled horizontally (the arrow keys / drag), like wide tables on
+// a real WAP browser. The status bar shows << >> when a card scrolls.
+const DEVICE_FONT = 13;
+function fitFont() {
+  content.style.fontSize = DEVICE_FONT + 'px';
+  updateScrollHint();
+}
+function updateScrollHint() {
+  const hint = document.getElementById('scrollhint');
+  const wide = content.scrollWidth > content.clientWidth + 1;
+  hint.style.visibility = wide ? 'visible' : 'hidden';
+}
+content.addEventListener('scroll', updateScrollHint);
+function scrollContent(dx, dy) {
+  content.scrollBy({ left: dx, top: dy, behavior: 'smooth' });
+}
+
+// Render the card's <p> blocks: text nodes, <br/>, <a>, <b>/<i>/<strong>/<em>
+function renderParagraphs(card, container) {
+  for (const p of card.querySelectorAll('p')) {
+    const div = document.createElement('div');
+    walk(p, div);
+    container.appendChild(div);
+  }
+}
+function walk(node, into) {
+  for (const child of node.childNodes) {
+    if (child.nodeType === 3) { into.appendChild(document.createTextNode(child.nodeValue)); }
+    else if (child.nodeType === 1) {
+      const tag = child.tagName;
+      if (tag === 'br') { into.appendChild(document.createElement('br')); }
+      else if (tag === 'a') {
+        const a = document.createElement('a');
+        a.textContent = '';
+        walk(child, a);
+        const href = child.getAttribute('href') || '';
+        a.onclick = () => href.startsWith('#') ? show(href.slice(1)) : window.open(href, '_blank');
+        into.appendChild(a);
+      }
+      else if (tag === 'b' || tag === 'strong') {
+        const b = document.createElement('b'); walk(child, b); into.appendChild(b);
+      }
+      else if (tag === 'i' || tag === 'em') {
+        const i = document.createElement('i'); walk(child, i); into.appendChild(i);
+      }
+      else { walk(child, into); }
+    }
+  }
+}
+
+skLeft.onclick = () => { const prev = history.pop(); if (prev) show(prev, true); };
+skRight.onclick = () => {
+  if (!rightAction) return;
+  if (rightAction.type === 'go') show(rightAction.href.slice(1));
+  else window.open(rightAction.href, '_blank');
+};
+function goHome() { show('home', true); }
+
+// clock, why not
+const now = new Date();
+document.getElementById('clock').textContent =
+  String(now.getHours()).padStart(2,'0') + ':' + String(now.getMinutes()).padStart(2,'0');
+</script>
+</body>
+</html>
