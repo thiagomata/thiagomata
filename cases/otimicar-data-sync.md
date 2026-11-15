@@ -35,7 +35,7 @@ We integrated with some key partners, sending data about the customers' cars. Th
 - Java
 - REST
 - SOAP
-- GRPC
+- gRPC
 - MongoDB
 - Google Web App
 - IoT

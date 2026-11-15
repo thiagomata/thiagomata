@@ -694,6 +694,13 @@ body {
     .title-box-call-to-action .button-primary,
     .title-box-cv .button-primary
      {
+        /* Links styled as the buttons they used to wrap. */
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        box-sizing: border-box;
+        font-family: Arial, sans-serif;
+        text-decoration: none;
         background-color: var(--dark-80);
         color: var(--light-80);
         width: 12rem;

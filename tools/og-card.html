@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Link preview card</title>
+    <style>
+        /* The picture shown when a link to the site is shared (og:image), 1200 × 630.
+           Rendered to img/og-card.png by tools/og-card.js; the same look as the homepage hero. */
+        html, body {
+            margin: 0;
+            width: 1200px;
+            height: 630px;
+            overflow: hidden;
+        }
+        body {
+            position: relative;
+            box-sizing: border-box;
+            padding: 84px 96px;
+            background: rgb(16, 17, 20);
+            color: rgb(236, 238, 241);
+            font-family: Arial, Helvetica, sans-serif;
+        }
+        /* The hero's glow along the bottom edge. */
+        body::after {
+            content: "";
+            position: absolute;
+            left: -10%;
+            right: -10%;
+            bottom: -140px;
+            height: 260px;
+            background: radial-gradient(ellipse at center, rgba(88, 76, 230, 0.75), rgba(88, 76, 230, 0) 70%);
+        }
+        h1 {
+            margin: 0;
+            font-size: 128px;
+            line-height: 1;
+            letter-spacing: -2px;
+            text-shadow: 0 0 40px rgba(255, 255, 255, 0.25);
+        }
+        h2 {
+            margin: 18px 0 0;
+            font-size: 44px;
+            color: rgb(214, 218, 224);
+        }
+        ul {
+            display: flex;
+            gap: 56px;
+            margin: 72px 0 0;
+            padding: 0;
+            list-style: none;
+        }
+        li {
+            font-size: 24px;
+            color: rgb(190, 195, 204);
+        }
+        li strong {
+            display: block;
+            font-size: 56px;
+            color: rgb(244, 245, 247);
+        }
+        .site {
+            position: absolute;
+            right: 96px;
+            top: 92px;
+            font-size: 26px;
+            color: rgb(170, 176, 188);
+        }
+    </style>
+</head>
+<body>
+    <div class="site">thiagomata.com</div>
+    <h1>Thiago Mata</h1>
+    <h2>Crafting impactful software</h2>
+    <ul>
+        <li><strong>20+</strong>Years in Software</li>
+        <li><strong>9</strong>Years in Cloud Solutions</li>
+        <li><strong>4</strong>Years as Tech Lead</li>
+    </ul>
+</body>
+</html>

@@ -93,6 +93,8 @@ menu li:nth-child(1) {
   border: 0;
   width: var(--padding-width);
   color: white;
+  /* The picture's main colour, so the white text stays readable if the picture doesn't load. */
+  background-color: #520e33;
   background-image: url("../img/rokt-new.svg?v=5d55f3ef");
   background-size: cover;
   background-repeat: no-repeat;
@@ -262,6 +264,7 @@ menu li:nth-child(1) {
   text-transform: uppercase;
 }
 .slisystems #summary {
+  background-color: #534e52;
   background-image: url("../img/sli-bg.svg?v=194c86b0");
   background-size: cover;
   background-position: center bottom;
@@ -284,6 +287,7 @@ menu li:nth-child(1) {
 }
 
 .idea #summary {
+  background-color: #202220;
   background-image: url("../img/people4.svg?v=c7fea7d5");
   background-size: cover;
   background-position: center bottom;
@@ -314,6 +318,7 @@ menu li:nth-child(1) {
 }
 
 .otimicar #summary {
+  background-color: #0d2d2a;
   background-image: url("../img/car4.svg?v=557fd216");
   border-image: linear-gradient(180deg, rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.7))
     fill 1;
@@ -369,6 +374,7 @@ menu li:nth-child(1) {
 }
 
 .mec #summary {
+  background-color: #1c2b2c;
   background-image: url("../img/bsb7.svg?v=301f6a37");
   border-image: linear-gradient(180deg, rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.7))
     fill 1;
@@ -437,6 +443,7 @@ menu li:nth-child(1) {
     .card {
        /* max-width: fit-content; */
       /* margin: auto; */
+      background-color: #520e33;
       background-image: url("../img/rokt-new.svg?v=5d55f3ef");
       border: 5px solid rgb(99, 31, 87);
       background-size: cover;
