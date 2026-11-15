@@ -28,7 +28,7 @@
       Sydney, Australia<br/>
       <br/>
       <a href="#about">About me</a><br/>
-      <a href="#exp">Experience</a><br/>
+      <a href="#experience">Experience</a><br/>
       <a href="#research">Research</a><br/>
       <a href="#projects">Projects</a><br/>
       <a href="#values">Values</a><br/>
@@ -40,7 +40,7 @@
 
   <card id="about" title="About">
     <do type="accept" label="Exp.">
-      <go href="#exp"/>
+      <go href="#experience"/>
     </do>
     <p>
       Connects engineering to business outcomes.<br/>
@@ -51,7 +51,7 @@
     </p>
   </card>
 
-  <card id="exp" title="Experience">
+  <card id="experience" title="Experience">
     <do type="accept" label="Resch">
       <go href="#research"/>
     </do>
@@ -63,7 +63,7 @@
       <a href="#sli">SLI Systems 17-19</a><br/>
       <a href="#ideia">Ideia 14-17</a><br/>
       <a href="#otimicar">Otimicar 13-14</a><br/>
-      <a href="#earlier">Earlier 03-13</a><br/>
+      <a href="#inep">INEP 03-13</a><br/>
     </p>
   </card>
 
@@ -71,15 +71,17 @@
     <do type="accept" label="Rokt">
       <go href="#rokt"/>
     </do>
-    <p>
+    <p mode="nowrap">
       &#160;&#160;.-"""-.&#160;&#160;<br/>&#160;/&#160;&#160;___&#160;&#160;\&#160;<br/>|&#160;&#160;/&#160;&#160;&#160;\&#160;&#160;|<br/>|&#160;&#160;\___/&#160;&#160;|<br/>&#160;\&#160;&#160;&#160;&#160;&#160;&#160;&#160;/&#160;<br/>&#160;&#160;'-...-'&#160;&#160;&#160;<br/>&#160;MACQUARIE&#160;&#160;<br/>
+    </p>
+    <p>
       <br/>
       Senior Manager<br/>
       2024-Present<br/>
       <br/>
       Leads a new team delivering banking products, cutting production incidents through testing, observability and graceful degradation.<br/>
       <br/>
-      <a href="https://thiagomata.com/cases/macquarie-term-deposits.html">Term Deposits</a><br/>
+      <a href="#deposits">Term Deposits</a><br/>
     </p>
   </card>
 
@@ -87,17 +89,19 @@
     <do type="accept" label="SLI">
       <go href="#sli"/>
     </do>
-    <p>
+    <p mode="nowrap">
       &#160;&#160;____&#160;&#160;&#160;___&#160;&#160;_&#160;&#160;_______&#160;<br/>&#160;|&#160;&#160;_&#160;\&#160;/&#160;_&#160;\|&#160;|/&#160;/_&#160;&#160;&#160;_|<br/>&#160;|&#160;|_)&#160;|&#160;|&#160;|&#160;|&#160;'&#160;/&#160;&#160;|&#160;|&#160;&#160;<br/>&#160;|&#160;&#160;_&#160;&lt;|&#160;|_|&#160;|&#160;.&#160;\&#160;&#160;|&#160;|&#160;&#160;<br/>&#160;|_|&#160;\_\\___/|_|\_\&#160;|_|&#160;&#160;<br/>
+    </p>
+    <p>
       <br/>
       Senior Software Eng.<br/>
       2019-2024<br/>
       <br/>
       Led bot detection on the critical path of all traffic. Built the identity and attribution systems of a platform processing billions of transactions.<br/>
       <br/>
-      <a href="https://thiagomata.com/cases/rokt-identity.html">Identity</a><br/>
-      <a href="https://thiagomata.com/cases/rokt-attribution.html">Attribution</a><br/>
-      <a href="https://thiagomata.com/cases/rokt-bot-detection.html">Bot Detection</a><br/>
+      <a href="#identity">Identity</a><br/>
+      <a href="#attribution">Attribution</a><br/>
+      <a href="#bots">Bot Detection</a><br/>
     </p>
   </card>
 
@@ -105,15 +109,17 @@
     <do type="accept" label="Ideia">
       <go href="#ideia"/>
     </do>
-    <p>
+    <p mode="nowrap">
       &#160;&#160;&#160;____&#160;&#160;__&#160;&#160;&#160;&#160;__&#160;&#160;&#160;&#160;&#160;&#160;____&#160;&#160;_&#160;&#160;_&#160;&#160;____&#160;&#160;____&#160;&#160;____&#160;&#160;_&#160;&#160;_&#160;&#160;____&#160;<br/>&#160;&#160;/&#160;___)(&#160;&#160;)&#160;&#160;(&#160;&#160;)___&#160;/&#160;___)(&#160;\/&#160;)/&#160;___)(_&#160;&#160;_)(&#160;&#160;__)(&#160;\/&#160;)/&#160;___)<br/>&#160;&#160;\___&#160;\/&#160;(_/\&#160;)((___)\___&#160;\&#160;)&#160;&#160;/&#160;\___&#160;\&#160;&#160;)(&#160;&#160;&#160;)&#160;_)&#160;/&#160;\/&#160;\\___&#160;\&#160;<br/>&#160;&#160;(____/\____/(__)&#160;&#160;&#160;&#160;(____/(__/&#160;&#160;(____/&#160;(__)&#160;(____)\_)(_/(____/<br/>
+    </p>
+    <p>
       <br/>
       Senior Data Engineer<br/>
       2017-2019<br/>
       <br/>
       Migrated core data services to Google Cloud, making them faster and cheaper, strengthening the company position in its acquisition.<br/>
       <br/>
-      <a href="https://thiagomata.com/cases/sli-to-the-cloud.html">To the Cloud</a><br/>
+      <a href="#cloud">To the Cloud</a><br/>
     </p>
   </card>
 
@@ -121,51 +127,53 @@
     <do type="accept" label="Otimi">
       <go href="#otimicar"/>
     </do>
-    <p>
+    <p mode="nowrap">
       &#160;__&#160;&#160;&#160;_______&#160;&#160;&#160;_______&#160;&#160;&#160;&#160;&#160;___&#160;&#160;&#160;&#160;&#160;&#160;<br/>|&#160;&#160;|&#160;|&#160;&#160;&#160;&#160;&#160;&#160;&#160;\&#160;|&#160;&#160;&#160;____|&#160;&#160;&#160;/&#160;&#160;&#160;\&#160;&#160;&#160;&#160;&#160;<br/>|&#160;&#160;|&#160;|&#160;&#160;.--.&#160;&#160;||&#160;&#160;|__&#160;&#160;&#160;&#160;&#160;/&#160;&#160;^&#160;&#160;\&#160;&#160;&#160;&#160;<br/>|&#160;&#160;|&#160;|&#160;&#160;|&#160;&#160;|&#160;&#160;||&#160;&#160;&#160;__|&#160;&#160;&#160;/&#160;&#160;/_\&#160;&#160;\&#160;&#160;&#160;<br/>|&#160;&#160;|&#160;|&#160;&#160;'--'&#160;&#160;||&#160;&#160;|____&#160;/&#160;&#160;_____&#160;&#160;\&#160;&#160;<br/>|__|&#160;|_______/&#160;|_______/__/&#160;&#160;&#160;&#160;&#160;\__\&#160;<br/>
+    </p>
+    <p>
       <br/>
       CTO<br/>
       2014-2017<br/>
       <br/>
       Hired and led engineering across three offices in three states, from concept to first production products. Created the career ladder for the merger with Pinion.<br/>
       <br/>
-      <a href="https://thiagomata.com/cases/ideia-alexandria.html">Alexandria</a><br/>
+      <a href="#alexandria">Alexandria</a><br/>
     </p>
   </card>
 
   <card id="otimicar" title="Otimicar">
-    <do type="accept" label="Early">
-      <go href="#earlier"/>
+    <do type="accept" label="INEP">
+      <go href="#inep"/>
     </do>
-    <p>
+    <p mode="nowrap">
       .&#160;&#160;____&#160;&#160;__&#160;&#160;_&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;_<br/>&#160;&#160;/&#160;__&#160;\/&#160;/_(_)___&#160;___&#160;&#160;(_)________&#160;______<br/>&#160;/&#160;/&#160;/&#160;/&#160;__/&#160;/&#160;__&#160;`__&#160;\/&#160;/&#160;___/&#160;__&#160;`/&#160;___/<br/>/&#160;/_/&#160;/&#160;/_/&#160;/&#160;/&#160;/&#160;/&#160;/&#160;/&#160;/&#160;/__/&#160;/_/&#160;/&#160;/<br/>\____/\__/_/_/&#160;/_/&#160;/_/_/\___/\__,_/_/<br/>
+    </p>
+    <p>
       <br/>
       Co-Founder<br/>
       2013-2014<br/>
       <br/>
       Built the first server for a device that turns any car into a smart car.<br/>
       <br/>
-      <a href="https://thiagomata.com/cases/otimicar-data-sync.html">Data Sharing</a><br/>
+      <a href="#datasync">Data Sharing</a><br/>
     </p>
   </card>
 
-  <card id="earlier" title="Earlier">
+  <card id="inep" title="MEC / INEP">
     <do type="accept" label="Resch">
       <go href="#research"/>
     </do>
-    <p>
-      <br/>
-      <br/>
-      INEP<br/>
-      <br/>
+    <p mode="nowrap">
       ░▒▓█▓▒░▒▓███████▓▒░░▒▓████████▓▒░▒▓███████▓▒░&#160;&#160;<br/>░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░&#160;&#160;&#160;&#160;&#160;&#160;░▒▓█▓▒░░▒▓█▓▒░&#160;<br/>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;<br/>░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░▒▓██████▓▒░&#160;░▒▓███████▓▒░&#160;&#160;<br/>░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░&#160;&#160;&#160;&#160;&#160;&#160;░▒▓█▓▒░&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;<br/>░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░&#160;&#160;&#160;&#160;&#160;&#160;░▒▓█▓▒░&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;<br/>░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░▒▓████████▓▒░▒▓█▓▒░&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;<br/>
+    </p>
+    <p>
       <br/>
       MEC / INEP<br/>
       2003-2013<br/>
       <br/>
       INEP and Ministry of Education: high availability public systems E-MEC and Revalida. Bancoob: credit portfolio transfers. Taught web development for six years.<br/>
       <br/>
-      <a href="https://thiagomata.com/cases/mec-education-platform.html">Education</a><br/>
+      <a href="#education">Education as Platform</a><br/>
     </p>
   </card>
 
@@ -220,8 +228,10 @@
     <do type="accept" label="Relia.">
       <go href="#reliable"/>
     </do>
-    <p>
+    <p mode="nowrap">
       &#160;&#160;,-.&#160;&#160;,-.&#160;&#160;<br/>&#160;/&#160;&#160;&#160;&#160;v&#160;&#160;&#160;&#160;\&#160;<br/>'=|======|='<br/>
+    </p>
+    <p>
       <br/>
       USEFUL<br/>
       Influential and meaningful<br/>
@@ -236,8 +246,10 @@
     <do type="accept" label="Eleg.">
       <go href="#elegant"/>
     </do>
-    <p>
+    <p mode="nowrap">
       &#160;&#160;,---.&#160;<br/>&#160;/&#160;&#160;&#160;&#160;&#160;\&#160;<br/>&#160;|-----|&#160;<br/>&#160;|&#160;&#160;#&#160;&#160;|&#160;<br/>&#160;'-----'&#160;<br/>
+    </p>
+    <p>
       <br/>
       RELIABLE<br/>
       Steady and trustworthy<br/>
@@ -252,8 +264,10 @@
     <do type="accept" label="Thrift">
       <go href="#thrifty"/>
     </do>
-    <p>
+    <p mode="nowrap">
       &#160;.&#160;&#160;*&#160;&#160;.&#160;<br/>&#160;&#160;*&#160;+&#160;*&#160;&#160;<br/>&#160;.&#160;&#160;*&#160;&#160;.&#160;<br/>
+    </p>
+    <p>
       <br/>
       ELEGANT<br/>
       Straightforward but thorough<br/>
@@ -268,8 +282,10 @@
     <do type="accept" label="Contact">
       <go href="#contact"/>
     </do>
-    <p>
+    <p mode="nowrap">
       &#160;&#160;,----.&#160;&#160;<br/>&#160;(&#160;&#160;$$&#160;&#160;)&#160;<br/>&#160;&#160;`----'&#160;&#160;<br/>
+    </p>
+    <p>
       <br/>
       THRIFTY<br/>
       Budget-conscious and efficient<br/>
@@ -297,6 +313,162 @@
       <br/>
       WAP edition 1.2<br/>
       Sydney, Australia<br/>
+    </p>
+  </card>
+
+  <card id="deposits" title="Term Deposits">
+    <do type="accept" label="Mcq.">
+      <go href="#macquarie"/>
+    </do>
+    <p>
+      TERM DEPOSITS<br/>
+      Macquarie Bank<br/>
+      <br/>
+      Account opening, from days to minutes.<br/>
+      <br/>
+      A cross-team effort replacing a slow, bureaucratic process with a lean digital journey.<br/>
+      <br/>
+      Change managed through evidence: A/B tests, feature flags, live old-vs-new comparisons and reconciliation reports.<br/>
+      <br/>
+      An end-to-end scenario tool, local testing, CI/CD and load tests made quality part of delivery.<br/>
+      <br/>
+      Result: no incidents related to the change.<br/>
+      <br/>
+      <a href="https://thiagomata.com/cases/macquarie-term-deposits.html">Full case</a><br/>
+    </p>
+  </card>
+
+  <card id="identity" title="Identity">
+    <do type="accept" label="Rokt">
+      <go href="#rokt"/>
+    </do>
+    <p>
+      IDENTITY<br/>
+      Rokt<br/>
+      <br/>
+      Connecting touchpoints and devices to one customer through a multi-hop identity graph, with privacy, data residency and client isolation.<br/>
+      <br/>
+      Result: real-time identification in a fraction of the time and resources, open to new identifiers and strategies.<br/>
+      <br/>
+      Scala, Spark, Kafka, AWS Neptune<br/>
+      <br/>
+      <a href="#attribution">Attribution</a><br/>
+      <a href="#bots">Bot Detection</a><br/>
+      <a href="https://thiagomata.com/cases/rokt-identity.html">Full case</a><br/>
+    </p>
+  </card>
+
+  <card id="attribution" title="Attribution">
+    <do type="accept" label="Rokt">
+      <go href="#rokt"/>
+    </do>
+    <p>
+      ATTRIBUTION<br/>
+      Rokt<br/>
+      <br/>
+      Matching campaign events to outcomes with per-campaign rules, consistent and explainable.<br/>
+      <br/>
+      Result: matches in a fraction of the time and resources, rules that change on the fly, and ML models that optimise campaigns faster.<br/>
+      <br/>
+      Scala, Spark, Kafka, HBase<br/>
+      <br/>
+      <a href="#identity">Identity</a><br/>
+      <a href="#bots">Bot Detection</a><br/>
+      <a href="https://thiagomata.com/cases/rokt-attribution.html">Full case</a><br/>
+    </p>
+  </card>
+
+  <card id="bots" title="Bot Detection">
+    <do type="accept" label="Rokt">
+      <go href="#rokt"/>
+    </do>
+    <p>
+      BOT DETECTION<br/>
+      Rokt<br/>
+      <br/>
+      Screening every public request in real time, blocking malicious bots that create fake transactions.<br/>
+      <br/>
+      Every decision explained for audit; a rule engine measures new rules before they reach customers.<br/>
+      <br/>
+      Go, Istio, Envoy, WASM, Kubernetes, Kafka<br/>
+      <br/>
+      <a href="#identity">Identity</a><br/>
+      <a href="#attribution">Attribution</a><br/>
+      <a href="https://thiagomata.com/cases/rokt-bot-detection.html">Full case</a><br/>
+    </p>
+  </card>
+
+  <card id="cloud" title="To the Cloud">
+    <do type="accept" label="SLI">
+      <go href="#sli"/>
+    </do>
+    <p>
+      TO THE CLOUD<br/>
+      SLI Systems<br/>
+      <br/>
+      Rewrote AI services from Apache Spark to Apache Beam on Google Dataflow, keeping data consistent across both platforms during the move.<br/>
+      <br/>
+      Result: faster, cheaper services that scale on demand and strengthened the company in its acquisition.<br/>
+      <br/>
+      Beam, Dataflow, BigQuery, Pub/Sub<br/>
+      <br/>
+      <a href="https://thiagomata.com/cases/sli-to-the-cloud.html">Full case</a><br/>
+    </p>
+  </card>
+
+  <card id="alexandria" title="Alexandria">
+    <do type="accept" label="Ideia">
+      <go href="#ideia"/>
+    </do>
+    <p>
+      ALEXANDRIA<br/>
+      Ideia<br/>
+      <br/>
+      Turned an internal reporting tool into a self-service platform: clients upload files, query their databases and find insights themselves.<br/>
+      <br/>
+      Result: less dependence on the technical team, and a foundation to serve more clients.<br/>
+      <br/>
+      PHP, Python, Scala, Spark, PostgreSQL<br/>
+      <br/>
+      <a href="https://thiagomata.com/cases/ideia-alexandria.html">Full case</a><br/>
+    </p>
+  </card>
+
+  <card id="datasync" title="Data Sharing">
+    <do type="accept" label="Otimi">
+      <go href="#otimicar"/>
+    </do>
+    <p>
+      DATA SHARING<br/>
+      Otimicar<br/>
+      <br/>
+      Server for a device that makes any car smart: compares each car with similar models and recommends services and maintenance.<br/>
+      <br/>
+      Integrated workshops, car stores and insurers that shared no common data standard.<br/>
+      <br/>
+      Result: working integrations that boosted investor confidence.<br/>
+      <br/>
+      Java, REST, SOAP, gRPC, MongoDB<br/>
+      <br/>
+      <a href="https://thiagomata.com/cases/otimicar-data-sync.html">Full case</a><br/>
+    </p>
+  </card>
+
+  <card id="education" title="Education">
+    <do type="accept" label="INEP">
+      <go href="#inep"/>
+    </do>
+    <p>
+      EDUCATION AS PLATFORM<br/>
+      MEC / INEP<br/>
+      <br/>
+      Services for millions of students, schools and universities, monitoring financial transactions that reach millions per day.<br/>
+      <br/>
+      Built E-MEC (accreditation of every university), Revalida (foreign medical diplomas) and SISTEC (technical courses).<br/>
+      <br/>
+      PHP, Java, Oracle, Postgres<br/>
+      <br/>
+      <a href="https://thiagomata.com/cases/mec-education-platform.html">Full case</a><br/>
     </p>
   </card>
 </wml>

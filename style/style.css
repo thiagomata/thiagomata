@@ -1492,3 +1492,17 @@ p {
             url("../img/project-primes-light.svg?v=a49396f7");
     }
 }
+
+/* A quiet footnote: the WAP edition, for whoever scrolls this far. */
+footer .wap-note {
+    padding: 2.5rem 1rem;
+    text-align: center;
+    font-family: Roboto, sans-serif;
+    font-size: 0.75rem;
+    color: inherit;
+    opacity: 0.7;
+
+    a {
+        color: inherit;
+    }
+}

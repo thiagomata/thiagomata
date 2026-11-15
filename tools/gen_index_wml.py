@@ -8,7 +8,7 @@ Run:
     python3 tools/gen_index_wml.py
 
 It regenerates index.wml at the site root (entity-escaped, valid WML 1.1)
-and validates it. Preview with tools/wap-emulator.html served by
+and validates it. Preview with wap/ (the emulator) served by
 tools/serve.py.
 """
 import xml.etree.ElementTree as ET
@@ -69,36 +69,6 @@ ART = {
         r"/ /_/ / /_/ / / / / / / / /__/ /_/ / /",
         r"\____/\__/_/_/ /_/ /_/_/\___/\__,_/_/",
     ],
-    "congress": [
-        ""
-    ],
-    "sli-logo": [
-        r"             /_____\ ",
-        r"             /_/     \_\ ",
-        r"             |         |\ ",
-        r"             |         ||",
-        r"           /_/         \_\ ",
-        r"         /_/    /___\    \_\ ",
-        r"   /_____/    //_____\\    \_____\ ",
-        r" /_/        //_/     \_\\        \_\ ",
-        r" |         //|         |\\         |\ ",
-        r" |         |/|         |||         ||",
-        r" \\        \_\\        \_\\       //|",
-        r"  \_____\    \\_____\    \_\______///",
-        r"   /_____\\    \____\_\    \_____\_/",
-        r" /_/     \_\\        \\_\        \_\ ",
-        r" |         |\\         |\\         |\ ",
-        r" |         |||         |||         ||",
-        r" \\        \_\\       //_/        //|",
-        r"  \_____\    \_\_____/_/    /_____///",
-        r"   \____\_\    \_____/    /_//_____/",
-        r"         \\_\           /_//_/",
-        r"           \\\         ///_/",
-        r"             |         |//",
-        r"             \\       //|",
-        r"              \_______///",
-        r"               \_______/",
-    ],
     "inep": [
         r"░▒▓█▓▒░▒▓███████▓▒░░▒▓████████▓▒░▒▓███████▓▒░  ",
         r"░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░      ░▒▓█▓▒░░▒▓█▓▒░ ",
@@ -140,7 +110,7 @@ CARDS = [
     ("home", "Thiago Mata", "About", "#about", None, [
         "THIAGO MATA", "Technology Leader", "Sydney, Australia", "",
         ("link", "About me", "#about"),
-        ("link", "Experience", "#exp"),
+        ("link", "Experience", "#experience"),
         ("link", "Research", "#research"),
         ("link", "Projects", "#projects"),
         ("link", "Values", "#values"),
@@ -148,53 +118,51 @@ CARDS = [
         "",
         ("link", "Full site", "https://thiagomata.com"),
     ]),
-    ("about", "About", "Exp.", "#exp", None, [
+    ("about", "About", "Exp.", "#experience", None, [
         "Connects engineering to business outcomes.", "",
         "Twenty years across startups, ad-tech at billions of transactions, and regulated banking.", "",
         "Favouring clarity over cleverness, reliability over novelty.",
     ]),
-    ("exp", "Experience", "Resch", "#research", None, [
+    ("experience", "Experience", "Resch", "#research", None, [
         "EXPERIENCE 2003-NOW", "",
         ("link", "Macquarie Bank 24-", "#macquarie"),
         ("link", "Rokt 19-24", "#rokt"),
         ("link", "SLI Systems 17-19", "#sli"),
         ("link", "Ideia 14-17", "#ideia"),
         ("link", "Otimicar 13-14", "#otimicar"),
-        ("link", "Earlier 03-13", "#earlier"),
+        ("link", "INEP 03-13", "#inep"),
     ]),
     ("macquarie", "Macquarie", "Rokt", "#rokt", "macquarie", [
         "", "Senior Manager", "2024-Present", "",
         "Leads a new team delivering banking products, cutting production incidents through testing, observability and graceful degradation.", "",
-        ("link", "Term Deposits", "https://thiagomata.com/cases/macquarie-term-deposits.html"),
+        ("link", "Term Deposits", "#deposits"),
     ]),
     ("rokt", "Rokt", "SLI", "#sli", "rokt", [
         "", "Senior Software Eng.", "2019-2024", "",
         "Led bot detection on the critical path of all traffic. Built the identity and attribution systems of a platform processing billions of transactions.", "",
-        ("link", "Identity", "https://thiagomata.com/cases/rokt-identity.html"),
-        ("link", "Attribution", "https://thiagomata.com/cases/rokt-attribution.html"),
-        ("link", "Bot Detection", "https://thiagomata.com/cases/rokt-bot-detection.html"),
+        ("link", "Identity", "#identity"),
+        ("link", "Attribution", "#attribution"),
+        ("link", "Bot Detection", "#bots"),
     ]),
     ("sli", "SLI Systems", "Ideia", "#ideia", "sli", [
         "", "Senior Data Engineer", "2017-2019", "",
         "Migrated core data services to Google Cloud, making them faster and cheaper, strengthening the company position in its acquisition.", "",
-        ("link", "To the Cloud", "https://thiagomata.com/cases/sli-to-the-cloud.html"),
+        ("link", "To the Cloud", "#cloud"),
     ]),
     ("ideia", "Ideia", "Otimi", "#otimicar", "ideia", [
         "", "CTO", "2014-2017", "",
         "Hired and led engineering across three offices in three states, from concept to first production products. Created the career ladder for the merger with Pinion.", "",
-        ("link", "Alexandria", "https://thiagomata.com/cases/ideia-alexandria.html"),
+        ("link", "Alexandria", "#alexandria"),
     ]),
-    ("otimicar", "Otimicar", "Early", "#earlier", "otimicar", [
+    ("otimicar", "Otimicar", "INEP", "#inep", "otimicar", [
         "", "Co-Founder", "2013-2014", "",
         "Built the first server for a device that turns any car into a smart car.", "",
-        ("link", "Data Sharing", "https://thiagomata.com/cases/otimicar-data-sync.html"),
+        ("link", "Data Sharing", "#datasync"),
     ]),
-    ("earlier", "Earlier", "Resch", "#research", "congress", [
-        "", "INEP", "",
-        "@art:inep", "",
-        "MEC / INEP", "2003-2013", "",
+    ("inep", "MEC / INEP", "Resch", "#research", "inep", [
+        "", "MEC / INEP", "2003-2013", "",
         "INEP and Ministry of Education: high availability public systems E-MEC and Revalida. Bancoob: credit portfolio transfers. Taught web development for six years.", "",
-        ("link", "Education", "https://thiagomata.com/cases/mec-education-platform.html"),
+        ("link", "Education as Platform", "#education"),
     ]),
     ("research", "Research", "Proj.", "#projects", None, [
         "FORMAL VERIFICATION", "",
@@ -254,23 +222,107 @@ CARDS = [
 ]
 
 
+# ----------------------------------------------------------------------------
+# Case studies: one short card per case, condensed from cases/*.md, each
+# linking out to the full page. Listed after CARDS so the emulator files
+# them under the job card that links to them (#experience/rokt/identity).
+FULL = "https://thiagomata.com/cases/"
+CASES = [
+    ("deposits", "Term Deposits", "Mcq.", "#macquarie", None, [
+        "TERM DEPOSITS", "Macquarie Bank", "",
+        "Account opening, from days to minutes.", "",
+        "A cross-team effort replacing a slow, bureaucratic process with a lean digital journey.", "",
+        "Change managed through evidence: A/B tests, feature flags, live old-vs-new comparisons and reconciliation reports.", "",
+        "An end-to-end scenario tool, local testing, CI/CD and load tests made quality part of delivery.", "",
+        "Result: no incidents related to the change.", "",
+        ("link", "Full case", FULL + "macquarie-term-deposits.html"),
+    ]),
+    ("identity", "Identity", "Rokt", "#rokt", None, [
+        "IDENTITY", "Rokt", "",
+        "Connecting touchpoints and devices to one customer through a multi-hop identity graph, with privacy, data residency and client isolation.", "",
+        "Result: real-time identification in a fraction of the time and resources, open to new identifiers and strategies.", "",
+        "Scala, Spark, Kafka, AWS Neptune", "",
+        ("link", "Attribution", "#attribution"),
+        ("link", "Bot Detection", "#bots"),
+        ("link", "Full case", FULL + "rokt-identity.html"),
+    ]),
+    ("attribution", "Attribution", "Rokt", "#rokt", None, [
+        "ATTRIBUTION", "Rokt", "",
+        "Matching campaign events to outcomes with per-campaign rules, consistent and explainable.", "",
+        "Result: matches in a fraction of the time and resources, rules that change on the fly, and ML models that optimise campaigns faster.", "",
+        "Scala, Spark, Kafka, HBase", "",
+        ("link", "Identity", "#identity"),
+        ("link", "Bot Detection", "#bots"),
+        ("link", "Full case", FULL + "rokt-attribution.html"),
+    ]),
+    ("bots", "Bot Detection", "Rokt", "#rokt", None, [
+        "BOT DETECTION", "Rokt", "",
+        "Screening every public request in real time, blocking malicious bots that create fake transactions.", "",
+        "Every decision explained for audit; a rule engine measures new rules before they reach customers.", "",
+        "Go, Istio, Envoy, WASM, Kubernetes, Kafka", "",
+        ("link", "Identity", "#identity"),
+        ("link", "Attribution", "#attribution"),
+        ("link", "Full case", FULL + "rokt-bot-detection.html"),
+    ]),
+    ("cloud", "To the Cloud", "SLI", "#sli", None, [
+        "TO THE CLOUD", "SLI Systems", "",
+        "Rewrote AI services from Apache Spark to Apache Beam on Google Dataflow, keeping data consistent across both platforms during the move.", "",
+        "Result: faster, cheaper services that scale on demand and strengthened the company in its acquisition.", "",
+        "Beam, Dataflow, BigQuery, Pub/Sub", "",
+        ("link", "Full case", FULL + "sli-to-the-cloud.html"),
+    ]),
+    ("alexandria", "Alexandria", "Ideia", "#ideia", None, [
+        "ALEXANDRIA", "Ideia", "",
+        "Turned an internal reporting tool into a self-service platform: clients upload files, query their databases and find insights themselves.", "",
+        "Result: less dependence on the technical team, and a foundation to serve more clients.", "",
+        "PHP, Python, Scala, Spark, PostgreSQL", "",
+        ("link", "Full case", FULL + "ideia-alexandria.html"),
+    ]),
+    ("datasync", "Data Sharing", "Otimi", "#otimicar", None, [
+        "DATA SHARING", "Otimicar", "",
+        "Server for a device that makes any car smart: compares each car with similar models and recommends services and maintenance.", "",
+        "Integrated workshops, car stores and insurers that shared no common data standard.", "",
+        "Result: working integrations that boosted investor confidence.", "",
+        "Java, REST, SOAP, gRPC, MongoDB", "",
+        ("link", "Full case", FULL + "otimicar-data-sync.html"),
+    ]),
+    ("education", "Education", "INEP", "#inep", None, [
+        "EDUCATION AS PLATFORM", "MEC / INEP", "",
+        "Services for millions of students, schools and universities, monitoring financial transactions that reach millions per day.", "",
+        "Built E-MEC (accreditation of every university), Revalida (foreign medical diplomas) and SISTEC (technical courses).", "",
+        "PHP, Java, Oracle, Postgres", "",
+        ("link", "Full case", FULL + "mec-education-platform.html"),
+    ]),
+]
+
+
 def render_card(cid, title, accept_label, accept_href, art_key, items):
     parts = [
         f'  <card id="{cid}" title="{title}">',
         f'    <do type="accept" label="{accept_label}">',
         f'      <go href="{accept_href}"/>',
         '    </do>',
-        '    <p>',
     ]
+
+    # Art goes in its own <p mode="nowrap"> so wide logos scroll
+    # sideways instead of breaking at "/" or ")" mid-row.
+    def art(key):
+        parts.append('    <p mode="nowrap">')
+        parts.append('      ' + esc(ART[key]) + '<br/>')
+        parts.append('    </p>')
+
     if art_key:
-        parts.append('      ' + esc(ART[art_key]) + '<br/>')
+        art(art_key)
+    parts.append('    <p>')
     for it in items:
         if it == "":
             parts.append('      <br/>')
         elif isinstance(it, tuple):
             parts.append(f'      <a href="{it[2]}">{it[1]}</a><br/>')
         elif it.startswith("@art:"):
-            parts.append('      ' + esc(ART[it[5:]]) + '<br/>')
+            parts.append('    </p>')
+            art(it[5:])
+            parts.append('    <p>')
         else:
             parts.append('      ' + it + '<br/>')
     parts += ['    </p>', '  </card>']
@@ -278,7 +330,7 @@ def render_card(cid, title, accept_label, accept_href, art_key, items):
 
 
 def main():
-    cards_xml = "\n\n".join(render_card(*c) for c in CARDS)
+    cards_xml = "\n\n".join(render_card(*c) for c in CARDS + CASES)
     wml = f'''<?xml version="1.0"?>
 <!DOCTYPE wml PUBLIC "-//WAPFORUM//DTD WML 1.1//EN" "http://www.wapforum.org/DTD/wml_1.1.xml">
 <!--
