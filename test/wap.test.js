@@ -1,12 +1,15 @@
 import assert from "node:assert/strict";
-import { createHash } from "node:crypto";
 import { existsSync, readFileSync } from "node:fs";
 import { describe, it } from "node:test";
-import { cardPath, dtmf, keyFor, numberFor, SECRETS, sections, special, SPECIAL_MS, SPEED_DIAL } from "../wap/phone.js";
+import { checkDeck, renderCard, renderDeck } from "../tools/wap-deck.js";
+import { manifest, recordingKey, spoken, voiceLines } from "../tools/wap-voices.js";
+import {
+    cardPath, dtmf, keyFor, numberFor, SECRETS, sections, special, SPECIAL_MS, SPEED_DIAL, SUPPORT, telHref,
+} from "../wap/phone.js";
 
 const PAGE = readFileSync(new URL("../wap/index.html", import.meta.url), "utf8");
 const DECK = readFileSync(new URL("../index.wml", import.meta.url), "utf8");
-const VOICE = JSON.parse(PAGE.match(/<script type="application\/json" id="voice-lines">([\s\S]*?)<\/script>/)[1]);
+const VOICE = voiceLines(PAGE);
 const MANIFEST = JSON.parse(readFileSync(new URL("../wap/voice/manifest.json", import.meta.url), "utf8"));
 
 // The deck's cards, each with the hrefs it links to.
@@ -150,6 +153,45 @@ describe("wap: secret numbers", () => {
     });
 });
 
+describe("wap: emergency numbers", () => {
+    it("offers each region's support line as a number to tap", () => {
+        assert.equal(telHref("13 11 14"), "tel:131114");
+        assert.equal(telHref("116 123"), "tel:116123");
+        assert.equal(telHref("988"), "tel:988");
+    });
+
+    it("has a support line only for numbers that reach the emergency screen, never as the number itself", () => {
+        const { emergency } = callNumbers();
+        for (const [number, [who, line]] of Object.entries(SUPPORT)) {
+            assert.ok(emergency.includes(number), number);
+            assert.notEqual(telHref(line), telHref(number), who);
+        }
+    });
+});
+
+describe("wap: the deck", () => {
+    it("is exactly what tools/wap-deck.js makes (run `npm run wap:deck` after editing the deck)", () => {
+        assert.equal(renderDeck(), DECK);
+    });
+
+    it("is valid XML whose every #link names a card", () => {
+        assert.equal(checkDeck(DECK).size, Object.keys(deckLinks()).length);
+    });
+
+    it("rejects a deck that is not XML, or that links to a missing card", () => {
+        assert.throws(() => checkDeck("<wml><card id=\"a\"></wml>"), /Invalid XML/);
+        const broken = renderDeck([{ id: "a", title: "A", label: "B", href: "#b", art: null, items: [] }]);
+        assert.throws(() => checkDeck(broken), /Broken link: #b on card a/);
+    });
+
+    it("escapes text, and keeps logos aligned with non-breaking spaces", () => {
+        const card = renderCard({ id: "x", title: "R&D", label: "OK", href: "#x", art: "elegant", items: ["1 < 2", ""] });
+        assert.match(card, /title="R&amp;D"/);
+        assert.match(card, /1 &lt; 2<br\/>/);
+        assert.match(card, /<p mode="nowrap">\n {6}&#160;\.&#160;&#160;\*/);
+    });
+});
+
 describe("wap: voices", () => {
     it("has a voice for every caller the page puts on the line", () => {
         const callers = [...PAGE.matchAll(/quoteCall\('[^']*', '([^']+)'|caller: '([^']+)'/g)].map(([, a, b]) => a || b);
@@ -158,14 +200,19 @@ describe("wap: voices", () => {
     });
 
     it("has a recording of every line, made from that line as it reads now", () => {
-        for (const [caller, voice] of Object.entries(VOICE)) {
-            voice.lines.forEach((text, n) => {
-                const name = `${caller}-${n}.mp3`;
-                const spoken = Object.entries(voice.pronounce || {}).reduce((t, [word, sound]) => t.replaceAll(word, sound), text);
-                const key = createHash("sha256").update(`${voice.espeak}\n${spoken}`).digest("hex").slice(0, 16);
-                assert.ok(existsSync(new URL(`../wap/voice/${name}`, import.meta.url)), `${name} is missing`);
-                assert.equal(MANIFEST[name], key, `${name} is stale: run python3 tools/gen_voice.py`);
-            });
+        for (const [name, key] of Object.entries(manifest(VOICE))) {
+            assert.ok(existsSync(new URL(`../wap/voice/${name}`, import.meta.url)), `${name} is missing`);
+            assert.equal(MANIFEST[name], key, `${name} is stale: run \`npm run wap:voices\``);
         }
+        assert.deepEqual(Object.keys(MANIFEST).sort(), Object.keys(manifest(VOICE)).sort(), "the manifest lists a line no longer in the page");
+    });
+
+    it("says names the way they are spelled for it, and re-records when the voice or the words change", () => {
+        const voice = { espeak: "en+m1", pronounce: { Thiago: "Cheeahgo" }, lines: [] };
+        assert.equal(spoken(voice, "Hi, Thiago."), "Hi, Cheeahgo.");
+        assert.equal(recordingKey(voice, "Hi"), recordingKey(voice, "Hi"));
+        assert.notEqual(recordingKey(voice, "Hi"), recordingKey(voice, "Hello"));
+        assert.notEqual(recordingKey(voice, "Hi"), recordingKey({ ...voice, espeak: "en+f2" }, "Hi"));
+        assert.match(recordingKey(voice, "Hi"), /^[0-9a-f]{16}$/);
     });
 });

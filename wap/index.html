@@ -49,6 +49,8 @@
     border-radius: 3px;
     box-shadow: inset 0 0 22px rgba(0,0,0,.25);
     color: var(--pixel);
+    /* LCD pixels were chunky: one or two dots per stroke, never hairlines */
+    font-weight: bold;
     display: flex;
     flex-direction: column;
     position: relative;
@@ -157,21 +159,12 @@
   .call { width: 64px; height: 24px; border-radius: 12px; font-size: 15px; line-height: 24px; }
   .call.green { color: #6fd36f; }
   .call.red { color: #ef6a5c; }
-  /* 12-key pad under the spring-loaded slide cover */
+  /* 12-key pad, with the slide cover pulled down below it */
   .keypad {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 8px 14px;
-    padding: 0 14px;
-    max-height: 0;
-    overflow: hidden;
-    transition: max-height .25s ease-out, padding .25s ease-out;
-  }
-  .phone.open .keypad { max-height: 240px; padding: 14px 14px 4px; }
-  /* On a touch screen there is no keyboard to type on: keep the pad out */
-  @media (pointer: coarse) {
-    .keypad { max-height: 240px; padding: 14px 14px 4px; transition: none; }
-    .cover { cursor: default; }
+    padding: 14px 14px 4px;
   }
   .num {
     -webkit-touch-callout: none;
@@ -188,17 +181,9 @@
     border-radius: 0 0 46px 46px / 0 0 34px 34px;
     background: linear-gradient(100deg, #23262c 0%, #3c4048 45%, #23262c 100%);
     border-top: 2px solid #15171a;
-    cursor: pointer;
     display: flex;
-    flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 6px;
-    color: #7d828b;
-    font-family: Arial, sans-serif;
-    font-size: 9px;
-    letter-spacing: 2px;
-    user-select: none;
   }
   .cover::before {
     content: ""; width: 70px; height: 8px;
@@ -236,18 +221,18 @@
   .call-screen a { color: inherit; cursor: pointer; text-decoration: underline; }
   .meter i { font-style: normal; }
   .meter i.off { opacity: .2; }
-  #battery.low i:first-child { animation: blink 1s steps(1) infinite 3s; }
   .screen.flash { filter: invert(1); }
   #signal.blink { animation: blink .15s steps(1) 4; }
   @keyframes blink { 50% { visibility: hidden; } }
-  .note {
-    color: #8b8f96;
+  .caption {
+    color: #a3a7ae;
     font-family: Arial, sans-serif;
-    font-size: 11px;
-    margin-top: 12px;
+    font-size: 12px;
+    line-height: 1.5;
+    margin: 0 16px 14px;
     text-align: center;
   }
-  .note a { color: #b9bcc2; }
+  .caption a { color: #d4d7dc; }
   .sr-only {
     position: absolute; width: 1px; height: 1px; overflow: hidden;
     clip: rect(0 0 0 0); white-space: nowrap;
@@ -255,7 +240,9 @@
 </style>
 </head>
 <body>
-<div class="phone open">
+<p class="caption">A playful, simplified version of Thiago Mata's CV, as a WAP site on a 1999 phone.<br>
+  The full, modern site is at <a href="/">thiagomata.com</a>. Read with the keys, or dial: some numbers answer.</p>
+<div class="phone">
   <div class="earpiece"></div>
   <div class="screen-frame">
     <div class="screen">
@@ -280,13 +267,12 @@
     <button class="key call red" title="End" aria-label="End" id="key-end">&#9990;</button>
   </div>
   <div class="keypad" id="keypad"></div>
-  <div class="cover" id="cover">SLIDE</div>
-  </div>
+  <div class="cover" aria-hidden="true"></div>
+</div>
 <div class="sr-only" id="announce" aria-live="polite"></div>
-<div class="note">A tiny WML emulator for <a href="/index.wml" target="_blank">index.wml</a>.</div>
 
 <!-- Every spoken line, per caller: the eSpeak NG voice that renders it
-     to voice/<caller>-<n>.mp3 (python3 tools/gen_voice.py), the browser
+     to voice/<caller>-<n>.mp3 (npm run wap:voices), the browser
      voice used when that file is missing, and how to pronounce names
      (subtitles keep the real spelling). -->
 <script type="application/json" id="voice-lines">
@@ -351,13 +337,13 @@
       "rate": 0.9
     },
     "lines": [
-      "Rick here, just checking in. I'm not going anywhere.",
-      "Rick here. I'd never leave you on hold... well, just this once.",
+      "Rollers here, just checking in. We're not going anywhere.",
+      "Rollers here. We'd never leave you on hold... well, just this once.",
       "You've been Rickrolled. Over a 1999 phone line, no less.",
-      "Rick here. I can't talk right now, I hope you'll understand.",
-      "Sorry, still can't talk. please don't give up.",
-      "Rick here. You found me on a 1999 keypad. Respect.",
-      "Rick here. You called me, so technically you rickrolled yourself. That's a first."
+      "Rollers here. We can't talk right now, we hope you'll understand.",
+      "Sorry, still can't talk. Please don't give up.",
+      "Rollers here. You found us on a 1999 keypad. Respect.",
+      "You called us, so technically you rickrolled yourself. That's a first."
     ]
   },
   "mary": {
@@ -494,7 +480,8 @@
 }
 </script>
 <script type="module">
-import { KEYS, keyFor, dtmf as dtmfTones, special, sections, cardPath as pathIn, SECRETS, SPEED_DIAL, LONG_PRESS_MS } from './phone.js';
+import { KEYS, keyFor, dtmf as dtmfTones, special, sections, cardPath as pathIn, SECRETS, SPEED_DIAL, LONG_PRESS_MS,
+  SUPPORT, telHref } from './phone.js?v=0f279a5a';
 
 const content = document.getElementById('content');
 const cardTitle = document.getElementById('cardtitle');
@@ -507,8 +494,9 @@ let cards = {};           // id -> card element
 let current = null;
 let rightAction = null;   // {type:'go',href} | {type:'url',href}
 
-fetch('/index.wml')
+fetch('/index.wml?v=c65d6e48')
   .then(r => {
+    if (!r.ok) throw new Error('HTTP ' + r.status);
     const modified = r.headers.get('last-modified');
     if (modified) deckDate = new Date(modified);
     return r.text();
@@ -527,7 +515,10 @@ fetch('/index.wml')
     history.replaceState({ depth }, '', '#' + cardPath(id));
     show(id, { push: false });
   })
-  .catch(e => { content.textContent = 'Network error: ' + e; });
+  .catch(e => {
+    cardTitle.textContent = 'No signal';
+    content.textContent = 'The WAP deck did not load (' + e.message + '). The full site is at thiagomata.com.';
+  });
 
 // Back is the browser's own history: each card visited is an entry, and
 // depth counts how many of them lead back into the phone.
@@ -655,16 +646,37 @@ for (const [k, sub] of KEYS) {
   const b = document.createElement('button');
   b.className = 'key num';
   b.innerHTML = k + '<small>' + (sub || '&#160;') + '</small>';
-  // The digit sounds as the key goes down; held, it speed-dials.
-  let held = null;
-  const release = () => { clearTimeout(held); held = null; };
-  b.addEventListener('pointerdown', () => {
-    pressKey(k);
-    held = setTimeout(() => { held = null; speedDial(k); }, LONG_PRESS_MS);
+  // The tone sounds while the key is held; held long, it speed-dials.
+  // A mouse dials as the key goes down. A finger dials as it lifts, so
+  // a scroll that starts on a key (the browser cancels the touch) dials
+  // nothing.
+  let held = null, touched = false;
+  const release = () => { clearTimeout(held); held = null; toneUp(); };
+  b.addEventListener('pointerdown', e => {
+    if (e.button !== 0) return;
+    toneDown(k);
+    touched = e.pointerType !== 'mouse';
+    if (!touched) pressKey(k);
+    held = setTimeout(() => {
+      held = null; touched = false; toneUp();
+      speedDial(k);
+    }, LONG_PRESS_MS);
   });
-  for (const ev of ['pointerup', 'pointerleave', 'pointercancel']) b.addEventListener(ev, release);
+  b.addEventListener('pointerup', () => {
+    if (touched && held) pressKey(k);
+    touched = false;
+    release();
+  });
+  for (const ev of ['pointerleave', 'pointercancel']) {
+    b.addEventListener(ev, () => { touched = false; release(); });
+  }
   b.addEventListener('contextmenu', e => e.preventDefault());   // a long touch is not a right click
-  b.onclick = e => { if (e.detail === 0) pressKey(k); };         // Enter or Space on a focused key
+  b.onclick = e => {                                             // Enter or Space on a focused key
+    if (e.detail !== 0) return;
+    toneDown(k);
+    pressKey(k);
+    setTimeout(toneUp, 120);
+  };
   keypad.appendChild(b);
 }
 // Hold a key: call whoever is stored on it (phone.js), by name.
@@ -677,7 +689,6 @@ function speedDial(k) {
 // 214 + C, quickly, is a special move: god mode (see phone.js).
 let inputs = [];
 function pressKey(k) {
-  dtmf(k);
   if (onCall()) hangUp();        // a key ends the call or closes the info screen
   dial(k);
   const move = special(inputs, k, performance.now());
@@ -696,9 +707,6 @@ document.querySelector('.phone').addEventListener('mousedown', e => {
   if (e.target.closest('.key')) e.preventDefault();
 });
 
-// Slide cover: springs down to reveal the keypad, like the 7110.
-document.getElementById('cover').onclick = () => phone.classList.toggle('open');
-keypad.addEventListener('transitionend', e => { if (e.propertyName === 'max-height') fitPhone(); });
 
 // Computer keyboard: arrows scroll, Enter/Backspace are the soft keys,
 // digits and * # are the keypad, Escape goes home.
@@ -719,15 +727,17 @@ document.addEventListener('keydown', e => {
   // A key held down repeats: that is a long press, never more digits.
   else if (keyFor(e.key)) {
     const k = keyFor(e.key);
-    if (!e.repeat) { pressKey(k); keyHeld = { k, at: performance.now() }; }
+    if (!e.repeat) { toneDown(k); pressKey(k); keyHeld = { k, at: performance.now() }; }
     else if (keyHeld && keyHeld.k === k && performance.now() - keyHeld.at >= LONG_PRESS_MS) {
       keyHeld = null;
+      toneUp();
       speedDial(k);
     }
   }
 });
 let keyHeld = null;
-document.addEventListener('keyup', () => { keyHeld = null; });
+document.addEventListener('keyup', () => { keyHeld = null; toneUp(); });
+addEventListener('blur', () => { keyHeld = null; toneUp(); });   // never a tone stuck on
 
 // ----------------------------------------------------------------------------
 // Calls. Dial on the keypad, green (or Enter) calls, red hangs up. Unknown numbers
@@ -755,12 +765,38 @@ function endKey() {
 }
 
 const sleep = ms => new Promise(r => setTimeout(r, ms));
-function newAudio() { return new (window.AudioContext || window.webkitAudioContext)(); }
-function tone(ctx, freqs, ms, at = 0, gain = 0.06) {
+// One audio context for every sound. iOS only lets a page start sound
+// from a tap, and calls speak seconds after it, so the first tap or key
+// press unlocks the context, the voice player and speech, and every
+// later sound reuses them.
+let audio = null;
+function sharedAudio() {
+  const AudioContext = window.AudioContext || window.webkitAudioContext;
+  if (!AudioContext) return null;
+  audio ||= new AudioContext();
+  if (audio.state === 'suspended') audio.resume().catch(() => {});
+  return audio;
+}
+const voicePlayer = new Audio();
+let unlocked = false;
+function unlockAudio() {
+  sharedAudio();
+  if (unlocked) return;
+  unlocked = true;
+  voicePlayer.muted = true;
+  voicePlayer.src = voiceUrl('thiago', 0);
+  voicePlayer.play().then(() => voicePlayer.pause(), () => {}).finally(() => { voicePlayer.muted = false; });
+  if (window.speechSynthesis) speechSynthesis.speak(new SpeechSynthesisUtterance(''));
+}
+for (const ev of ['pointerdown', 'keydown']) document.addEventListener(ev, unlockAudio, { capture: true });
+// A sound on out, an audio node: the context's speakers, or a call's line.
+function tone(out, freqs, ms, at = 0, gain = 0.06) {
+  if (!out) return;
+  const ctx = out.context;
   const t = ctx.currentTime + at / 1000;
   const g = ctx.createGain();
   g.gain.value = gain;
-  g.connect(ctx.destination);
+  g.connect(out);
   for (const f of freqs) {
     const o = ctx.createOscillator();
     o.frequency.value = f;
@@ -769,10 +805,31 @@ function tone(ctx, freqs, ms, at = 0, gain = 0.06) {
     o.stop(t + ms / 1000);
   }
 }
-// Key tones have their own audio context, so hanging up never cuts them.
-let keyAudio = null;
-function dtmf(k) {
-  tone(keyAudio ||= newAudio(), dtmfTones(k), 120);
+// Key tones go straight to the speakers, so hanging up never cuts them.
+// A key's tone lasts as long as the key is held (at least MIN_TONE_S, so
+// a quick tap is still heard).
+let keyTone = null;
+const MIN_TONE_S = 0.08;
+function toneDown(k) {
+  toneUp();
+  const ctx = sharedAudio();
+  if (!ctx) return;
+  const g = ctx.createGain();
+  g.gain.value = 0.06;
+  g.connect(ctx.destination);
+  const from = ctx.currentTime;
+  const oscillators = dtmfTones(k).map(f => {
+    const o = ctx.createOscillator();
+    o.frequency.value = f;
+    o.connect(g);
+    o.start();
+    return o;
+  });
+  keyTone = () => oscillators.forEach(o => o.stop(Math.max(ctx.currentTime, from + MIN_TONE_S)));
+}
+function toneUp() {
+  if (keyTone) keyTone();
+  keyTone = null;
 }
 
 // The call object a script gets. Everything that waits goes through
@@ -780,7 +837,7 @@ function dtmf(k) {
 function newCall() {
   const controller = new AbortController();
   const { signal } = controller;
-  const c = { controller, signal, audio: null };
+  const c = { controller, signal, line: null };
   c.until = promise => new Promise((resolve, reject) => {
     if (signal.aborted) return reject(signal.reason);
     const abort = () => reject(signal.reason);
@@ -789,7 +846,13 @@ function newCall() {
                  e => { signal.removeEventListener('abort', abort); reject(e); });
   });
   c.wait = ms => c.until(sleep(ms));
-  c.tone = (...args) => tone(c.audio ||= newAudio(), ...args);
+  // The call's sounds go through its own line, cut when it hangs up.
+  c.tone = (...args) => {
+    const ctx = sharedAudio();
+    if (!ctx) return;
+    if (!c.line) { c.line = ctx.createGain(); c.line.connect(ctx.destination); }
+    tone(c.line, ...args);
+  };
   c.ring = async times => {
     for (let i = 0; i < times; i++) {
       c.tone([400, 450], 400);          // Australian double ring
@@ -807,13 +870,15 @@ async function startCall(script) {
   try {
     await script(c);
   } catch (e) {
-    if (!c.signal.aborted) throw e;    // hung up mid-script: expected
+    if (c.signal.aborted) return;      // hung up mid-script: expected
+    console.error('Call failed:', e);
+    if (active === c) screenText('Call failed\n\nPlease try again.');
   }
 }
 function hangUp() {
   if (active) {
     active.controller.abort();
-    if (active.audio) active.audio.close();
+    if (active.line) active.line.disconnect();
     active = null;
   }
   callScreen.hidden = true;
@@ -847,14 +912,28 @@ function pickVoice(names) {
 }
 // Play the caller's recorded line; resolves when it ends. Rejects when
 // there is no recording, so the browser voice can take over.
+// Each recording's version (voice/manifest.json), so a re-recorded line
+// is never played from a stale cache.
+let voiceVersions = {};
+fetch('./voice/manifest.json?v=e1541235')
+  .then(r => (r.ok ? r.json() : {}))
+  .then(v => { voiceVersions = v; }, () => {});
+function voiceUrl(caller, n) {
+  const name = `${caller}-${n}.mp3`;
+  return 'voice/' + name + (voiceVersions[name] ? '?v=' + voiceVersions[name] : '');
+}
 async function playRecorded(c, caller, text) {
   const n = VOICE[caller] ? VOICE[caller].lines.indexOf(text) : -1;
   if (n < 0) throw new Error('no recording');
-  const rec = new Audio(`voice/${caller}-${n}.mp3`);
+  const rec = voicePlayer;
+  rec.muted = false;
+  rec.src = voiceUrl(caller, n);
   c.signal.addEventListener('abort', () => rec.pause(), { once: true });
-  const ended = new Promise(r => { rec.onended = r; rec.onerror = r; });
+  const ended = new Promise((resolve, reject) => {
+    rec.onended = resolve;
+    rec.onerror = () => reject(new Error('recording failed: ' + rec.src));
+  });
   await rec.play();
-  if (c.signal.aborted) rec.pause();
   return ended;
 }
 function pronounce(caller, text) {
@@ -881,8 +960,12 @@ async function say(c, text, { caller = null, cps = 16 } = {}) {
   announce(text);
   const line = document.createElement('div');
   callScreen.appendChild(line);
+  // The recording, else the browser's voice; never an error, since the
+  // subtitle carries the line either way.
   const voice = caller
-    ? playRecorded(c, caller, text).catch(() => speakWithBrowser(c, caller, text))
+    ? playRecorded(c, caller, text)
+        .catch(() => (c.signal.aborted ? null : speakWithBrowser(c, caller, text)))
+        .catch(() => null)
     : null;
   for (const ch of text) {
     line.textContent += ch;
@@ -944,17 +1027,9 @@ async function rain(c, ms) {
     canvas.remove();
   }
 }
-// Emergency numbers, and HELP: email me for help, call real emergency
-// services in an emergency, and a support line for the region of the
-// number dialled (checked Nov 2026), plus a worldwide directory.
-const SUPPORT = {
-  '000': 'Lifeline (Australia):\n13 11 14',
-  '911': '988 Suicide & Crisis Lifeline (US, Canada): call or text 988',
-  '999': 'Samaritans (UK, Ireland):\n116 123',
-  '190': 'CVV (Brasil):\n188',
-  '192': 'CVV (Brasil):\n188',
-  '193': 'CVV (Brasil):\n188',
-};
+// Emergency numbers, and HELP: call real emergency services, a support
+// line for the region of the number dialled (phone.js), a worldwide
+// directory, and how to reach me.
 function linkTo(text, href) {
   const a = document.createElement('a');
   a.textContent = text;
@@ -965,15 +1040,28 @@ function linkTo(text, href) {
   return a;
 }
 async function emergency(c, number) {
-  const mail = deck && deck.querySelector('a[href^="mailto:"]');
-  screenText('If you need me, contact me at\n');
-  if (mail) callScreen.appendChild(linkTo(mail.getAttribute('href').slice('mailto:'.length), mail.getAttribute('href')));
-  callScreen.appendChild(document.createTextNode('\nor on Twitter / X: '));
-  callScreen.appendChild(linkTo('@thiagomata', 'https://x.com/thiagomata'));
-  callScreen.appendChild(document.createTextNode(
-    '\n\nFor a real emergency, please call your local emergency services.\n\n' +
-    'To talk to someone now:\n' + (SUPPORT[number] ? SUPPORT[number] + '\n' : '')));
-  callScreen.appendChild(linkTo('findahelpline.com', 'https://findahelpline.com'));
+  const text = t => callScreen.appendChild(document.createTextNode(t));
+  const help = () => {
+    text('For a real emergency, call your local emergency services.\n\nTo talk to someone now:\n');
+    if (SUPPORT[number]) {
+      const [who, line] = SUPPORT[number];
+      text(who + ':\n');
+      callScreen.appendChild(linkTo(line, telHref(line)));
+      text('\nor ');
+    }
+    callScreen.appendChild(linkTo('findahelpline.com', 'https://findahelpline.com'));
+  };
+  const me = () => {
+    const mail = deck && deck.querySelector('a[href^="mailto:"]');
+    text('If you need me, contact me at\n');
+    if (mail) callScreen.appendChild(linkTo(mail.getAttribute('href').slice('mailto:'.length), mail.getAttribute('href')));
+    text('\nor on Twitter / X: ');
+    callScreen.appendChild(linkTo('@thiagomata', 'https://x.com/thiagomata'));
+  };
+  screenText('');
+  // HELP asks for me; an emergency number needs help first
+  if (number === '4357') { me(); text('\n\n'); help(); }
+  else { help(); text('\n\n'); me(); }
   announce(callScreen.textContent);
 }
 // 777: a terminal that lists every secret (phone.js), as symlinks to
@@ -1024,13 +1112,13 @@ const CALLS = {
   '628749': quoteCall('Morpheus', 'morpheus', { after: c => rain(c, 3500) }),
   // PORTAL on the keypad letters: Aperture Science calling.
   '767825': quoteCall('Aperture Science\nGLaDOS', 'glados'),
-  // RICK on the keypad letters: a Rickroll, by phone.
-  '7425': quoteCall('Rick', 'rick'),
+  // RICK on the keypad letters: a Rickroll, by phone, from the Rollers.
+  '7425': quoteCall('Rollers', 'rick'),
   // NEVERGONNA and RICKROLL spelled on the letters: you rolled yourself.
-  '6383746662': quoteCall('Rick', 'rick'),
-  '74257655': quoteCall('Rick', 'rick'),
+  '6383746662': quoteCall('Rollers', 'rick'),
+  '74257655': quoteCall('Rollers', 'rick'),
   // ...or the chorus hook itself, played on the keypad tones.
-  '1262##9': quoteCall('Rick', 'rick'),
+  '1262##9': quoteCall('Rollers', 'rick'),
   // Mary Had a Little Lamb, played on the keypad tones while dialling.
   '3212333': quoteCall('Mary', 'mary'),
   // More tunes on the keypad tones. The 3rd column rises one step per
@@ -1117,9 +1205,9 @@ const phone = document.querySelector('.phone');
 const MIN_FONT = 14;
 function fitPhone() {
   phone.style.zoom = 1;
-  const note = document.querySelector('.note');
+  const caption = document.querySelector('.caption');
   const wide = innerWidth / phone.offsetWidth;
-  const tall = innerHeight / (phone.offsetHeight + note.offsetHeight + 12);
+  const tall = innerHeight / (phone.offsetHeight + caption.offsetHeight + 38);
   const scale = matchMedia('(pointer: coarse)').matches ? wide
     : Math.min(wide * 0.95, Math.max(Math.min(wide, tall) * 0.95, MIN_FONT / DEVICE_FONT));
   phone.style.zoom = Math.max(scale, 0.5);
@@ -1127,18 +1215,18 @@ function fitPhone() {
 addEventListener('resize', fitPhone);
 fitPhone();
 
-// Power: the phone starts weak, with one bar of signal and one of
-// battery. The Konami code (keyboard) turns on god mode: full bars and
-// a backlight that never times out.
+// Power: the phone starts with two bars of signal and two of battery,
+// and the backlight goes off a while after the last key press. The
+// Konami code or 214 + C turn on god mode: full bars, backlight always on.
+const POWER = { low: { bars: 2, backlightMs: 15000 }, full: { bars: 4, backlightMs: Infinity } };
 let power = 'low';
 function meter(el, lit) {
   el.innerHTML = [1, 2, 3, 4].map(i => `<i${i > lit ? ' class="off"' : ''}>${el.id === 'signal' ? '▂▄▆█'[i - 1] : '▮'}</i>`).join('');
 }
 function setPower(p) {
   power = p;
-  meter(document.getElementById('signal'), p === 'full' ? 4 : 1);
-  meter(document.getElementById('battery'), p === 'full' ? 4 : 1);
-  document.getElementById('battery').classList.toggle('low', p === 'low');
+  meter(document.getElementById('signal'), POWER[p].bars);
+  meter(document.getElementById('battery'), POWER[p].bars);
   wake();
 }
 function godMode() {
@@ -1155,15 +1243,16 @@ function godMode() {
 }
 
 // Backlight: on for a while after the last key press, like the 7110.
+// It never goes off before the first one, so a visitor who only reads
+// never sees a dim screen.
 const lcd = document.querySelector('.screen');
-// Low battery saves power with a 5 s backlight; god mode keeps it on.
-const BACKLIGHT_MS = { low: 5000, full: Infinity };
-let backlightTimer = null;
-function wake() {
+let backlightTimer = null, pressed = false;
+function wake(e) {
+  if (e) pressed = true;
   lcd.classList.remove('unlit');
   clearTimeout(backlightTimer);
-  if (BACKLIGHT_MS[power] < Infinity) {
-    backlightTimer = setTimeout(() => lcd.classList.add('unlit'), BACKLIGHT_MS[power]);
+  if (pressed && POWER[power].backlightMs < Infinity) {
+    backlightTimer = setTimeout(() => lcd.classList.add('unlit'), POWER[power].backlightMs);
   }
 }
 for (const ev of ['pointerdown', 'keydown', 'wheel', 'touchstart']) {

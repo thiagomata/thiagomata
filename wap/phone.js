@@ -60,9 +60,22 @@ export function cardPath(id, parents) {
 export const LONG_PRESS_MS = 800;
 export const SPEED_DIAL = {
     "1": ["Voicemail", ""], "2": ["Morpheus", "628749"], "3": ["GLaDOS", "767825"],
-    "4": ["Deep Thought", "42"], "5": ["Rick", "7425"], "6": ["Mary", "3212333"],
+    "4": ["Deep Thought", "42"], "5": ["Rollers", "7425"], "6": ["Mary", "3212333"],
     "7": ["Beethoven", "336996321123322"], "8": ["Santa", "33333339123"], "9": ["Terminal", "777"],
 };
+
+// Support lines for the region of the emergency number dialled (checked
+// Nov 2026), as [who, number]. 112 and HELP get the worldwide directory.
+export const SUPPORT = {
+    "000": ["Lifeline (Australia)", "13 11 14"],
+    "911": ["988 Lifeline (US, Canada), call or text", "988"],
+    "999": ["Samaritans (UK, Ireland)", "116 123"],
+    "190": ["CVV (Brasil)", "188"],
+    "192": ["CVV (Brasil)", "188"],
+    "193": ["CVV (Brasil)", "188"],
+};
+// A phone number as a link that calls it: tel: and its digits.
+export const telHref = number => "tel:" + number.replace(/[^\d+]/g, "");
 
 // Every secret, as 777 lists it. The page has a call for each number.
 export const SECRETS = [
